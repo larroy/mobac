@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Mobile Atlas Creator - Readme for Developers</title>
+<style type="text/css">
+body {
+	margin-left: 10px;
+}
+
+h1,h2,h3 {
+	color: #0000CC;
+	font-style: italic;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+h2 {
+	margin-left: 20px;
+}
+
+h3 {
+	margin-left: 70px;
+}
+
+h1 {
+	border-bottom: solid thin black;
+}
+
+pre {
+	margin-left: 140px;
+}
+
+tt {
+	font-size: 120%;
+}
+
+p,li {
+	font-size: 110%;
+	font-family: Helvetica, Arial, sans-serif;
+	margin-left: 100px;
+}
+</style>
+</head>
+<body>
+<h1>Mobile Atlas Creator - Readme for Developers</h1>
+<p>Welcome to the developer documentation of Mobile Atlas Creator
+(MOBAC). First please read the <a href="README.HTM">standard readme</a>
+for all users.</p>
+<h2>Code access</h2>
+<p>If you want do get your hands on the latest source code of Mobile
+Atlas Creator you can checkout the code from the Subversion repository
+at SourceForge:</p>
+<p><a
+	href="https://trekbuddyatlasc.svn.sourceforge.net/svnroot/trekbuddyatlasc/trunk/TAC"><tt>https://trekbuddyatlasc.svn.sourceforge.net/svnroot/trekbuddyatlasc/trunk/TAC</tt></a>
+</p>
+<p>There you will find the latest sources of Mobile Atlas Creator in form of an
+Eclipse (v3.5) project. All tools, libraries, sources and build files
+are included in this repository.</p>
+
+<h2>Compiling MOBAC within Eclipse</h2>
+<p>If you want to run MOBAC from within Eclipse you only need Eclipse
+with Java Development Tools installed (included in all Eclipse Java
+editions). <br />
+The root class for starting MOBAC in Eclipse <tt>mobac.StartMOBAC</tt></p>
+<p>Compile/building Mobile Atlas Creator without Eclipse requires <a
+	href="http://ant.apache.org/">Apache Ant</a>) which is used for
+building the jar version of Mobile Atlas Creator and of course the Java Development Kit
+(JDK) installed.</p>
+
+<h2>Building Mobile Atlas Creator</h2>
+<p>For building Mobile Atlas Creator please run Apache Ant on the provided file <tt><a
+	href="build.xml">build.xml</a></tt></p>
+<p>The default build target performs all necessary tasks for
+compiling the sources, packaging the classes to a jar and then
+minimizing the size of the jar using <a
+	href="http://proguard.sourceforge.net/">ProGuard</a> (<tt>lib/proguard.jar</tt>).<br>
+Additionally the build steps include a call to <tt>lib/svnversion.jar</tt>
+which is a Java only version of the command <a
+	href="http://svnbook.red-bean.com/en/1.1/re57.html">svnversion</a>
+(bases on <a href="http://svnkit.com">SVNKit</a>). This command updates
+the SVN revision information in file <tt>src/mobac/mobac-rev.properties</tt>
+which is included in the final jar of Mobile Atlas Creator.</p>
+
+<h2>Guidelines for publishing custom builds/releases</h2>
+<p>If you modify Mobile Atlas Creator and you want to publish it
+yourself please consider the following guidelines:</p>
+<ol>
+	<li>Chose a version/release name that makes it clear that it is
+	not an official release: Change the version string to reflect that.<br>
+	Example: <tt>1.6 beta 3 XYZ edition</tt><br>
+	The version string is located in the properties file <tt>src/mobac/mobac.properties</tt>.
+	Change the entry <b>mobac.version</b> to your custom release name.</li>
+	<li>Do not forget that Mobile Atlas Creator is a GPL project -
+	therefore publishing the source code together with the binary release
+	should went without saying.</li>
+	<li>If your modification is useful you may consider to present it
+	to the Mobile Atlas Creator development team. <a
+		href="https://sourceforge.net/tracker/?group_id=238075&atid=1105496">Patches</a>
+	are always welcome. Useful modifications have a great chance to be
+	integrated into the main branch.</li>
+</ol>
+
+<h2>Source code overview - important packages</h2>
+<h3><a href="src/mobac/gui">mobac.gui</a></h3>
+<p>This package contains the implementation of all dialogs/windows.
+In the sub-packages you can find the related implementations of used
+graphical components - e.g. <tt><a
+	href="src/mobac/gui/mapview/PreviewMap.java">mobac.gui.mapview.PreviewMap</a></tt>
+- the component that draws the movable map background used by Mobile Atlas Creator.</p>
+<h3><a href="src/mobac/mapsources">mobac.mapsources</a></h3>
+<p>Holds the infrastructure and the implementation of all map
+sources available within Mobile Atlas Creator. For implementing own map sources you
+should derive your map source from the abstract base class <a
+	href="src/mobac/mapsources/AbstractMapSource.java"><tt>mobac.mapsources.AbstractMapSource</tt></a>.
+The list of available map sources is maintained by <a
+	href="src/mobac/mapsources/MapSourcesManager.java"><tt>mobac.mapsources.MapSourcesManager</tt></a>.
+By adding an instance of a map sources to the static array field <tt>MAP_SOURCES</tt>
+the map source will be available in the map sources combo-box within
+Mobile Atlas Creator.</p>
+<h3><a href="src/mobac/program/atlascreators">mobac.program.atlascreators</a></h3>
+<p>Holds the implementations of all atlas output formats provided by
+Mobile Atlas Creator. Each class in the package implements exactly one atlas output
+format. The list of available formats is maintained in the enumeration <a
+	href="src/mobac/program/model/AtlasOutputFormat.java"><tt>mobac.program.model.AtlasOutputFormat</tt></a>.
+</p>
+
+<h3><a href="src/mobac/tools">mobac.tools</a></h3>
+<p>This package contains additional stand-alone tools that are not
+shipped with the Mobile Atlas Creator binary release. For example the <a
+	href="src/mobac/tools/MapSourcesTester.java"><tt>mobac.tools.MapSourcesTester</tt></a>
+downloads one tile from each map source for verifying that the map
+source is functional.</p>
+
+<h2>Participation</h2>
+<p>If you are familiar with the programming language Java and you
+want to contribute or participate in the development process of Mobile Atlas Creator feel
+free to contact one of the other developers of Mobile Atlas Creator <a
+	href="https://sourceforge.net/project/memberlist.php?group_id=238075">listed
+at SourceForge</a>.</p>
+
+</body>
+</html>
