@@ -21,21 +21,17 @@ import java.awt.Point;
 import mobac.gui.mapview.PreviewMap;
 import mobac.program.interfaces.MapSpace;
 
-
 /**
- * Mercator projection with a world width and height of 256 * 2<sup>zoom</sup>
- * pixel. This is the common projecton used by Openstreetmap and Google. It
- * provides methods to translate coordinates from 'map space' into latitude and
- * longitude (on the WGS84 ellipsoid) and vice versa. Map space is measured in
- * pixels. The origin of the map space is the top left corner. The map space
- * origin (0,0) has latitude ~85 and longitude -180
+ * Mercator projection with a world width and height of 256 * 2<sup>zoom</sup> pixel. This is the common projection used
+ * by OpenStreetMap and Google. It provides methods to translate coordinates from 'map space' into latitude and
+ * longitude (on the WGS84 ellipsoid) and vice versa. Map space is measured in pixels. The origin of the map space is
+ * the top left corner. The map space origin (0,0) has latitude ~85 and longitude -180
  * 
  * <p>
- * This is the only implementation that is currently supported by Mobile Atlas
- * Creator.
+ * This is the only implementation that is currently supported by Mobile Atlas Creator.
  * </p>
  * <p>
- * DO NOT TRY TO IMPLEMENT YOUR OWN. IT WILL NOT WORK!
+ * DO NOT TRY TO IMPLEMENT YOUR OWN. IT WILL MOST LIKELY NOT WORK!
  * </p>
  * 
  * @see MapSpace
@@ -48,8 +44,7 @@ public class MercatorPower2MapSpace implements MapSpace {
 	protected final int tileSize;
 
 	/**
-	 * Pre-computed values for the world size (height respectively width) in the
-	 * different zoom levels.
+	 * Pre-computed values for the world size (height respectively width) in the different zoom levels.
 	 */
 	protected final int[] worldSize;
 	public static final MapSpace INSTANCE_256 = new MercatorPower2MapSpace(256);
@@ -70,12 +65,10 @@ public class MercatorPower2MapSpace implements MapSpace {
 	}
 
 	/**
-	 * Returns the absolute number of pixels in y or x, defined as:
-	 * 2<sup>zoom</sup> * TILE_WIDTH where TILE_WIDTH is the width respectively
-	 * height of a tile in pixels
+	 * Returns the absolute number of pixels in y or x, defined as: 2<sup>zoom</sup> * <code>tileSize</code>
 	 * 
 	 * @param zoom
-	 *            [0..22]
+	 *            [0..22] (for tileSize = 256)
 	 * @return
 	 */
 	public int getMaxPixels(int zoom) {
@@ -90,8 +83,10 @@ public class MercatorPower2MapSpace implements MapSpace {
 	 * Transforms latitude to pixelspace
 	 * 
 	 * @param lat
-	 *            [-90...90] qparam zoom [0..22]
-	 * @return [0..2^zoom*TILE_SIZE[
+	 *            [-90...90]
+	 * @param zoom
+	 *            [0..22] (for tileSize = 256)
+	 * @return [0..2^zoom*tileSize[
 	 * @author Jan Peter Stotz
 	 */
 	public int cLatToY(double lat, int zoom) {
@@ -110,7 +105,7 @@ public class MercatorPower2MapSpace implements MapSpace {
 	 * @param lon
 	 *            [-180..180]
 	 * @param zoom
-	 *            [0..22]
+	 *            [0..22] (for tileSize = 256)
 	 * @return [0..2^zoom*TILE_SIZE[
 	 * @author Jan Peter Stotz
 	 */
@@ -125,7 +120,7 @@ public class MercatorPower2MapSpace implements MapSpace {
 	 * Transforms pixel coordinate X to longitude
 	 * 
 	 * @param x
-	 *            [0..2^zoom*TILE_WIDTH[
+	 *            [0..2^zoom * tileSize[
 	 * @param zoom
 	 *            [0..22]
 	 * @return ]-180..180[
@@ -139,7 +134,7 @@ public class MercatorPower2MapSpace implements MapSpace {
 	 * Transforms pixel coordinate Y to latitude
 	 * 
 	 * @param y
-	 *            [0..2^zoom*TILE_WIDTH[
+	 *            [0..2^zoom * tileSize[
 	 * @param zoom
 	 *            [0..22]
 	 * @return [MIN_LAT..MAX_LAT] is about [-85..85]
@@ -161,9 +156,8 @@ public class MercatorPower2MapSpace implements MapSpace {
 		double lon = cXToLon(startX, zoom);
 		double sinLat = Math.sin(lat);
 
-		lon += Math.toDegrees(Math.atan2(Math.sin(angularDist) * Math.cos(lat), Math
-				.cos(angularDist)
-				- sinLat * sinLat));
+		lon += Math
+				.toDegrees(Math.atan2(Math.sin(angularDist) * Math.cos(lat), Math.cos(angularDist) - sinLat * sinLat));
 		int newX = cLonToX(lon, zoom);
 		int w = newX - startX;
 		return w;
@@ -222,5 +216,5 @@ public class MercatorPower2MapSpace implements MapSpace {
 			return false;
 		return true;
 	}
-	
+
 }
