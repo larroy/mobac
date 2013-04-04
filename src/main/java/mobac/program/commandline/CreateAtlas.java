@@ -16,6 +16,8 @@
  ******************************************************************************/
 package mobac.program.commandline;
 
+import java.io.File;
+
 import javax.xml.bind.JAXBException;
 
 import mobac.program.AtlasThread;
@@ -27,10 +29,24 @@ import mobac.utilities.GUIExceptionHandler;
 public class CreateAtlas implements CommandLineAction {
 
 	private final String profileName;
+	private final File outputDir;
 
 	public CreateAtlas(String profileName) {
+		this(profileName, null);
+	}
+
+	public CreateAtlas(String profileName, String outputDirectory) {
 		super();
 		this.profileName = profileName;
+		if (outputDirectory != null) {
+			File dir = new File(outputDirectory);
+			if (dir.isDirectory() || dir.exists()) {
+				System.err.println("Error: Atlas output directory \"" + outputDirectory + "\" already exists.");
+				System.exit(1);
+			}
+			outputDir = dir;
+		} else
+			outputDir = null;
 	}
 
 	@Override
@@ -50,7 +66,10 @@ public class CreateAtlas implements CommandLineAction {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			new AtlasThread(atlas).start();
+			AtlasThread atlasThread = new AtlasThread(atlas);
+			if (outputDir != null)
+				atlasThread.setCustomAtlasDir(outputDir);
+			atlasThread.start();
 		} catch (Exception e) {
 			GUIExceptionHandler.processException(e);
 		}

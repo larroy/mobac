@@ -19,13 +19,10 @@ package mobac;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.xml.bind.JAXBException;
 
-import mobac.exceptions.AtlasTestException;
 import mobac.gui.MainGUI;
 import mobac.gui.SplashFrame;
 import mobac.mapsources.DefaultMapSourcesManager;
-import mobac.program.AtlasThread;
 import mobac.program.DirectoryManager;
 import mobac.program.EnvironmentSetup;
 import mobac.program.Logging;
@@ -33,7 +30,6 @@ import mobac.program.ProgramInfo;
 import mobac.program.commandline.CommandLineEmpty;
 import mobac.program.commandline.CreateAtlas;
 import mobac.program.interfaces.CommandLineAction;
-import mobac.program.model.Profile;
 import mobac.program.model.Settings;
 import mobac.program.tilestore.TileStore;
 import mobac.utilities.GUIExceptionHandler;
@@ -86,9 +82,12 @@ public class Main {
 
 	protected void parseCommandLine() {
 		String[] args = StartMOBAC.ARGS;
-		if (args.length == 2) {
+		if (args.length >= 2) {
 			if ("create".equalsIgnoreCase(args[0])) {
-				cmdAction = new CreateAtlas(args[1]);
+				if (args.length > 2)
+					cmdAction = new CreateAtlas(args[1], args[2]);
+				else
+					cmdAction = new CreateAtlas(args[1]);
 				return;
 			}
 		}
