@@ -28,6 +28,7 @@ import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -50,6 +51,7 @@ import mobac.gui.panels.JCoordinatesPanel;
 import mobac.mapsources.MapSourcesManager;
 import mobac.program.DirectoryManager;
 import mobac.program.ProgramInfo;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.stream.ThrottledInputStream;
 
@@ -94,7 +96,7 @@ public class Settings {
 	@XmlElement(nillable = false)
 	public String mapviewMapSource = null;
 
-	public String elementName = "Layer name";
+	public String elementName = null;
 
 	private String userAgent = null;
 
@@ -231,12 +233,28 @@ public class Settings {
 
 	public boolean ignoreDlErrors = false;
 
+	public String localeLanguage = null;
+	public String localeCountry = null;
+
 	private Settings() {
+		elementName = "Layer";// no need i18n for it
 		Dimension dScreen = Toolkit.getDefaultToolkit().getScreenSize();
 		mainWindow.size.width = (int) (0.9f * dScreen.width);
 		mainWindow.size.height = (int) (0.9f * dScreen.height);
 		mainWindow.collapsedPanels.add(JCoordinatesPanel.NAME);
 		mainWindow.collapsedPanels.add("Gpx");
+
+		Locale defaultLocale = Locale.getDefault();
+		if (defaultLocale.equals(new Locale("zh", "CN"))) {
+			localeLanguage = "zh";
+			localeCountry = "CN";
+		} else if (defaultLocale.equals(new Locale("zh", "TW"))) {
+			localeLanguage = "zh";
+			localeCountry = "TW";
+		} else {
+			localeLanguage = "en";
+			localeCountry = "";
+		}
 	}
 
 	public static Settings getInstance() {
@@ -259,6 +277,10 @@ public class Settings {
 			instance.wgsGrid.checkValues();
 			instance.paperAtlas.checkValues();
 			SETTINGS_LAST_MODIFIED = FILE.lastModified();
+
+			// Settings 重新加载之后，必须更新语言资源
+			I18nUtils.updateLocalizedStringFormSettings();
+
 		} finally {
 			Settings s = getInstance();
 			s.applyProxySettings();
@@ -303,8 +325,10 @@ public class Settings {
 			load();
 		} catch (JAXBException e) {
 			log.error(e);
-			JOptionPane.showMessageDialog(null, "Could not read file settings.xml program will exit.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane
+					.showMessageDialog(null, I18nUtils.localizedStringForKey(I18nUtils
+							.localizedStringForKey("msg_settings_file_can_not_parse")), I18nUtils
+							.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
 	}
