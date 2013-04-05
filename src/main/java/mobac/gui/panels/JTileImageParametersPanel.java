@@ -42,6 +42,7 @@ import mobac.program.model.TileImageParameters;
 import mobac.program.model.TileImageParameters.Name;
 import mobac.program.tiledatawriter.TileImageJpegDataWriter;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 public class JTileImageParametersPanel extends JCollapsiblePanel {
@@ -55,7 +56,7 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 	private JLabel tileImageFormatLabel;
 	private JTileSizeCombo tileSizeWidth;
 	private JTileSizeCombo tileSizeHeight;
-	private JComboBox tileImageFormat;
+	private JComboBox<TileImageFormat> tileImageFormat;
 
 	private boolean widthEnabled = true;
 	private boolean heightEnabled = true;
@@ -63,26 +64,25 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 	private boolean formatJpgEnabled = true;
 
 	public JTileImageParametersPanel() {
-		super("Layer settings: custom tile processing", new GridBagLayout());
+		super(I18nUtils.localizedStringForKey("lp_tile_param_title"), new GridBagLayout());
 		setName("TileImageParameters");
 
-		enableCustomTileProcessingCheckButton = new JCheckBox("Recreate/adjust map tiles (CPU intensive)");
+		enableCustomTileProcessingCheckButton = new JCheckBox(
+				I18nUtils.localizedStringForKey("lp_tile_param_recreate_checkbox_title"));
 		enableCustomTileProcessingCheckButton.addActionListener(new EnableCustomTileSizeCheckButtonListener());
-		enableCustomTileProcessingCheckButton.setToolTipText("<html>If this option is disabled each "
-				+ "map tile (size: 256x256) is used axactly as downloaded " + "from the server (faster).<br>"
-				+ "Otherwise each tile is newly created which allows to "
-				+ "use custom tile size (slower / CPU intensive).</html>");
+		enableCustomTileProcessingCheckButton.setToolTipText(I18nUtils
+				.localizedStringForKey("lp_tile_param_recreate_checkbox_tips"));
 
-		tileSizeWidthLabel = new JLabel("Width:");
+		tileSizeWidthLabel = new JLabel(I18nUtils.localizedStringForKey("lp_tile_param_width_title"));
 		tileSizeWidth = new JTileSizeCombo();
-		tileSizeWidth.setToolTipText("Tile width");
+		tileSizeWidth.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_param_width_tips"));
 
-		tileSizeHeightLabel = new JLabel("Height:");
+		tileSizeHeightLabel = new JLabel(I18nUtils.localizedStringForKey("lp_tile_param_height_title"));
 		tileSizeHeight = new JTileSizeCombo();
-		tileSizeHeight.setToolTipText("Tile height");
+		tileSizeHeight.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_param_height_tips"));
 
-		tileImageFormatLabel = new JLabel("Tile format:");
-		tileImageFormat = new JComboBox(new TileFormatComboModel(TileImageFormat.values()));
+		tileImageFormatLabel = new JLabel(I18nUtils.localizedStringForKey("lp_tile_param_image_fmt_title"));
+		tileImageFormat = new JComboBox<TileImageFormat>(new TileFormatComboModel(TileImageFormat.values()));
 		tileImageFormat.setMaximumRowCount(tileImageFormat.getItemCount());
 		tileImageFormat.addActionListener(new TileImageFormatListener());
 
@@ -186,12 +186,12 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 		if (!enableCustomTileProcessingCheckButton.isSelected())
 			return errorText;
 		if (!tileSizeHeight.isValueValid())
-			errorText += "Value of \"Tile Size Height\" must be between " + JTileSizeCombo.MIN + " and "
-					+ JTileSizeCombo.MAX + ". \n";
+			errorText += String.format(I18nUtils.localizedStringForKey("lp_tile_param_msg_valid_height"),
+					JTileSizeCombo.MIN, JTileSizeCombo.MAX);
 
 		if (!tileSizeWidth.isValueValid())
-			errorText += "Value of \"Tile Size Width\" must be between " + JTileSizeCombo.MIN + " and "
-					+ JTileSizeCombo.MAX + ". \n";
+			errorText += String.format(I18nUtils.localizedStringForKey("lp_tile_param_msg_valid_width"),
+					JTileSizeCombo.MIN, JTileSizeCombo.MAX);
 		return errorText;
 	}
 
@@ -207,6 +207,8 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 			if (!tileImageFormat.isEnabled())
 				return;
 			TileImageFormat tif = (TileImageFormat) tileImageFormat.getSelectedItem();
+			if (tif == null)
+				return;
 			if (!JPEG_TESTED && (tif.getDataWriter() instanceof TileImageJpegDataWriter)) {
 				if (!TileImageJpegDataWriter.performOpenJDKJpegTest())
 					JOptionPane.showMessageDialog(null, "<html>The JPEG image format is not supported by OpenJDK.<br>"
@@ -227,8 +229,8 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private class TileFormatComboModel extends AbstractListModel implements ComboBoxModel {
+	private class TileFormatComboModel extends AbstractListModel<TileImageFormat> implements
+			ComboBoxModel<TileImageFormat> {
 
 		TileImageFormat[] values;
 		Object selectedObject = null;
@@ -258,10 +260,11 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 			return values.length;
 		}
 
-		public Object getElementAt(int index) {
+		public TileImageFormat getElementAt(int index) {
 			return values[index];
 		}
 
+		@Override
 		public void setSelectedItem(Object anItem) {
 			if ((selectedObject != null && !selectedObject.equals(anItem)) || selectedObject == null && anItem != null) {
 				selectedObject = anItem;
@@ -269,6 +272,7 @@ public class JTileImageParametersPanel extends JCollapsiblePanel {
 			}
 		}
 
+		@Override
 		public Object getSelectedItem() {
 			return selectedObject;
 		}

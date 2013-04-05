@@ -30,6 +30,7 @@ import javax.swing.ListSelectionModel;
 
 import mobac.gui.MainGUI;
 import mobac.program.model.AtlasOutputFormat;
+import mobac.utilities.I18nUtils;
 
 public class AtlasConvert implements ActionListener {
 
@@ -42,7 +43,9 @@ public class AtlasConvert implements ActionListener {
 
 		JPanel formatPanel = new JPanel(new BorderLayout());
 
-		formatPanel.add(new JLabel("<html><b>Please select the desired atlas format</b></html>"), BorderLayout.NORTH);
+		formatPanel.setPreferredSize(new Dimension(250, 300));
+		
+		formatPanel.add(new JLabel(I18nUtils.localizedStringForKey("dlg_new_atlas_select_format_title")), BorderLayout.NORTH);
 		JList atlasFormatList = new JList(AtlasOutputFormat.getFormatsAsVector());
 		atlasFormatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scroller = new JScrollPane(atlasFormatList);
@@ -59,7 +62,7 @@ public class AtlasConvert implements ActionListener {
 			atlasFormatList.setSelectedValue(currentAOF, true);
 		else
 			atlasFormatList.setSelectedIndex(1);
-		int result = JOptionPane.showConfirmDialog(MainGUI.getMainGUI(), panel, "Convert atlas format",
+		int result = JOptionPane.showConfirmDialog(MainGUI.getMainGUI(), panel, I18nUtils.localizedStringForKey("msg_convert_atlas_format"),
 				JOptionPane.OK_CANCEL_OPTION);
 		if (result != JOptionPane.OK_OPTION)
 			return;

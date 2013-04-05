@@ -57,6 +57,7 @@ import mobac.program.model.MapSelection;
 import mobac.program.model.Profile;
 import mobac.program.model.TileImageParameters;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.jdbc.SQLiteLoader;
 
 import org.apache.log4j.Logger;
@@ -66,21 +67,11 @@ public class JAtlasTree extends JTree implements Autoscroll {
 	private static final long serialVersionUID = 1L;
 	private static final int margin = 12;
 
-	private static final String MSG_ATLAS_VERSION_MISMATCH = ""
-			+ "The loaded atlas belongs to an older version Mobile Atlas Creator. "
-			+ "This old version \nused a somehow different atlas profile format "
-			+ "which is incompatible to this version.\n\n"
-			+ "It is recommended to clear the loaded atlas and delete the affected profile.\n"
-			+ "Otherwise various exceptions may be thrown while working with this atlas.";
+	private static final String MSG_ATLAS_VERSION_MISMATCH = I18nUtils.localizedStringForKey("msg_atlas_version_mismatch");
 
-	private static final String MSG_ATLAS_DATA_CHECK_FAILED = ""
-			+ "At least one problem was detected while loading the saved atlas profile.\n"
-			+ "Usually this indicates that the profile file is inconsistent " + "or the file format \n"
-			+ "has changed.\n\n" + "It is recommended to clear the loaded atlas and delete the affected profile.\n"
-			+ "Otherwise various exceptions may be thrown while working with this atlas.";
+	private static final String MSG_ATLAS_DATA_CHECK_FAILED = I18nUtils.localizedStringForKey("msg_atlas_data_check_failed");
 
-	private static final String MSG_ATLAS_EMPTY = "Atlas is empty - "
-			+ "please add at least one selection to atlas content.";
+	private static final String MSG_ATLAS_EMPTY = I18nUtils.localizedStringForKey("msg_atlas_is_empty");
 
 	private static final String ACTION_DELETE_NODE = "DELETE_NODE";
 
@@ -114,7 +105,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 		setCellRenderer(nodeRenderer);
 		setCellEditor(new NodeEditor(this));
 		setToolTipText("");
-		defaultToolTiptext = "<html>Use context menu of the entries to see all available commands.</html>";
+		defaultToolTiptext = I18nUtils.localizedStringForKey("lp_atlas_default_tip");
 		setAutoscrolls(true);
 		addMouseListener(new MouseController(this));
 
@@ -123,7 +114,9 @@ public class JAtlasTree extends JTree implements Autoscroll {
 
 		// map moving
 		inputMap.put(deleteNodeKS = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), ACTION_DELETE_NODE);
-		actionMap.put(ACTION_DELETE_NODE, new AbstractAction("Delete") {
+		actionMap.put(ACTION_DELETE_NODE, new AbstractAction(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_delete_node")) {
+
+			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed(ActionEvent e) {
 				deleteSelectedNode();
@@ -267,7 +260,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 			if (o == null)
 				return;
 			if (o instanceof ToolTipProvider) {
-				mi = new JMenuItem("Show item details");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_show_detail"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						ToolTipProvider ttp = (ToolTipProvider) o;
@@ -277,7 +270,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 				pm.add(mi);
 			}
 			if (o instanceof AtlasObject) {
-				final JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem("Display selected areas");
+				final JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_display_select_area"));
 				final MapAreaHighlightingLayer msl = new MapAreaHighlightingLayer(this);
 				cbmi.setSelected(displaySelectedMapArea);
 				cbmi.addActionListener(new ActionListener() {
@@ -296,7 +289,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 				pm.add(cbmi);
 			}
 			if (o instanceof MapInterface) {
-				mi = new JMenuItem("Select map bounding box");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_select_map_box"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						MapInterface map = (MapInterface) o;
@@ -306,7 +299,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 					}
 				});
 				pm.add(mi);
-				mi = new JMenuItem("Zoom to map bounding box");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_zoom_to_map_box"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						MapInterface map = (MapInterface) o;
@@ -320,7 +313,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 				pm.add(mi);
 			}
 			if (o instanceof LayerInterface) {
-				mi = new JMenuItem("Zoom to");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_zoom_to"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						LayerInterface layer = (LayerInterface) o;
@@ -344,14 +337,14 @@ public class JAtlasTree extends JTree implements Autoscroll {
 				pm.add(mi);
 			}
 			if (o instanceof AtlasObject) {
-				mi = new JMenuItem("Rename");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_rename"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						JAtlasTree.this.startEditingAtPath(selPath);
 					}
 				});
 				pm.add(mi);
-				mi = new JMenuItem("Apply tile processing options");
+				mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_apply_tile_process"));
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						AtlasObject atlasObject = (AtlasObject) o;
@@ -370,7 +363,7 @@ public class JAtlasTree extends JTree implements Autoscroll {
 		}
 		if (pm.getComponentCount() > 0)
 			pm.addSeparator();
-		mi = new JMenuItem("Clear atlas");
+		mi = new JMenuItem(I18nUtils.localizedStringForKey("lp_atlas_pop_menu_clear_atals"));
 		mi.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

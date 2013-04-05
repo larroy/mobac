@@ -17,6 +17,7 @@
 package mobac.gui.actions;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +51,7 @@ import mobac.program.model.SelectedZoomLevels;
 import mobac.program.model.Settings;
 import mobac.program.model.TileImageParameters;
 import mobac.program.model.UnitSystem;
+import mobac.utilities.I18nUtils;
 
 public class AddGpxTrackPolygonMap implements ActionListener {
 
@@ -70,8 +72,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 			GpxRootEntry re = (GpxRootEntry) entry;
 			List<TrkType> tlist = re.getLayer().getGpx().getTrk();
 			if (tlist.size() > 1) {
-				JOptionPane.showMessageDialog(mg, "The select gpx file contains more than one track.\n"
-						+ "Please select the desired track or track segment");
+				JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_add_gpx_polygon_too_many_track"));
 				return;
 			} else if (tlist.size() == 1)
 				t = tlist.get(0);
@@ -80,14 +81,15 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 			t = ((TrkEntry) entry).getTrk();
 		if (t != null) {
 			if (t.getTrkseg().size() > 1) {
-				JOptionPane.showMessageDialog(mg, "The select track contains more than one track segment.\n"
-						+ "Please select the desired track segment");
+				JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_add_gpx_polygon_too_many_segment"));
 				return;
 			} else if (t.getTrkseg().size() == 1)
 				trk = t.getTrkseg().get(0);
 		}
 		if (trk == null) {
-			JOptionPane.showMessageDialog(mg, "No GPX track segment selected", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(mg, 
+					I18nUtils.localizedStringForKey("msg_add_gpx_polygon_no_select"), 
+					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -99,7 +101,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 		SelectedZoomLevels sZL = mg.getSelectedZoomLevels();
 		int[] zoomLevels = sZL.getZoomLevels();
 		if (zoomLevels.length == 0) {
-			JOptionPane.showMessageDialog(mg, "Please select at least one zoom level");
+			JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_no_zoom_level_selected"));
 			return;
 		}
 		List<? extends GpxPoint> points = trk.getTrkpt();
@@ -127,6 +129,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 		final UnitSystem unitSystem = Settings.getInstance().getUnitSystem();
 
 		JPanel panel = new JPanel(new BorderLayout());
+		panel.setPreferredSize(new Dimension(300, 100));
 		final JLabel label = new JLabel("");
 		final JDistanceSlider slider = new JDistanceSlider(mapSource.getMapSpace(), maxZoom, centerY, unitSystem, 5,
 				500);
@@ -140,7 +143,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 					d /= unitSystem.unitFactor;
 					unitName = unitSystem.unitLarge;
 				}
-				label.setText("Selected distance around track: " + ((int) d) + " " + unitName);
+				label.setText(String.format(I18nUtils.localizedStringForKey("dlg_gpx_track_select_distance"), ((int) d), unitName));
 			}
 		};
 		cl.stateChanged(null);
@@ -148,7 +151,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(slider, BorderLayout.CENTER);
 
-		int result = JOptionPane.showConfirmDialog(mg, panel, "Select distance around track",
+		int result = JOptionPane.showConfirmDialog(mg, panel, I18nUtils.localizedStringForKey("dlg_gpx_track_select_title"),
 				JOptionPane.OK_CANCEL_OPTION);
 		if (result != JOptionPane.OK_OPTION)
 			return;
@@ -175,9 +178,10 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 		int width = maxZoomMap.getMaxTileCoordinate().x - maxZoomMap.getMinTileCoordinate().x;
 		int height = maxZoomMap.getMaxTileCoordinate().y - maxZoomMap.getMinTileCoordinate().y;
 		if (Math.max(width, height) > Settings.getInstance().maxMapSize) {
-			String msg = "At least one map that has been added violates the maximum map size.\n"
-					+ "Splitting a polygonal map into smaller pieces is not yet supported.\n\nDo you want to proceed anyway?";
-			result = JOptionPane.showConfirmDialog(mg, msg, "Maximum map size violated", JOptionPane.YES_NO_OPTION,
+			String msg = I18nUtils.localizedStringForKey("msg_add_gpx_polygon_maxsize");
+			result = JOptionPane.showConfirmDialog(mg, msg, 
+					I18nUtils.localizedStringForKey("msg_add_gpx_polygon_maxsize_title"), 
+					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 			if (result != JOptionPane.YES_OPTION)
 				return;

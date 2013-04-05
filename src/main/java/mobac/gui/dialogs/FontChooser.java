@@ -35,6 +35,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import mobac.utilities.GBCTable;
+import mobac.utilities.I18nUtils;
 
 public class FontChooser {
 
@@ -65,7 +66,7 @@ public class FontChooser {
 		return font.getName() + "-" + style + "-" + font.getSize();
 	}
 
-	private static JScrollPane scroll(JList jList, String title) {
+	private static JScrollPane scroll(JList<?> jList, String title) {
 		JLabel jLabel = new JLabel(title);
 		jLabel.setHorizontalAlignment(JLabel.CENTER);
 		JScrollPane jScrollPane = new JScrollPane(jList);
@@ -77,21 +78,24 @@ public class FontChooser {
 
 	private final JLabel jLabelPreview = new JLabel("DUMMY");
 
-	private final JList jListName = createJList(FONT_NAMES),
-			jListStyle = createJList(STYLES),
-			jListSize = createJList(new Integer[] { 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 });
+	private final JList<String> jListName = createJList(FONT_NAMES);
+	private final JList<String> jListStyle = createJList(STYLES);
+	private final JList<Integer> jListSize = createJList(new Integer[] { 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+			20, 21, 22, 23, 24 });
 
-	private final JButton jButtonOK = new JButton("OK"), jButtonCancel = new JButton("Cancel");
+	private final JButton jButtonOK = new JButton(I18nUtils.localizedStringForKey("OK")), jButtonCancel = new JButton(
+			I18nUtils.localizedStringForKey("Cancel"));
 
 	private boolean wasCanceled;
 
 	public FontChooser() {
-		jDialog.setTitle("Choose font");
+		jDialog.setTitle(I18nUtils.localizedStringForKey("dlg_font_choose_title"));
 		jDialog.setModalityType(ModalityType.APPLICATION_MODAL);
 
 		jLabelPreview.setHorizontalAlignment(JLabel.CENTER);
 		jLabelPreview.setVerticalAlignment(JLabel.CENTER);
-		jLabelPreview.setBorder(BorderFactory.createTitledBorder("Preview"));
+		jLabelPreview.setBorder(BorderFactory.createTitledBorder(I18nUtils
+				.localizedStringForKey("dlg_font_choose_preview")));
 
 		jButtonOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -114,9 +118,9 @@ public class FontChooser {
 		jPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		GBCTable gbc = new GBCTable();
-		jPanel.add(scroll(jListName, "Name"), gbc.begin().fill());
-		jPanel.add(scroll(jListStyle, "Style"), gbc.incX().fill());
-		jPanel.add(scroll(jListSize, "Size"), gbc.incX().fill());
+		jPanel.add(scroll(jListName, I18nUtils.localizedStringForKey("dlg_font_choose_name")), gbc.begin().fill());
+		jPanel.add(scroll(jListStyle, I18nUtils.localizedStringForKey("dlg_font_choose_style")), gbc.incX().fill());
+		jPanel.add(scroll(jListSize, I18nUtils.localizedStringForKey("dlg_font_choose_size")), gbc.incX().fill());
 		jPanel.add(jLabelPreview, gbc.begin(1, 2).fillH().gridwidth(3));
 		jPanel.add(buttonPane, gbc.incY().fillH().gridwidth(3));
 
@@ -126,8 +130,8 @@ public class FontChooser {
 		setFont(DEFAULT);
 	}
 
-	private JList createJList(Object[] objects) {
-		JList jList = new JList(objects);
+	private <E> JList<E> createJList(E[] objects) {
+		JList<E> jList = new JList<E>(objects);
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {

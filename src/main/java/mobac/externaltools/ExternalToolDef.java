@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import mobac.gui.MainGUI;
 import mobac.program.model.MapSelection;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 
 import org.apache.log4j.Logger;
 
@@ -75,16 +76,18 @@ public class ExternalToolDef implements ActionListener {
 					break;
 				case MAX_ZOOM:
 					if (zooms.length == 0) {
-						JOptionPane
-								.showMessageDialog(gui, "No zoom level selected", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(gui,
+								I18nUtils.localizedStringForKey("msg_no_zoom_level_selected"),
+								I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					add = Integer.toString(zooms[zooms.length - 1]);
 					break;
 				case MIN_ZOOM:
 					if (zooms.length == 0) {
-						JOptionPane
-								.showMessageDialog(gui, "No zoom level selected", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(gui,
+								I18nUtils.localizedStringForKey("msg_no_zoom_level_selected"),
+								I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					add = Integer.toString(zooms[0]);
@@ -106,16 +109,18 @@ public class ExternalToolDef implements ActionListener {
 				executeCommand += " " + add;
 			}
 			if (debug) {
-				int r = JOptionPane.showConfirmDialog(gui, "<html>Command to be executed:<br><tt>" + executeCommand
-						+ "</tt></html>", "Do you want to execute the command?", JOptionPane.OK_CANCEL_OPTION);
+				int r = JOptionPane.showConfirmDialog(gui,
+						String.format(I18nUtils.localizedStringForKey("msg_tools_exec_command_ask"), executeCommand),
+						I18nUtils.localizedStringForKey("msg_tools_exec_command_ask_title"),
+						JOptionPane.OK_CANCEL_OPTION);
 				if (r != JOptionPane.OK_OPTION)
 					return;
 			}
 			log.debug("Executing " + executeCommand);
-			Process p = Runtime.getRuntime().exec(executeCommand);
+			Runtime.getRuntime().exec(executeCommand);
 		} catch (Exception e1) {
 			GUIExceptionHandler.processException(e1);
 		}
 	}
-	
+
 }

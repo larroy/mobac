@@ -30,6 +30,7 @@ import javax.swing.JComponent;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.model.Coordinate;
 import mobac.program.model.SettingsWgsGrid;
+import mobac.utilities.I18nUtils;
 
 public class WgsGrid {
 
@@ -41,13 +42,13 @@ public class WgsGrid {
 
 		public final int iStep, minZoom;
 		public final boolean compressDegree, compressMinute, displayMinute, displaySecond;
-		private final String string;
-
+		//private final String string;		
+		
 		private WgsDensity(final int minZoom) {
 			this.minZoom = minZoom;
 			String[] split = name().split("_");
 			int value = Integer.parseInt(split[1]);
-			string = "Every " + split[1] + " " + split[0].toLowerCase();
+			
 			if (split[0].startsWith("D")) {
 				iStep = value * Coordinate.DEGREE;
 				displayMinute = displaySecond = false;
@@ -65,7 +66,10 @@ public class WgsGrid {
 		}
 
 		public String toString() {
-			return string;
+			String[] split = name().split("_");
+			String unitKey = "map_ctrl_wgs_grid_density_"+ split[0].toLowerCase();
+			return I18nUtils.localizedStringForKey("map_ctrl_wgs_grid_density_prefix") + " " + split[1] + " " + 
+					I18nUtils.localizedStringForKey(unitKey);
 		}
 	}
 

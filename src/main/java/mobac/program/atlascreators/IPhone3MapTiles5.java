@@ -74,7 +74,7 @@ public class IPhone3MapTiles5 extends RMapsSQLite {
 	private static final String INSERT_SQL = "INSERT or REPLACE INTO images(x,y,zoom,data,length,flags) VALUES (?,?,?,?,?,0);";
 	private static final String TABLE_IMAGES = "CREATE TABLE IF NOT EXISTS images(zoom int, x int, y int, flags int, length int, data blob); ";
 	private static final String TABLE_VERSION = "CREATE TABLE IF NOT EXISTS version(version int);";
-	private static final String TABLE_VERSION_DATA = "INSERT INTO version VALUES(0);";
+	private static final String TABLE_VERSION_DATA = "INSERT INTO version VALUES(5);";
 	private static final String INDEX_IMAGES = "CREATE INDEX IF NOT EXISTS index1 on images (zoom,x,y,flags);";
 
 	@Override

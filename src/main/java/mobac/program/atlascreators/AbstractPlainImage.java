@@ -136,7 +136,7 @@ public abstract class AbstractPlainImage extends AtlasCreator {
 						byte[] sourceTileData = mapDlTileProvider.getTileData(x, y);
 						if (sourceTileData != null) {
 							BufferedImage tile = ImageIO.read(new ByteArrayInputStream(sourceTileData));
-							graphics.drawImage(tile, lineX, lineY, Color.WHITE, null);
+							graphics.drawImage(tile, lineX, lineY, tileSize, tileSize, Color.WHITE, null);
 						}
 					} catch (IOException e) {
 						log.error("", e);

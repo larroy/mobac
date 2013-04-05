@@ -27,8 +27,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -83,6 +86,7 @@ import mobac.program.model.UnitSystem;
 import mobac.program.tilestore.TileStore;
 import mobac.utilities.GBC;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 import org.apache.log4j.Level;
@@ -98,7 +102,7 @@ public class SettingsGUI extends JDialog {
 	private static final long MBIT1 = 1000000 / 8;
 
 	private enum Bandwidth {
-		UNLIMUTED("Unlimited", 0), MBit1("1 MBit", MBIT1), MBit5("5 MBit", MBIT1 * 5), MBit10("10 MBit", MBIT1 * 10), MBit15(
+		UNLIMUTED(I18nUtils.localizedStringForKey("set_net_bandwidth_unlimited"), 0), MBit1("1 MBit", MBIT1), MBit5("5 MBit", MBIT1 * 5), MBit10("10 MBit", MBIT1 * 10), MBit15(
 				"15 MBit", MBIT1 * 15), MBit20("20 MBit", MBIT1 * 20);
 
 		public final long limit;
@@ -114,10 +118,61 @@ public class SettingsGUI extends JDialog {
 			return description;
 		}
 	};
+	
+	private enum SupportLocale {
+		SupportLocaleEn(new Locale("en")), //default
+		SupportLocaleZhCN(new Locale("zh", "CN")),
+		SupportLocaleZhTW(new Locale("zh", "TW"));
+
+		Locale locale;
+
+		private SupportLocale(Locale locale)
+		{
+			this.locale = locale;
+		}
+		
+		public static SupportLocale localeOf(String lang, String contry)
+		{
+			for(SupportLocale l : SupportLocale.values())
+			{
+				System.out.printf("%s", l.toString());
+				System.out.printf("%s, %s, %d", l.locale.getLanguage(), lang, (l.locale.getLanguage() == lang)? 1: 0);
+				System.out.printf("%s, %s, %d", l.locale.getCountry(), contry, (l.locale.getCountry() == contry)? 1: 0);
+				if(l.locale.getLanguage().equals(lang) &&
+					l.locale.getCountry().equals(contry))
+				{
+					return l;
+				}
+			}
+			return SupportLocaleEn;
+		}
+		
+		@Override
+		public String toString() {
+			if(this == SupportLocaleEn)
+			{
+				return "English";
+			}
+			else if(this == SupportLocaleZhCN)
+			{
+				return "简体中文";
+			}
+			else if(this == SupportLocaleZhTW)
+			{
+				return "繁體中文";
+			}
+			else
+			{
+				return I18nUtils.localizedStringForKey("Undefined");
+			}
+		}
+	};
 
 	private final Settings settings = Settings.getInstance();
 
 	private JComboBox unitSystem;
+	
+	private JComboBox languageCombo;
 
 	private JButton mapSourcesOnlineUpdate;
 	private JTextField osmHikingTicket;
@@ -196,7 +251,7 @@ public class SettingsGUI extends JDialog {
 
 	private void createJFrame() {
 		setLayout(new BorderLayout());
-		setTitle("Settings");
+		setTitle(I18nUtils.localizedStringForKey("set_title"));
 	}
 
 	// Create tabbed pane
@@ -233,43 +288,101 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addDisplaySettingsPanel() {
-		JPanel tab = createNewTab("Display");
+		JPanel tab = createNewTab(I18nUtils.localizedStringForKey("set_display_title"));
 		tab.setLayout(new GridBagLayout());
 
 		JPanel unitSystemPanel = new JPanel(new GridBagLayout());
-		unitSystemPanel.setBorder(createSectionBorder("Unit System"));
+		unitSystemPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_display_unit_system_title")));
+		
+		//Language Panel
+		JPanel languagePanel = new JPanel(new GridBagLayout());
+		languagePanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_display_language")));
+		languageCombo= new JComboBox(SupportLocale.values());
+		languageCombo.setToolTipText(I18nUtils.localizedStringForKey("set_display_language_choose_tips"));
+		languageCombo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Locale locale = ((SupportLocale)languageCombo.getSelectedItem()).locale;
+				String currentLocaleStr = "" + settings.localeLanguage + settings.localeCountry;
+				String LocaleStr = "" + locale.getLanguage() + locale.getCountry();
+				if(!currentLocaleStr.equals(LocaleStr) && isVisible())
+				{
+					settings.localeLanguage = locale.getLanguage();
+					settings.localeCountry = locale.getCountry();
+					I18nUtils.updateLocalizedStringFormSettings();
+					
+					int result = JOptionPane.showConfirmDialog(null, 
+							I18nUtils.localizedStringForKey("set_display_language_restart_desc"), 
+							I18nUtils.localizedStringForKey("set_display_language_msg_title"), 
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if (result == JOptionPane.YES_OPTION) {
+						applySettings();
+						
+						try{
+							final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+							final File currentJar = new File(SettingsGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+	
+							/* is it a jar file? */
+							if(currentJar.getName().endsWith(".jar"))
+							{
+								/* Build command: java -jar application.jar */
+								final ArrayList<String> command = new ArrayList<String>();
+								command.add(javaBin);
+								command.add("-jar");
+								command.add("-Xms64m");
+								command.add("-Xmx1024M");
+								command.add(currentJar.getPath());
+	
+								final ProcessBuilder builder = new ProcessBuilder(command);
+								builder.start();
+							}
+						}catch(Exception ex)
+						{
+							
+						}
+						System.exit(0);
+					}
+				}
+			}
+		});
+
+		languagePanel.add(new JLabel(I18nUtils.localizedStringForKey("set_display_language_choose")), GBC.std());
+		languagePanel.add(languageCombo, GBC.std());
+		languagePanel.add(Box.createHorizontalGlue(), GBC.eol().fill(GBC.HORIZONTAL));
 
 		UnitSystem[] us = UnitSystem.values();
 		unitSystem = new JComboBox(us);
-		unitSystemPanel.add(new JLabel("Unit system for map scale bar: "), GBC.std());
+		unitSystemPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_display_unit_system_scale_bar")), GBC.std());
 		unitSystemPanel.add(unitSystem, GBC.std());
 		unitSystemPanel.add(Box.createHorizontalGlue(), GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(unitSystemPanel, GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(display, GBC.eol().fill(GBC.HORIZONTAL));
+		tab.add(languagePanel,GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(Box.createVerticalGlue(), GBC.std().fill(GBC.VERTICAL));
 	}
 
 	private void addMapSourceSettingsPanel() throws URISyntaxException {
 
-		JPanel tab = createNewTab("Map sources config");
+		JPanel tab = createNewTab(I18nUtils.localizedStringForKey("set_mapsrc_config_title"));
 		tab.setLayout(new GridBagLayout());
 
 		JPanel updatePanel = new JPanel(new GridBagLayout());
-		updatePanel.setBorder(createSectionBorder("Map packs online update"));
+		updatePanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_mapsrc_config_online_update")));
 
-		mapSourcesOnlineUpdate = new JButton("Perform online update");
+		mapSourcesOnlineUpdate = new JButton(I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_btn"));
 		mapSourcesOnlineUpdate.addActionListener(new MapPacksOnlineUpdateAction());
 		updatePanel.add(mapSourcesOnlineUpdate, GBC.std());
 
 		JPanel osmHikingPanel = new JPanel(new GridBagLayout());
-		osmHikingPanel.setBorder(createSectionBorder("Reit- und Wanderkarte ($Abo)"));
+		osmHikingPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking")));
 
 		osmHikingTicket = new JTextField(20);
 
-		osmHikingPanel.add(new JLabel("Purchased ticket ID:"), GBC.std());
+		osmHikingPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_purchased")), GBC.std());
 		osmHikingPanel.add(osmHikingTicket, GBC.std().insets(2, 0, 10, 0));
-		JLabel osmHikingTicketUrl = new JLabel("<html><u>How to get a ticket (German)</u></html>");
-		osmHikingTicketUrl.addMouseListener(new OpenInWebbrowser("http://www.wanderreitkarte.de/shop_abo_de.php"));
+		JLabel osmHikingTicketUrl = new JLabel(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_howto"));
+		osmHikingTicketUrl.addMouseListener(new OpenInWebbrowser(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_howto_url")));
 		osmHikingPanel.add(osmHikingTicketUrl, GBC.eol());
 
 		tab.add(updatePanel, GBC.eol().fill(GBC.HORIZONTAL));
@@ -278,24 +391,24 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addMapSourceManagerPanel() {
-		JPanel tab = createNewTab("Map sources");
+		JPanel tab = createNewTab(I18nUtils.localizedStringForKey("set_mapsrc_mgr_title"));
 		tab.setLayout(new GridBagLayout());
 
 		JPanel leftPanel = new JPanel(new BorderLayout());
-		leftPanel.setBorder(createSectionBorder("Enabled Map Sources"));
+		leftPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_mapsrc_mgr_title_enabled")));
 
 		JPanel centerPanel = new JPanel(new GridBagLayout());
 		JPanel rightPanel = new JPanel(new BorderLayout());
-		rightPanel.setBorder(createSectionBorder("Disabled Map Sources"));
+		rightPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_mapsrc_mgr_title_disabled")));
 
 		JButton up = new JButton(Utilities.loadResourceImageIcon("arrow_blue_up.png"));
-		up.setToolTipText("<html>Move selected enabled map<br>source(s) one positon up</html>");
+		up.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_up_tips"));
 		JButton down = new JButton(Utilities.loadResourceImageIcon("arrow_blue_down.png"));
-		down.setToolTipText("<html>Move selected enabled map<br>source(s) one positon down</html>");
+		down.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_down_tips"));
 		JButton toLeft = new JButton(Utilities.loadResourceImageIcon("arrow_blue_left.png"));
-		toLeft.setToolTipText("<html>Enable the selected disabled map source(s)</html>");
+		toLeft.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_left_tips"));
 		JButton toRight = new JButton(Utilities.loadResourceImageIcon("arrow_blue_right.png"));
-		toRight.setToolTipText("<html>Disable the selected enabled map source(s)</html>");
+		toRight.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_right_tips"));
 		Insets buttonInsets = new Insets(4, 4, 4, 4);
 		Dimension buttonDimension = new Dimension(40, 40);
 		up.setPreferredSize(buttonDimension);
@@ -399,7 +512,7 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addTileUpdatePanel() {
-		JPanel backGround = createNewTab("Tile update");
+		JPanel backGround = createNewTab(I18nUtils.localizedStringForKey("set_tile_update_title"));
 		backGround.setLayout(new GridBagLayout());
 
 		ChangeListener sliderChangeListener = new ChangeListener() {
@@ -416,34 +529,30 @@ public class SettingsGUI extends JDialog {
 		GBC gbc_ef = GBC.eol().fill(GBC.HORIZONTAL);
 
 		JPanel defaultExpirationPanel = new JPanel(new GridBagLayout());
-		defaultExpirationPanel.setName("Default expiration time");
+		defaultExpirationPanel.setName(I18nUtils.localizedStringForKey("set_tile_update_default_expiration"));
 		defaultExpirationPanel.setBorder(createSectionBorder(""));
 		defaultExpirationTime = new JTimeSlider();
 		defaultExpirationTime.addChangeListener(sliderChangeListener);
-		JLabel descr = new JLabel("<html>The default expiration time is used for map sources that do not <br>"
-				+ "provide an expiration time for each map tile.</html>", JLabel.CENTER);
+		JLabel descr = new JLabel(I18nUtils.localizedStringForKey("set_tile_update_default_expiration_desc"), JLabel.CENTER);
 
 		defaultExpirationPanel.add(descr, gbc_ef);
 		defaultExpirationPanel.add(defaultExpirationTime, gbc_ef);
 
 		JPanel maxExpirationPanel = new JPanel(new BorderLayout());
-		maxExpirationPanel.setName("Maximum expiration time");
+		maxExpirationPanel.setName(I18nUtils.localizedStringForKey("set_tile_update_max_expiration"));
 		maxExpirationPanel.setBorder(createSectionBorder(""));
 		maxExpirationTime = new JTimeSlider();
 		maxExpirationTime.addChangeListener(sliderChangeListener);
 		maxExpirationPanel.add(maxExpirationTime, BorderLayout.CENTER);
 
 		JPanel minExpirationPanel = new JPanel(new BorderLayout());
-		minExpirationPanel.setName("Minimum expiration time");
+		minExpirationPanel.setName(I18nUtils.localizedStringForKey("set_tile_update_min_expiration"));
 		minExpirationPanel.setBorder(createSectionBorder(""));
 		minExpirationTime = new JTimeSlider();
 		minExpirationTime.addChangeListener(sliderChangeListener);
 		minExpirationPanel.add(minExpirationTime, BorderLayout.CENTER);
 
-		descr = new JLabel("<html>Tiles are updated automatically base on the settings below. "
-				+ "Each map tile has <br>an expiry date that is sometimes provided by "
-				+ "the server. If the server does <br> not provide one, the default expiration "
-				+ "time is used.</html>", JLabel.CENTER);
+		descr = new JLabel(I18nUtils.localizedStringForKey("set_tile_update_desc"), JLabel.CENTER);
 
 		backGround.add(descr, gbc_ef);
 		backGround.add(defaultExpirationPanel, gbc_ef);
@@ -453,7 +562,7 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addMapSizePanel() {
-		JPanel backGround = createNewTab("Map size");
+		JPanel backGround = createNewTab(I18nUtils.localizedStringForKey("set_map_size_title"));
 		backGround.setLayout(new GridBagLayout());
 		mapSize = new JMapSizeCombo();
 		mapSize.addActionListener(new ActionListener() {
@@ -463,25 +572,15 @@ public class SettingsGUI extends JDialog {
 			}
 		});
 
-		JLabel mapSizeLabel = new JLabel("Maximum size (width & height) of rectangular maps: ");
-		JLabel mapSizeText = new JLabel(
-				"<html>If the area of the selected rectangular region to download "
-						+ "is larger in height or width than <br>the map size it will be splitted into "
-						+ "several maps <b>when adding the map selection</b>.<br>"
-						+ "Each map is no larger than the specified maximum map size.<br>"
-						+ "Note that polygonal maps are not affected by this setting!<br>"
-						+ "You can see the number of maps and their region in the atlas content tree.<br>"
-						+ "Changing the maximum map size after an area has been added the atlas has no effect on the atlas.<br><br>"
-						+ "<b>Note for TrekBuddy users:</b><br>TrekBuddy versions before v0.9.88 "
-						+ "do not support map sizes larger than 32767.<br>"
-						+ "Newer versions can handle maps up to a size of 1048575.</html>");
+		JLabel mapSizeLabel = new JLabel(I18nUtils.localizedStringForKey("set_map_size_max_size_of_rect"));
+		JLabel mapSizeText = new JLabel(I18nUtils.localizedStringForKey("set_map_size_desc"));
 
 		mapOverlapTiles = new JSpinner(new SpinnerNumberModel(0,0,5,1));
 
-		JLabel mapOverlapTilesLabel = new JLabel("Number of tiles to overlap maps regions:");
+		JLabel mapOverlapTilesLabel = new JLabel(I18nUtils.localizedStringForKey("set_map_size_overlap_tiles"));
 		
 		JPanel leftPanel = new JPanel(new GridBagLayout());
-		leftPanel.setBorder(createSectionBorder("Map size settings"));
+		leftPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_map_size_settings")));
 
 		GBC gbc = GBC.eol().insets(0, 5, 0, 5);
 		leftPanel.add(mapSizeLabel, GBC.std());
@@ -496,21 +595,22 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addDirectoriesPanel() {
-		JPanel backGround = createNewTab("Directories");
+		JPanel backGround = createNewTab(I18nUtils.localizedStringForKey("set_directory_title"));
 		backGround.setLayout(new GridBagLayout());
 		JPanel atlasOutputDirPanel = new JPanel(new GridBagLayout());
-		atlasOutputDirPanel.setBorder(createSectionBorder("Atlas output directory"));
+		atlasOutputDirPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_directory_output")));
 
 		atlasOutputDirectory = new JTextField();
-		atlasOutputDirectory.setToolTipText("<html>If empty the default directory " + "is used: <br><tt>"
-				+ settings.getAtlasOutputDirectory() + "</tt></html>");
-		JButton selectAtlasOutputDirectory = new JButton("Select");
+		atlasOutputDirectory.setToolTipText(
+				String.format(I18nUtils.localizedStringForKey("set_directory_output_tips"), settings.getAtlasOutputDirectory()));
+		JButton selectAtlasOutputDirectory = new JButton(I18nUtils.localizedStringForKey("set_directory_output_select"));
 		selectAtlasOutputDirectory.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				JDirectoryChooser dc = new JDirectoryChooser();
 				dc.setCurrentDirectory(settings.getAtlasOutputDirectory());
-				if (dc.showDialog(SettingsGUI.this, "Select Directory") != JFileChooser.APPROVE_OPTION)
+				if (dc.showDialog(SettingsGUI.this, 
+						I18nUtils.localizedStringForKey("set_directory_output_select_dlg_title")) != JFileChooser.APPROVE_OPTION)
 					return;
 				atlasOutputDirectory.setText(dc.getSelectedFile().getAbsolutePath());
 			}
@@ -524,21 +624,21 @@ public class SettingsGUI extends JDialog {
 	}
 
 	private void addNetworkPanel() {
-		JPanel backGround = createNewTab("Network");
+		JPanel backGround = createNewTab(I18nUtils.localizedStringForKey("set_net_title"));
 		backGround.setLayout(new GridBagLayout());
 		GBC gbc_eolh = GBC.eol().fill(GBC.HORIZONTAL);
 		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(createSectionBorder("Network connections"));
+		panel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_net_connection")));
 		threadCount = new JComboBox(THREADCOUNT_LIST);
 		threadCount.setMaximumRowCount(THREADCOUNT_LIST.length);
 		panel.add(threadCount, GBC.std().insets(5, 5, 5, 5).anchor(GBC.EAST));
-		panel.add(new JLabel("Number of parallel network connections for tile downloading"),
+		panel.add(new JLabel(I18nUtils.localizedStringForKey("set_net_connection_desc")),
 				GBC.eol().fill(GBC.HORIZONTAL));
 
 		bandwidth = new JComboBox(Bandwidth.values());
 		bandwidth.setMaximumRowCount(bandwidth.getItemCount());
 		panel.add(bandwidth, GBC.std().insets(5, 5, 5, 5));
-		panel.add(new JLabel("Bandwidth limitation for tile downloading"), GBC.eol().fill(GBC.HORIZONTAL));
+		panel.add(new JLabel(I18nUtils.localizedStringForKey("set_net_bandwidth_desc")), GBC.eol().fill(GBC.HORIZONTAL));
 
 		backGround.add(panel, gbc_eolh);
 
@@ -547,21 +647,21 @@ public class SettingsGUI extends JDialog {
 		// backGround.add(panel, gbc_eolh);
 
 		panel = new JPanel(new GridBagLayout());
-		panel.setBorder(createSectionBorder("HTTP Proxy"));
-		final JLabel proxyTypeLabel = new JLabel("Proxy settings: ");
+		panel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_net_proxy")));
+		final JLabel proxyTypeLabel = new JLabel(I18nUtils.localizedStringForKey("set_net_proxy_settings"));
 		proxyType = new JComboBox(ProxyType.values());
 		proxyType.setSelectedItem(settings.getProxyType());
 
-		final JLabel proxyHostLabel = new JLabel("Proxy host name: ");
+		final JLabel proxyHostLabel = new JLabel(I18nUtils.localizedStringForKey("set_net_proxy_host"));
 		proxyHost = new JTextField(settings.getCustomProxyHost());
 
-		final JLabel proxyPortLabel = new JLabel("Proxy port: ");
+		final JLabel proxyPortLabel = new JLabel(I18nUtils.localizedStringForKey("set_net_proxy_port"));
 		proxyPort = new JTextField(settings.getCustomProxyPort());
 
-		final JLabel proxyUserNameLabel = new JLabel("Proxy user: ");
+		final JLabel proxyUserNameLabel = new JLabel(I18nUtils.localizedStringForKey("set_net_proxy_username"));
 		proxyUserName = new JTextField(settings.getCustomProxyUserName());
 
-		final JLabel proxyPasswordLabel = new JLabel("Proxy password: ");
+		final JLabel proxyPasswordLabel = new JLabel(I18nUtils.localizedStringForKey("set_net_proxy_password"));
 		proxyPassword = new JTextField(settings.getCustomProxyPassword());
 
 		ActionListener al = new ActionListener() {
@@ -599,9 +699,9 @@ public class SettingsGUI extends JDialog {
 
 		backGround.add(panel, GBC.eol().fillH());
 
-		ignoreDlErrors = new JCheckBox("Ignore download errors and continue automatically", settings.ignoreDlErrors);
+		ignoreDlErrors = new JCheckBox(I18nUtils.localizedStringForKey("set_net_default_ignore_error"), settings.ignoreDlErrors);
 		JPanel jPanel = new JPanel(new GridBagLayout());
-		jPanel.setBorder(createSectionBorder("Default"));
+		jPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_net_default")));
 		jPanel.add(ignoreDlErrors, GBC.std());
 		jPanel.add(Box.createHorizontalGlue(), GBC.eol().fillH());
 		backGround.add(jPanel, GBC.eol().fillH());
@@ -611,20 +711,23 @@ public class SettingsGUI extends JDialog {
 
 	public void createJButtons() {
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
-		okButton = new JButton("Ok");
-		cancelButton = new JButton("Cancel");
+		okButton = new JButton(I18nUtils.localizedStringForKey("OK"));
+		cancelButton = new JButton(I18nUtils.localizedStringForKey("Cancel"));
 
 		GBC gbc = GBC.std().insets(5, 5, 5, 5);
 		buttonPanel.add(okButton, gbc);
 		buttonPanel.add(cancelButton, gbc);
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
-
+	
 	private void loadSettings() {
 		Settings s = settings;
-
+		
 		unitSystem.setSelectedItem(s.unitSystem);
 		tileStoreTab.tileStoreEnabled.setSelected(s.tileStoreEnabled);
+		
+		//language
+		languageCombo.setSelectedItem(SupportLocale.localeOf(s.localeLanguage, s.localeCountry));
 
 		mapSize.setValue(s.maxMapSize);
 		mapOverlapTiles.setValue(s.mapOverlapTiles);
@@ -675,6 +778,9 @@ public class SettingsGUI extends JDialog {
 		s.maxMapSize = mapSize.getValue();
 		s.mapOverlapTiles = (Integer) mapOverlapTiles.getValue();
 
+		Locale locale = ((SupportLocale)languageCombo.getSelectedItem()).locale;
+		s.localeLanguage = locale.getLanguage();
+		s.localeCountry = locale.getCountry();
 
 		s.setAtlasOutputDirectory(atlasOutputDirectory.getText());
 		int threads = ((Integer) threadCount.getSelectedItem()).intValue();
@@ -717,8 +823,9 @@ public class SettingsGUI extends JDialog {
 			MainGUI.getMainGUI().checkAndSaveSettings();
 		} catch (Exception e) {
 			log.error("Error saving settings to file", e);
-			JOptionPane.showMessageDialog(null, "Error saving settings to file:\n" + e.toString() + " ("
-					+ e.getClass().getSimpleName() + ")", "Error saving settings to file", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, 
+					String.format(I18nUtils.localizedStringForKey("set_error_saving_msg"),e.getClass().getSimpleName()), 
+					I18nUtils.localizedStringForKey("set_error_saving_title"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		MainGUI.getMainGUI().previewMap.repaint();
@@ -747,7 +854,8 @@ public class SettingsGUI extends JDialog {
 				if (tabbedPane.getSelectedComponent() == null)
 					return;
 				// First time the tile store tab is selected start updating the tile store information
-				if ("Tile store".equals(tabbedPane.getSelectedComponent().getName())) {
+				if(tabbedPane.getSelectedComponent() == tileStoreTab){
+				//if ("Tile store".equals(tabbedPane.getSelectedComponent().getName())) {
 					tabbedPane.removeChangeListener(this);
 					tileStoreTab.updateTileStoreInfoPanelAsync(null);
 				}
@@ -756,6 +864,8 @@ public class SettingsGUI extends JDialog {
 
 		KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 		Action escapeAction = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
 			public void actionPerformed(ActionEvent e) {
 				SettingsGUI.this.dispose();
 			}
@@ -806,21 +916,25 @@ public class SettingsGUI extends JDialog {
 				switch (result) {
 				case -1:
 					JOptionPane.showMessageDialog(SettingsGUI.this,
-							"This version of MOBAC is no longer supported for online updates. "
-									+ "Please upgrade to the most recent version.", "No updates available",
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_outdate"), 
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_no_update"),
 							JOptionPane.ERROR_MESSAGE);
 					break;
 				case 0:
-					JOptionPane.showMessageDialog(SettingsGUI.this, "You have already the latest map packs installed.",
-							"No updates available", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(SettingsGUI.this, 
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_noneed"),
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_no_update"), 
+							JOptionPane.INFORMATION_MESSAGE);
 					break;
 				default:
-					JOptionPane.showMessageDialog(SettingsGUI.this, result
-							+ " map packs has been updated.\nPlease restart MOBAC for installing the updates.",
-							"Updates has been downloaded", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(SettingsGUI.this, 
+							String.format(I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_done"), result),
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_done"), 
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			} catch (UpdateFailedException e) {
-				JOptionPane.showMessageDialog(SettingsGUI.this, e.getMessage(), "Update failed",
+				JOptionPane.showMessageDialog(SettingsGUI.this, e.getMessage(), 
+						I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_failed"),
 						JOptionPane.ERROR_MESSAGE);
 			} catch (Exception e) {
 				Settings.getInstance().mapSourcesUpdate.etag = null;

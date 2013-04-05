@@ -32,6 +32,7 @@ import mobac.gui.gpxtree.TrksegEntry;
 import mobac.gui.gpxtree.WptEntry;
 import mobac.gui.mapview.PreviewMap;
 import mobac.gui.mapview.controller.GpxMapController;
+import mobac.utilities.I18nUtils;
 
 /**
  * Listener for the gpx editor tree elements.
@@ -42,8 +43,8 @@ import mobac.gui.mapview.controller.GpxMapController;
  */
 public class GpxElementListener implements MouseListener {
 
-	public static final String MENU_NAME_RENAME = "rename";
-	public static final String MENU_NAME_DELETE = "delete";
+	public static final String MENU_NAME_RENAME = I18nUtils.localizedStringForKey("rp_gpx_menu_rename");
+	public static final String MENU_NAME_DELETE = I18nUtils.localizedStringForKey("rp_gpx_menu_delete");
 
 	private final GpxEntry gpxEntry;
 
@@ -88,7 +89,9 @@ public class GpxElementListener implements MouseListener {
 	 * 
 	 */
 	private void removeEntry() {
-		int answer = JOptionPane.showConfirmDialog(null, "Do you really want to delete this node?", "Delete node",
+		int answer = JOptionPane.showConfirmDialog(null, 
+				I18nUtils.localizedStringForKey("rp_gpx_msg_confim_delete"),
+				I18nUtils.localizedStringForKey("rp_gpx_msg_confim_delete_title"),
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if (answer == JOptionPane.YES_OPTION) {
 			PreviewMap map = MainGUI.getMainGUI().previewMap;
@@ -124,27 +127,30 @@ public class GpxElementListener implements MouseListener {
 	 */
 	private void renameEntry() {
 		if (gpxEntry.getClass().equals(TrksegEntry.class)) {
-			JOptionPane.showMessageDialog(null, "Track segments cannot be named.", "Error",
+			JOptionPane.showMessageDialog(null, 
+					I18nUtils.localizedStringForKey("rp_gpx_msg_can_not_rename_track"), 
+					I18nUtils.localizedStringForKey("Error"),
 					JOptionPane.INFORMATION_MESSAGE);
 			return;
 		} else {
 			if (gpxEntry.getClass().equals(RteEntry.class)) {
 				RteEntry rte = (RteEntry) gpxEntry;
-				String name = JOptionPane.showInputDialog(null, "Please input the name:", rte.getRte().getName());
+				String name = JOptionPane.showInputDialog(null, I18nUtils.localizedStringForKey("rp_gpx_rename_element_title"), 
+						rte.getRte().getName());
 				if (name == null) {
 					return;
 				}
 				rte.getRte().setName(name);
 			} else if (gpxEntry.getClass().equals(TrkEntry.class)) {
 				TrkEntry trk = (TrkEntry) gpxEntry;
-				String name = JOptionPane.showInputDialog(null, "Please input the name:", trk.getTrk().getName());
+				String name = JOptionPane.showInputDialog(null, I18nUtils.localizedStringForKey("rp_gpx_rename_element_title"), trk.getTrk().getName());
 				if (name == null) {
 					return;
 				}
 				trk.getTrk().setName(name);
 			} else if (gpxEntry.getClass().equals(WptEntry.class)) {
 				WptEntry wpt = (WptEntry) gpxEntry;
-				String name = JOptionPane.showInputDialog(null, "Please input the name:", wpt.getWpt().getName());
+				String name = JOptionPane.showInputDialog(null, I18nUtils.localizedStringForKey("rp_gpx_rename_element_title"), wpt.getWpt().getName());
 				if (name == null) {
 					return;
 				}
@@ -152,7 +158,7 @@ public class GpxElementListener implements MouseListener {
 			} else if (gpxEntry.getClass().equals(GpxRootEntry.class)) {
 				GpxRootEntry root = (GpxRootEntry) gpxEntry;
 				String initialValue = root.getMetaDataName();
-				String name = JOptionPane.showInputDialog(null, "Please input the name:", initialValue);
+				String name = JOptionPane.showInputDialog(null, I18nUtils.localizedStringForKey("rp_gpx_rename_element_title"), initialValue);
 				if (name == null) {
 					return;
 				}

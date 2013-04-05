@@ -33,6 +33,7 @@ import mobac.program.model.MapSelection;
 import mobac.program.model.SelectedZoomLevels;
 import mobac.program.model.Settings;
 import mobac.program.model.TileImageParameters;
+import mobac.utilities.I18nUtils;
 
 public class AddRectangleMapAutocut implements ActionListener {
 
@@ -46,7 +47,7 @@ public class AddRectangleMapAutocut implements ActionListener {
 		SelectedZoomLevels sZL = mg.getSelectedZoomLevels();
 		MapSelection ms = mg.getMapSelectionCoordinates();
 		if (ms == null) {
-			JOptionPane.showMessageDialog(mg, "Please select an area");
+			JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_no_select_area"));
 			return;
 		}
 		Settings settings = Settings.getInstance();
@@ -58,7 +59,7 @@ public class AddRectangleMapAutocut implements ActionListener {
 
 		int[] zoomLevels = sZL.getZoomLevels();
 		if (zoomLevels.length == 0) {
-			JOptionPane.showMessageDialog(mg, "Please select at least one zoom level");
+			JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_no_zoom_level_selected"));
 			return;
 		}
 

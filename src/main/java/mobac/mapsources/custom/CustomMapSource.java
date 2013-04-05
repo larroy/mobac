@@ -82,6 +82,9 @@ public class CustomMapSource implements HttpMapSource {
 	@XmlList
 	private String[] serverParts = null;
 	private int currentServerPart = 0;
+	
+//	@XmlElement(required = false, defaultValue = "false")
+//	protected boolean ignoreContentMismatch = false;
 
 	private MapSourceLoaderInfo loaderInfo = null;
 
@@ -96,6 +99,11 @@ public class CustomMapSource implements HttpMapSource {
 		this.url = url;
 	}
 
+//	public boolean ignoreContentMismatch()
+//	{
+//		return ignoreContentMismatch;
+//	}
+	
 	public TileUpdate getTileUpdate() {
 		return tileUpdate;
 	}
@@ -152,35 +160,40 @@ public class CustomMapSource implements HttpMapSource {
 			}
 			return data;
 		}
-		if (!ignoreErrors)
-			return TileDownLoader.getImage(x, y, zoom, this);
-		else
+		if (ignoreErrors) {
 			try {
 				return TileDownLoader.getImage(x, y, zoom, this);
 			} catch (Exception e) {
 				return null;
 			}
+		} else {
+			return TileDownLoader.getImage(x, y, zoom, this);
+		}
 	}
 
 	public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
 			UnrecoverableDownloadException, InterruptedException {
+		
 		byte[] data = getTileData(zoom, x, y, loadMethod);
+
 		if (data == null) {
 			if (!ignoreErrors)
 				return null;
 			else {
-				BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_4BYTE_ABGR);
+				int tileSize = this.getMapSpace().getTileSize();
+				BufferedImage image = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				Graphics g = (Graphics) image.getGraphics();
 				try {
 					g.setColor(backgroundColor);
-					g.fillRect(0, 0, 256, 256);
+					g.fillRect(0, 0, tileSize, tileSize);
 				} finally {
 					g.dispose();
 				}
 				return image;
 			}
+		} else {
+			return ImageIO.read(new ByteArrayInputStream(data));
 		}
-		return ImageIO.read(new ByteArrayInputStream(data));
 	}
 
 	@Override

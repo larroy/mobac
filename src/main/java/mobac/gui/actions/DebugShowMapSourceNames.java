@@ -35,6 +35,7 @@ import mobac.gui.MainGUI;
 import mobac.mapsources.MapSourcesManager;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.MapSourceLoaderInfo;
+import mobac.utilities.I18nUtils;
 
 public class DebugShowMapSourceNames implements ActionListener {
 
@@ -49,7 +50,7 @@ public class DebugShowMapSourceNames implements ActionListener {
 			}
 
 		});
-		JFrame dialog = new JFrame("Map source names");
+		JFrame dialog = new JFrame(I18nUtils.localizedStringForKey("dlg_show_source_title"));
 		dialog.setLocationRelativeTo(MainGUI.getMainGUI());
 		dialog.setLocation(100, 40);
 		Dimension dScreen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -86,13 +87,13 @@ public class DebugShowMapSourceNames implements ActionListener {
 		public String getColumnName(int column) {
 			switch (column) {
 			case 0:
-				return "Name";
+				return I18nUtils.localizedStringForKey("dlg_show_source_column_name");
 			case 1:
-				return "Display text";
+				return I18nUtils.localizedStringForKey("dlg_show_source_column_display_text");
 			case 2:
-				return "Revision";
+				return I18nUtils.localizedStringForKey("dlg_show_source_column_rev");
 			case 3:
-				return "Type";
+				return I18nUtils.localizedStringForKey("dlg_show_source_column_type");
 			default:
 				return null;
 			}

@@ -47,6 +47,7 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.interfaces.MapSpace.ProjectionCategory;
 import mobac.program.interfaces.TileImageDataWriter;
 import mobac.program.model.TileImageParameters.Name;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.stream.ArrayOutputStream;
 
@@ -206,7 +207,7 @@ public class AlpineQuestMap extends AtlasCreator {
 		// name of this specific map (displayed to user)
 		String strName = map.getLayer().getName();
 		if (strName == null || strName.length() == 0)
-			strName = "Unnamed";
+			strName = I18nUtils.localizedStringForKey("Unnamed");
 
 		// scale of the map (displayed to user)
 		String strScale = "";

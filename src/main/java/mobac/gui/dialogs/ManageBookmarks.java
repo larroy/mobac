@@ -40,6 +40,8 @@ import mobac.program.Logging;
 import mobac.program.model.Bookmark;
 import mobac.program.model.Settings;
 import mobac.utilities.GBC;
+import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 
 public class ManageBookmarks extends JDialog implements ListSelectionListener, ActionListener {
 
@@ -47,25 +49,25 @@ public class ManageBookmarks extends JDialog implements ListSelectionListener, A
 
 	private JButton applyButton;
 
-	private JList bookmarks;
+	private JList<Bookmark> bookmarks;
 
-	private DefaultListModel bookmarksModel;
+	private DefaultListModel<Bookmark> bookmarksModel;
 
 	public ManageBookmarks(Window owner) throws HeadlessException {
-		super(owner, "Manage Bookmarks");
+		super(owner, I18nUtils.localizedStringForKey("dlg_mgn_bookmark_title"));
 		setIconImages(MainGUI.MOBAC_ICONS);
 		setLayout(new GridBagLayout());
-		applyButton = new JButton("Close");
+		applyButton = new JButton(I18nUtils.localizedStringForKey("Close"));
 		applyButton.addActionListener(this);
 		applyButton.setDefaultCapable(true);
 
-		deleteButton = new JButton("Delete Bookmark");
+		deleteButton = new JButton(I18nUtils.localizedStringForKey("dlg_mgn_bookmark_delete"));
 		deleteButton.addActionListener(this);
 
-		bookmarksModel = new DefaultListModel();
+		bookmarksModel = new DefaultListModel<Bookmark>();
 		for (Bookmark b : Settings.getInstance().placeBookmarks)
 			bookmarksModel.addElement(b);
-		bookmarks = new JList(bookmarksModel);
+		bookmarks = new JList<Bookmark>(bookmarksModel);
 		bookmarks.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		bookmarks.addListSelectionListener(this);
 		bookmarks.setVisibleRowCount(10);
@@ -106,17 +108,6 @@ public class ManageBookmarks extends JDialog implements ListSelectionListener, A
 
 	public void valueChanged(ListSelectionEvent e) {
 		deleteButton.setEnabled(bookmarks.getSelectedIndices().length > 0);
-	}
-
-	public static void main(String[] args) {
-		DirectoryManager.initialize();
-		Logging.configureLogging();
-		try {
-			Settings.load();
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-		new ManageBookmarks(null).setVisible(true);
 	}
 
 }

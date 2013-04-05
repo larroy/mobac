@@ -30,6 +30,7 @@ import mobac.gui.MainGUI;
 import mobac.gui.gpxtree.GpxEntry;
 import mobac.gui.panels.JGpxPanel;
 import mobac.program.model.Settings;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.file.GpxFileFilter;
 
 
@@ -59,7 +60,9 @@ public class GpxSave implements ActionListener {
 
 		GpxEntry entry = panel.getSelectedEntry();
 		if (entry == null) {
-			JOptionPane.showMessageDialog(null, "No Gpx file selected", "Error saving Gpx file",
+			JOptionPane.showMessageDialog(null, 
+					I18nUtils.localizedStringForKey("rp_gpx_msg_error_save_gpx_file"), 
+					I18nUtils.localizedStringForKey("rp_gpx_msg_no_select_file"),
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}

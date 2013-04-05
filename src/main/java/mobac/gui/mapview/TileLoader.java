@@ -113,7 +113,7 @@ public class TileLoader {
 			} catch (DownloadFailedException e) {
 				log.warn("Downloading of " + tile + " failed " + e.getMessage());
 			} catch (Exception e) {
-				log.trace("Downloading of " + tile + " failed", e);
+				log.debug("Downloading of " + tile + " failed", e);
 			}
 			tile.setErrorImage();
 			listener.tileLoadingFinished(tile, false);

@@ -48,6 +48,7 @@ import mobac.gui.gpxtree.WptEntry;
 import mobac.gui.mapview.PreviewMap;
 import mobac.gui.mapview.layer.GpxLayer;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 
 /**
  * Allows to load, display, edit and save gpx files using a tree view. TODO warn unsaved changes on exit
@@ -69,22 +70,22 @@ public class JGpxPanel extends JCollapsiblePanel {
 
 		this.previewMap = previewMap;
 
-		JButton newGpx = new JButton("New Gpx");
+		JButton newGpx = new JButton(I18nUtils.localizedStringForKey("rp_gpx_new_gpx"));
 		newGpx.addActionListener(new GpxNew(this));
 
-		JButton loadGpx = new JButton("Load Gpx");
+		JButton loadGpx = new JButton(I18nUtils.localizedStringForKey("rp_gpx_load_gpx"));
 		loadGpx.addActionListener(new GpxLoad(this));
 
-		JButton saveGpx = new JButton("Save Gpx");
+		JButton saveGpx = new JButton(I18nUtils.localizedStringForKey("rp_gpx_save_gpx"));
 		saveGpx.addActionListener(new GpxSave(this));
 
-		JButton clearGpx = new JButton("Clear List");
+		JButton clearGpx = new JButton(I18nUtils.localizedStringForKey("rp_gpx_clear_gpx"));
 		clearGpx.addActionListener(new GpxClear(this));
 
-		JButton addPointGpx = new JButton("Add wpt");
+		JButton addPointGpx = new JButton(I18nUtils.localizedStringForKey("rp_gpx_add_wpt"));
 		addPointGpx.addActionListener(new GpxAddPoint(this));
 
-		rootNode = new DefaultMutableTreeNode("loaded gpx files...");
+		rootNode = new DefaultMutableTreeNode(I18nUtils.localizedStringForKey("rp_gpx_default_node_name"));
 		tree = new JTree(rootNode);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setRootVisible(false);
@@ -254,7 +255,7 @@ public class JGpxPanel extends JCollapsiblePanel {
 	 * 
 	 */
 	public void resetModel() {
-		rootNode = new DefaultMutableTreeNode("loaded gpx files...");
+		rootNode = new DefaultMutableTreeNode(I18nUtils.localizedStringForKey("rp_gpx_default_node_name"));
 		model.setRoot(rootNode);
 		openedFiles = new ArrayList<String>();
 	}

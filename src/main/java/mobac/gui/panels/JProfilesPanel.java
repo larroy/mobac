@@ -31,6 +31,7 @@ import mobac.gui.components.JCollapsiblePanel;
 import mobac.gui.components.JProfilesComboBox;
 import mobac.program.model.Profile;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 public class JProfilesPanel extends JCollapsiblePanel {
@@ -44,33 +45,32 @@ public class JProfilesPanel extends JCollapsiblePanel {
 	private JButton saveAsButton;
 
 	public JProfilesPanel(JAtlasTree atlasTree) {
-		super("Saved profiles", new GridBagLayout());
+		super(I18nUtils.localizedStringForKey("lp_atlas_profile_title"), new GridBagLayout());
 
 		if (atlasTree == null)
 			throw new NullPointerException();
 
 		// profiles combo box
 		profilesCombo = new JProfilesComboBox();
-		profilesCombo.setToolTipText("Select an atlas creation profile\n "
-				+ "or enter a name for a new profile");
+		profilesCombo.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_profile_combo_tips"));
 		profilesCombo.addActionListener(new ProfileListListener());
 
 		// delete profile button
-		deleteButton = new JButton("Delete");
+		deleteButton = new JButton(I18nUtils.localizedStringForKey("lp_atlas_profile_delete_btn_title"));
 		deleteButton.addActionListener(new DeleteProfileListener());
 		deleteButton.setToolTipText("Delete atlas profile from list");
 
 		// save as profile button
-		saveAsButton = new JButton("Save");
-		saveAsButton.setToolTipText("Save atlas profile");
+		saveAsButton = new JButton(I18nUtils.localizedStringForKey("lp_atlas_profile_save_btn_title"));
+		saveAsButton.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_profile_save_btn_tips"));
 		saveAsButton.addActionListener(new SaveAsProfileListener(atlasTree));
 
-		loadButton = new JButton("Load");
-		loadButton.setToolTipText("Load the selected profile");
+		loadButton = new JButton(I18nUtils.localizedStringForKey("lp_atlas_profile_load_btn_title"));
+		loadButton.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_profile_load_btn_tips"));
 
 		GBC gbc = GBC.eol().fill().insets(5, 5, 5, 5);
 		reloadButton = new JButton(Utilities.loadResourceImageIcon("refresh.png"));
-		reloadButton.setToolTipText("reload the profiles list");
+		reloadButton.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_profile_refresh_btn_tips"));
 		reloadButton.addActionListener(new ReloadListener());
 		reloadButton.setPreferredSize(new Dimension(24, 0));
 
@@ -141,7 +141,8 @@ public class JProfilesPanel extends JCollapsiblePanel {
 				profileName = (String) selObject;
 
 			if (profileName.length() == 0) {
-				JOptionPane.showMessageDialog(null, "Please enter a profile name", "Error",
+				JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("lp_atlas_profile_msg_ask_name"), 
+						I18nUtils.localizedStringForKey("Error"),
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
@@ -149,8 +150,9 @@ public class JProfilesPanel extends JCollapsiblePanel {
 			profile = new Profile(profileName);
 
 			if (profile.exists()) {
-				int response = JOptionPane.showConfirmDialog(null, "Profile \"" + profileName
-						+ "\" already exists. Overwrite?", "Please confirm",
+				int response = JOptionPane.showConfirmDialog(null, 
+						String.format(I18nUtils.localizedStringForKey("lp_atlas_profile_msg_overwrite_confirm"), profileName),
+						I18nUtils.localizedStringForKey("lp_atlas_profile_msg_overwrite_confirm_title"),
 						JOptionPane.YES_NO_OPTION);
 				if (response != JOptionPane.YES_OPTION)
 					return;

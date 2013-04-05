@@ -44,6 +44,7 @@ import mobac.exceptions.InvalidNameException;
 import mobac.program.interfaces.LayerInterface;
 import mobac.program.interfaces.MapInterface;
 import mobac.program.model.AtlasTreeModel;
+import mobac.utilities.I18nUtils;
 
 import org.apache.log4j.Logger;
 
@@ -182,16 +183,17 @@ public class DragDropController {
 		protected void mergeLayers(AtlasTreeModel atlasTreeModel, LayerInterface sourceLayer,
 				LayerInterface targetLayer) throws InvalidNameException {
 			int answer = JOptionPane.showConfirmDialog(null,
-					"Are you sure you want to merge the maps of layer\n" + "\""
-							+ sourceLayer.getName() + "\" into layer " + "\""
-							+ targetLayer.getName() + "\"?", "Confirm layer merging",
+					String.format(I18nUtils.localizedStringForKey("msg_confirm_merge_layer"),
+							sourceLayer.getName(), targetLayer.getName()), 
+					I18nUtils.localizedStringForKey("msg_confirm_merge_layer_title"),
 					JOptionPane.YES_NO_OPTION);
 			if (answer != JOptionPane.YES_OPTION)
 				return;
 			try {
 				atlasTreeModel.mergeLayers(sourceLayer, targetLayer);
 			} catch (InvalidNameException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Layer merging failed",
+				JOptionPane.showMessageDialog(null, e.getMessage(), 
+						I18nUtils.localizedStringForKey("msg_merge_layer_failed"),
 						JOptionPane.ERROR_MESSAGE);
 				throw e;
 			}

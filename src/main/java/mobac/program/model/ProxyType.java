@@ -16,21 +16,30 @@
  ******************************************************************************/
 package mobac.program.model;
 
+import mobac.utilities.I18nUtils;
+
 public enum ProxyType {
-	SYSTEM("Use standard Java proxy settings"), // 
-	APP_SETTINGS("Use application properties"), //
-	CUSTOM("Use custom proxy (user defined)"), //
-	CUSTOM_W_AUTH("Use custom proxy with Authentication");
+	SYSTEM, // 
+	APP_SETTINGS, //
+	CUSTOM, //
+	CUSTOM_W_AUTH;
 
-	private String text;
+	//private String text;
 
-	private ProxyType(String text) {
-		this.text = text;
-	}
+//	private ProxyType(String text) {
+//		this.text = text;
+//	}
 
 	@Override
 	public String toString() {
-		return text;
+		switch(this)
+		{
+			case SYSTEM: return I18nUtils.localizedStringForKey("set_net_proxy_settings_java");
+			case APP_SETTINGS: return I18nUtils.localizedStringForKey("set_net_proxy_settings_application");
+			case CUSTOM: return I18nUtils.localizedStringForKey("set_net_proxy_settings_custom");
+			case CUSTOM_W_AUTH: return I18nUtils.localizedStringForKey("set_net_proxy_settings_custom_auth");
+		}
+		return I18nUtils.localizedStringForKey("Undefined");
 	}
 
 }

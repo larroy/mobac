@@ -16,6 +16,7 @@
  ******************************************************************************/
 package mobac.optional;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 

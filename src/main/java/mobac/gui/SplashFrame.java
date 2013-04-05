@@ -35,7 +35,8 @@ public class SplashFrame extends JFrame {
 	}
 
 	public SplashFrame() throws HeadlessException {
-		super("Mobile Atlas Creator is starting up...");
+		//super(MainGUI.localizedStringForKey("splash_title"));
+		super("MOBAC");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setUndecorated(true);
 		setIconImages(MainGUI.MOBAC_ICONS);

@@ -25,6 +25,7 @@ import mobac.exceptions.AtlasTestException;
 import mobac.gui.atlastree.JAtlasTree;
 import mobac.program.AtlasThread;
 import mobac.program.interfaces.AtlasInterface;
+import mobac.utilities.I18nUtils;
 
 public class AtlasCreate implements ActionListener {
 
@@ -46,7 +47,7 @@ public class AtlasCreate implements ActionListener {
 			atlasThread.start();
 		} catch (AtlasTestException e) {
 			JOptionPane.showMessageDialog(null, "<html>" + e.getMessage() + "</html>",
-					"Map incompatible with atlas format", JOptionPane.ERROR_MESSAGE);
+					I18nUtils.localizedStringForKey("msg_convert_incompatible_format"), JOptionPane.ERROR_MESSAGE);
 
 		}
 	}

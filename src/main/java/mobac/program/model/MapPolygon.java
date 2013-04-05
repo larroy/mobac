@@ -37,6 +37,7 @@ import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.interfaces.TileFilter;
 import mobac.program.tilefilter.PolygonTileFilter;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.MyMath;
 
 @XmlRootElement
@@ -197,20 +198,19 @@ public class MapPolygon extends Map {
 
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
-		sw.write("<b>Polygonal Map</b><br>");
-		sw.write("Map source: " + mapSource.getName() + "<br>");
-		sw.write("Zoom level: " + zoom + "<br>");
-		sw.write("Polygon points: " + polygon.npoints + "<br>");
-		sw.write("Area start: " + tl + " (" + minTileCoordinate.x + " / " + minTileCoordinate.y + ")<br>");
-		sw.write("Area end: " + br + " (" + maxTileCoordinate.x + " / " + maxTileCoordinate.y + ")<br>");
-		sw.write("Map size: " + (maxTileCoordinate.x - minTileCoordinate.x + 1) + "x"
-				+ (maxTileCoordinate.y - minTileCoordinate.y + 1) + " pixel<br>");
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_polygon_map_title"));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_source_short"), mapSource.getName()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_zoom_lv"), zoom));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_polygon_map_point"), polygon.npoints));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_start"), tl,  minTileCoordinate.x, minTileCoordinate.y));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_end"), br,  maxTileCoordinate.x, maxTileCoordinate.y));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_size"), (maxTileCoordinate.x - minTileCoordinate.x + 1), (maxTileCoordinate.y - minTileCoordinate.y + 1)));
 		if (parameters != null) {
-			sw.write("Tile size: " + parameters.getWidth() + "x" + parameters.getHeight() + "<br>");
-			sw.write("Tile format: " + parameters.getFormat() + "<br>");
+			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_size"), parameters.getWidth(), parameters.getHeight()));
+			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_format"), parameters.getFormat()));
 		} else
-			sw.write("Tile size: 256x256 (no processing)<br>");
-		sw.write("Maximum tiles to download: " + calculateTilesToDownload() + "<br>");
+			sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_tile_format_origin"));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"),calculateTilesToDownload()));
 		sw.write("</html>");
 		return sw.toString();
 	}

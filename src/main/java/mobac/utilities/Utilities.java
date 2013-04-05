@@ -21,6 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -306,6 +307,15 @@ public class Utilities {
 		}
 	}
 
+	public static void close(Closeable c) {
+		if (c == null)
+			return;
+		try {
+			c.close();
+		} catch (IOException e) {
+		}
+	}
+
 	public static void closeStream(OutputStream out) {
 		if (out == null)
 			return;
@@ -368,12 +378,12 @@ public class Utilities {
 	 */
 	public static String formatBytes(long bytes) {
 		if (bytes < 1000)
-			return Long.toString(bytes) + " Bytes";
+			return Long.toString(bytes) + " " + I18nUtils.localizedStringForKey("Bytes");
 		if (bytes < 1000000)
-			return FORMAT_2_DEC.format(bytes / 1024d) + " KiByte";
+			return FORMAT_2_DEC.format(bytes / 1024d) + " " + I18nUtils.localizedStringForKey("KiByte");
 		if (bytes < 1000000000)
-			return FORMAT_2_DEC.format(bytes / 1048576d) + " MiByte";
-		return FORMAT_2_DEC.format(bytes / 1073741824d) + " GiByte";
+			return FORMAT_2_DEC.format(bytes / 1048576d) + " " + I18nUtils.localizedStringForKey("MiByte");
+		return FORMAT_2_DEC.format(bytes / 1073741824d) + " " + I18nUtils.localizedStringForKey("GiByte");
 	}
 
 	public static String formatDurationSeconds(long seconds) {
@@ -675,11 +685,16 @@ public class Utilities {
 	}
 
 	public static void copyFile(File source, File target) throws IOException {
-		FileChannel in = (new FileInputStream(source)).getChannel();
-		FileChannel out = (new FileOutputStream(target)).getChannel();
-		in.transferTo(0, source.length(), out);
-		in.close();
-		out.close();
+		FileChannel in = null;
+		FileChannel out = null;
+		try {
+			in = (new FileInputStream(source)).getChannel();
+			out = (new FileOutputStream(target)).getChannel();
+			in.transferTo(0, source.length(), out);
+		} finally {
+			close(in);
+			close(out);
+		}
 	}
 
 	/**

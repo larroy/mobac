@@ -18,14 +18,18 @@ package mobac.gui.components;
 
 import javax.swing.JCheckBox;
 
+import mobac.utilities.I18nUtils;
+
 public class JZoomCheckBox extends JCheckBox {
 
+	private static final long serialVersionUID = 1L;
+	
 	private final int zoomLevel;
 
 	public JZoomCheckBox(int zoomLevel) {
 		super();
 		this.zoomLevel = zoomLevel;
-		setToolTipText("Select zoom level " + zoomLevel + " for atlas");
+		setToolTipText(String.format(I18nUtils.localizedStringForKey("lp_zoom_number_tips"),zoomLevel));
 	}
 
 	public int getZoomLevel() {

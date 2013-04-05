@@ -69,7 +69,7 @@ public class OsmdroidSQLite extends AtlasCreator implements RequiresSQLite {
 		try {
 			SQLiteLoader.loadSQLite();
 		} catch (SQLException e) {
-			throw new AtlasTestException(SQLiteLoader.MSG_SQLITE_MISSING);
+			throw new AtlasTestException(SQLiteLoader.getMsgSqliteMissing());
 		}
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFile);

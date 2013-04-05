@@ -110,7 +110,7 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 		try {
 			SQLiteLoader.loadSQLite();
 		} catch (SQLException e) {
-			throw new MapCreationException(SQLiteLoader.MSG_SQLITE_MISSING, map, e);
+			throw new MapCreationException(SQLiteLoader.getMsgSqliteMissing(), map, e);
 		}
 		try {
 			openConnection();
@@ -245,7 +245,7 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 	}
 
 	protected String getDatabaseFileName() {
-		return "Custom " + atlas.getName() + ".sqlitedb";
+		return atlas.getName() + ".sqlitedb";
 	}
 
 	protected String getTileInsertSQL() {

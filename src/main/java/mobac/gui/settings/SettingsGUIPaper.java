@@ -50,6 +50,7 @@ import mobac.program.model.Settings;
 import mobac.program.model.SettingsPaperAtlas;
 import mobac.program.model.UnitSystem;
 import mobac.utilities.GBCTable;
+import mobac.utilities.I18nUtils;
 
 public class SettingsGUIPaper extends JPanel {
 	private static final long serialVersionUID = -8265562215604604074L;
@@ -299,88 +300,78 @@ public class SettingsGUIPaper extends JPanel {
 	}
 
 	private void i18n() {
-		setName("Paper Atlas");
-		titledBorderActions.setTitle("Actions");
-		titledBorderAdditions.setTitle("Additions");
-		titledBorderAdvanced.setTitle("Advanced");
-		titledBorderMargins.setTitle("Margins");
-		titledBorderSize.setTitle("Size");
-		jComboBoxFormat.setToolTipText("Chooses a default page format.");
-		jComboBoxWgsDensity.setToolTipText("Chooses the density for the WGS-84 Grid.");
-		jRadioButtonSelection.setText("Selection");
-		jRadioButtonSelection.setToolTipText("If selected, paper size will be determined by the map size.");
-		jRadioButtonDefault.setText("Default");
-		jRadioButtonDefault.setToolTipText("If selected, papper size will be determined by the specifed format.");
-		jRadioButtonCustom.setText("Custom");
-		jRadioButtonCustom.setToolTipText("If selected, user can specify the paper size manualy.");
-		jCheckBoxScaleBar.setText("Scale bar");
-		jCheckBoxScaleBar.setToolTipText("If selected, scale bar will be painted on the map.");
-		jCheckBoxCompass.setText("Compass");
-		jCheckBoxCompass.setToolTipText("If selected, compass will be painted on the map.");
-		jCheckBoxLandscape.setText("Landscape");
-		jCheckBoxLandscape.setToolTipText("If selected, the paper format will be positioned landscape.");
-		jCheckBoxWgsGrid.setText("WGS Grid");
-		jCheckBoxWgsGrid.setToolTipText("If selected, WGS-84 grid will be painted on the map.");
-		jCheckBoxPageNumbers.setText("Page numbers");
-		jCheckBoxPageNumbers.setToolTipText("If selected, page numbers will be painted on each page.");
-		jLabelCompression.setText("Compression:");
-		String compression = "<html>Specifies the compression level used for PDF document. <br />"
-				+ "Zero means no compression and 9 means best compression. <br />"
-				+ "The higher number the better compression. The default value is 6.";
+		setName(I18nUtils.localizedStringForKey("set_paper_title"));
+		titledBorderActions.setTitle(I18nUtils.localizedStringForKey("set_paper_actions"));
+		titledBorderAdditions.setTitle(I18nUtils.localizedStringForKey("set_paper_additions"));
+		titledBorderAdvanced.setTitle(I18nUtils.localizedStringForKey("set_paper_advanced"));
+		titledBorderMargins.setTitle(I18nUtils.localizedStringForKey("set_paper_margins"));
+		titledBorderSize.setTitle(I18nUtils.localizedStringForKey("set_paper_size"));
+		jComboBoxFormat.setToolTipText(I18nUtils.localizedStringForKey("set_paper_size_default_format_tips"));
+		jComboBoxWgsDensity.setToolTipText(I18nUtils.localizedStringForKey("set_paper_wgs_grid_density_tips"));
+		jRadioButtonSelection.setText(I18nUtils.localizedStringForKey("set_paper_size_selection"));
+		jRadioButtonSelection.setToolTipText(I18nUtils.localizedStringForKey("set_paper_size_selection_tips"));
+		jRadioButtonDefault.setText(I18nUtils.localizedStringForKey("set_paper_size_default"));
+		jRadioButtonDefault.setToolTipText(I18nUtils.localizedStringForKey("set_paper_size_default_tips"));
+		jRadioButtonCustom.setText(I18nUtils.localizedStringForKey("set_paper_size_custom"));
+		jRadioButtonCustom.setToolTipText(I18nUtils.localizedStringForKey("set_paper_size_custom_tips"));
+		jCheckBoxScaleBar.setText(I18nUtils.localizedStringForKey("set_paper_scale_bar"));
+		jCheckBoxScaleBar.setToolTipText(I18nUtils.localizedStringForKey("set_paper_scale_tips"));
+		jCheckBoxCompass.setText(I18nUtils.localizedStringForKey("set_paper_compass"));
+		jCheckBoxCompass.setToolTipText(I18nUtils.localizedStringForKey("set_paper_compass_tips"));
+		jCheckBoxLandscape.setText(I18nUtils.localizedStringForKey("set_paper_size_default_landscape"));
+		jCheckBoxLandscape.setToolTipText(I18nUtils.localizedStringForKey("set_paper_size_default_landscape_tips"));
+		jCheckBoxWgsGrid.setText(I18nUtils.localizedStringForKey(I18nUtils.localizedStringForKey("set_paper_wgs_grid")));
+		jCheckBoxWgsGrid.setToolTipText(I18nUtils.localizedStringForKey("set_paper_wgs_grid_tips"));
+		jCheckBoxPageNumbers.setText(I18nUtils.localizedStringForKey("set_paper_paper_nubmer"));
+		jCheckBoxPageNumbers.setToolTipText(I18nUtils.localizedStringForKey("set_paper_paper_nubmer_tips"));
+		jLabelCompression.setText(I18nUtils.localizedStringForKey("set_paper_advanced_compression"));
+		String compression = I18nUtils.localizedStringForKey("set_paper_advanced_compression_tips");
 		jLabelCompression.setToolTipText(compression);
 		jSpinnerCompression.setToolTipText(compression);
-		jLabelDpi.setText("Resolution");
-		String dpi = "<html>Specifies the resolution (DPI) to be used for images. <br />"
-				+ "Generally higher values means better quality, <br />" + "but smaller pixel based objects <br />"
-				+ "( such as scale bar, WGS-84 grid, compass and page numbers). <br />"
-				+ "Default value is 96, better quality can be achieved width 120. <br />"
-				+ "Notice: Make sure, your PDF viewer displays the page with the <br />"
-				+ "selected resolution.</html>";
+		jLabelDpi.setText(I18nUtils.localizedStringForKey("set_paper_advanced_dpi"));
+		String dpi = I18nUtils.localizedStringForKey("set_paper_advanced_dpi_tips");
 		jLabelDpi.setToolTipText(dpi);
 		jSpinnerDpi.setToolTipText(dpi);
-		jLabelWidth.setText("Width:");
-		String width = "Specified the page width.";
+		jLabelWidth.setText(I18nUtils.localizedStringForKey("set_paper_size_custom_width"));
+		String width = I18nUtils.localizedStringForKey("set_paper_size_custom_width_tips");
 		jLabelWidth.setToolTipText(width);
 		jSpinnerWidth.setToolTipText(width);
-		jLabelHeight.setText("Height:");
-		String height = "Specified the page height.";
+		jLabelHeight.setText(I18nUtils.localizedStringForKey("set_paper_size_custom_height"));
+		String height = I18nUtils.localizedStringForKey("set_paper_size_custom_height_tips");
 		jLabelHeight.setToolTipText(height);
 		jSpinnerHeight.setToolTipText(height);
-		String margin = "Specifies the margin size.";
-		jLabelMarginTop.setText("Top:");
+		String margin = I18nUtils.localizedStringForKey("set_paper_margins_tips");
+		jLabelMarginTop.setText(I18nUtils.localizedStringForKey("set_paper_margins_top"));
 		jLabelMarginTop.setToolTipText(margin);
 		jSpinnerMarginTop.setToolTipText(margin);
-		jLabelMarginLeft.setText("Left:");
+		jLabelMarginLeft.setText(I18nUtils.localizedStringForKey("set_paper_margins_left"));
 		jLabelMarginLeft.setToolTipText(margin);
 		jSpinnerMarginLeft.setToolTipText(margin);
-		jLabelMarginBottom.setText("Bottom:");
+		jLabelMarginBottom.setText(I18nUtils.localizedStringForKey("set_paper_margins_bottom"));
 		jLabelMarginBottom.setToolTipText(margin);
 		jSpinnerMarginBottom.setToolTipText(margin);
-		jLabelMarginRight.setText("Right:");
+		jLabelMarginRight.setText(I18nUtils.localizedStringForKey("set_paper_margins_right"));
 		jLabelMarginRight.setToolTipText(margin);
 		jSpinnerMarginRight.setToolTipText(margin);
-		jLabelOverlap.setText("Overlap:");
-		String overlap = "Specifies the size of overlap for two neighboring pages.";
+		jLabelOverlap.setText(I18nUtils.localizedStringForKey("set_paper_advanced_overlap"));
+		String overlap = I18nUtils.localizedStringForKey("set_paper_advanced_overlap_tips");
 		jLabelOverlap.setToolTipText(overlap);
 		jSpinnerOverlap.setToolTipText(overlap);
-		jLabelCrop.setText("Crop:");
-		String crop = "<html>Specifies the number of crop percentage. <br />"
-				+ "If any edge page is covered less than the crop percentage, <br />"
-				+ "it will not be processed.</html>";
+		jLabelCrop.setText(I18nUtils.localizedStringForKey("set_paper_advanced_crop"));
+		String crop = I18nUtils.localizedStringForKey("set_paper_advanced_crop_tips");
 		jLabelCrop.setToolTipText(crop);
 		jSpinnerCrop.setToolTipText(crop);
-		jButtonImport.setText("Import from XML");
-		jButtonImport.setToolTipText("Imports all Paper Atlas settings from a XML file.");
-		jButtonExport.setText("Export to XML");
-		jButtonExport.setToolTipText("Exports all Paper Atlas settings to a XML file.");
-		jButtonDefaults.setText("Reset to defaults");
-		jButtonDefaults.setToolTipText("<html>Resets Paper Atlas settings to default. <br />"
-				+ "All previous changes will be lost.</html>");
-		importError = "Unable to import Paper Atlas settings from file: ";
-		exportError = "Unable to export Paper Atlas settings to file: ";
-		errorReason = "Reason: ";
-		errorTitle = "An error occured!";
-		xmlFileFilter = "XML Files (*.xml)";
+		jButtonImport.setText(I18nUtils.localizedStringForKey("set_paper_actions_import_xml"));
+		jButtonImport.setToolTipText(I18nUtils.localizedStringForKey("set_paper_actions_import_xml_tip"));
+		jButtonExport.setText(I18nUtils.localizedStringForKey("set_paper_actions_export_xml"));
+		jButtonExport.setToolTipText(I18nUtils.localizedStringForKey("set_paper_actions_export_xml_tip"));
+		jButtonDefaults.setText(I18nUtils.localizedStringForKey("set_paper_actions_restore_default"));
+		jButtonDefaults.setToolTipText(I18nUtils.localizedStringForKey("set_paper_actions_restore_default_tips"));
+		importError = I18nUtils.localizedStringForKey("set_paper_actions_error_import");
+		exportError = I18nUtils.localizedStringForKey("set_paper_actions_error_export");
+		errorReason = I18nUtils.localizedStringForKey("set_paper_actions_error_reason");
+		errorTitle = I18nUtils.localizedStringForKey("set_paper_actions_error_title");
+		xmlFileFilter = I18nUtils.localizedStringForKey("set_paper_actions_xml_filter");
 	}
 
 	private void setUnitSystem(UnitSystem unitSystem) {

@@ -36,6 +36,7 @@ import mobac.program.model.Layer;
 import mobac.program.model.MapPolygon;
 import mobac.program.model.SelectedZoomLevels;
 import mobac.program.model.TileImageParameters;
+import mobac.utilities.I18nUtils;
 
 public class AddPolygonMapLayer implements ActionListener {
 
@@ -55,7 +56,7 @@ public class AddPolygonMapLayer implements ActionListener {
 
 		int[] zoomLevels = sZL.getZoomLevels();
 		if (zoomLevels.length == 0) {
-			JOptionPane.showMessageDialog(mg, "Please select at least one zoom level");
+			JOptionPane.showMessageDialog(mg, I18nUtils.localizedStringForKey("msg_no_zoom_level_selected"));
 			return;
 		}
 

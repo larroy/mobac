@@ -59,6 +59,7 @@ import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.MapSourceLoaderInfo.LoaderType;
 import mobac.program.model.Settings;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.file.FileExtFilter;
 
@@ -135,9 +136,9 @@ public class MapPackManager {
 					Utilities.renameFile(oldMapPackFile, newMapPackFile);
 					try {
 						JOptionPane.showMessageDialog(null,
-								"An error occured while installing the updated map package.\n"
-										+ "Please restart MOBAC for restoring the previous version.",
-								"Error loading updated map package", JOptionPane.INFORMATION_MESSAGE);
+								I18nUtils.localizedStringForKey("msg_update_map_pack_error"),
+								I18nUtils.localizedStringForKey("msg_update_map_pack_error_title"),
+								JOptionPane.INFORMATION_MESSAGE);
 						System.exit(1);
 					} catch (Exception e1) {
 						log.error(e1.getMessage(), e1);

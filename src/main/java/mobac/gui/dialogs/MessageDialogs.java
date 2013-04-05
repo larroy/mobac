@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import mobac.utilities.I18nUtils;
+
 public class MessageDialogs {
 
 	public static void showErrorMessage(Component parentComponent, String message, String title) {
@@ -37,7 +39,7 @@ public class MessageDialogs {
 			size.height *= lineCount;
 			label.setPreferredSize(size);
 		}
-		JOptionPane.showMessageDialog(null, label, "Test", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, label, I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 }

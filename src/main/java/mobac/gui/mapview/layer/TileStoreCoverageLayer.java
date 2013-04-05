@@ -33,6 +33,7 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.tilestore.TileStore;
 import mobac.program.tilestore.berkeleydb.DelayedInterruptThread;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 
 public class TileStoreCoverageLayer implements MapLayer {
 
@@ -87,8 +88,8 @@ public class TileStoreCoverageLayer implements MapLayer {
 					coverageImage = TileStore.getInstance().getCacheCoverage(mapSource, zoom, tileNumMin, tileNumMax);
 					if (coverageImage == null)
 						JOptionPane.showMessageDialog(MainGUI.getMainGUI(),
-								"Failed to retrieve tile store coverage data.\n"
-										+ "May be the selected area and zoom is too large.", "Error",
+								I18nUtils.localizedStringForKey("msg_tile_store_failed_retrieve_coverage"), 
+								I18nUtils.localizedStringForKey("Error"),
 								JOptionPane.ERROR_MESSAGE);
 				} catch (InterruptedException e) {
 				} catch (Exception e) {

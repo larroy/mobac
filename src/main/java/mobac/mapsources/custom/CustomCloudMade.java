@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import mobac.mapsources.mappacks.openstreetmap.CloudMade;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.WrappedMapSource;
+import mobac.utilities.I18nUtils;
 
 /**
  * Requires the OpenStreetMap
@@ -49,10 +50,10 @@ public class CustomCloudMade implements WrappedMapSource {
 			Constructor<CloudMade> c = CLOUD_MADE_CLASS.getConstructor(String.class, String.class);
 			return c.newInstance(styleID, displayName);
 		} catch (Exception e) {
-			String errorMsg = "Unable to load custom CloudMade map source. "
-					+ "Please make sure the openstreetmap map source bundle is available.";
+			String errorMsg = I18nUtils.localizedStringForKey("msg_environment_error_load_cloudmade");
 			if (!ERROR) {
-				JOptionPane.showMessageDialog(null, errorMsg, "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, errorMsg, 
+						I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 				ERROR = true;
 			}
 			throw new RuntimeException(errorMsg, e);

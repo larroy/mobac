@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -107,35 +108,82 @@ public abstract class AbstractMultiLayerMapSource implements MapSource, Iterable
 		BufferedImage image = getTileImage(zoom, x, y, loadMethod);
 		if (image == null)
 			return null;
+		// TODO: here can write with compress
 		ImageIO.write(image, tileType.getFileExt(), buf);
 		return buf.toByteArray();
 	}
 
+	// public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
+	// InterruptedException, TileException {
+	// int tileSize = mapSpace.getTileSize();
+	// BufferedImage image = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_3BYTE_BGR);
+	// Graphics2D g2 = image.createGraphics();
+	// try {
+	// g2.setColor(getBackgroundColor());
+	// g2.fillRect(0, 0, tileSize, tileSize);
+	// boolean used = false;
+	// for (MapSource layerMapSource : mapSources) {
+	// BufferedImage layerImage = layerMapSource.getTileImage(zoom, x, y, loadMethod);
+	// if (layerImage != null) {
+	// log.debug("Multi layer loading: " + layerMapSource + " " + x + " " + y + " " + zoom);
+	// g2.drawImage(layerImage, 0, 0, null);
+	// used = true;
+	// }
+	// }
+	// if (used)
+	// return image;
+	// else
+	// return null;
+	// } finally {
+	// g2.dispose();
+	// }
+	// }
+
 	public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
 			InterruptedException, TileException {
-		int tileSize = mapSpace.getTileSize();
-		BufferedImage image = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_3BYTE_BGR);
-		Graphics2D g2 = image.createGraphics();
+		// int tileSize = mapSpace.getTileSize();
+		BufferedImage image = null;
+		Graphics2D g2 = null;
 		try {
-			g2.setColor(getBackgroundColor());
-			g2.fillRect(0, 0, tileSize, tileSize);
-			boolean used = false;
+			ArrayList<BufferedImage> layerImages = new ArrayList<BufferedImage>(mapSources.length);
+			int maxSize = mapSpace.getTileSize();
 			for (int i = 0; i < mapSources.length; i++) {
 				MapSource layerMapSource = mapSources[i];
 				BufferedImage layerImage = layerMapSource.getTileImage(zoom, x, y, loadMethod);
 				if (layerImage != null) {
 					log.debug("Multi layer loading: " + layerMapSource + " " + x + " " + y + " " + zoom);
-					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getLayerAlpha(i)));
-					g2.drawImage(layerImage, 0, 0, null);
-					used = true;
+					layerImages.add(layerImage);
+					int size = layerImage.getWidth();
+					if (size > maxSize) {
+						maxSize = size;
+					}
 				}
 			}
-			if (used)
+
+			// optimize for when only one layer exist
+			if (layerImages.size() == 1) {
+				return layerImages.get(0);
+			} else if (layerImages.size() > 1) {
+				image = new BufferedImage(maxSize, maxSize, BufferedImage.TYPE_3BYTE_BGR);
+				g2 = image.createGraphics();
+				g2.setColor(getBackgroundColor());
+				g2.fillRect(0, 0, maxSize, maxSize);
+
+				for (int i = 0; i < layerImages.size(); i++) {
+					BufferedImage layerImage = layerImages.get(i);
+					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getLayerAlpha(i)));
+					g2.drawImage(layerImage, 0, 0, maxSize, maxSize, null);
+				}
 				return image;
-			else
+			} else {
 				return null;
+			}
+
 		} finally {
-			g2.dispose();
+			if (g2 != null) {
+				g2.dispose();
+			}
+
 		}
 	}
 

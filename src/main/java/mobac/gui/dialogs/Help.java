@@ -35,6 +35,7 @@ import mobac.Main;
 import mobac.gui.MainGUI;
 import mobac.utilities.Charsets;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 
 
 public class Help extends JFrame implements WindowListener {
@@ -48,11 +49,11 @@ public class Help extends JFrame implements WindowListener {
 	}
 
 	public Help() throws HeadlessException {
-		super("Help");
+		super(I18nUtils.localizedStringForKey("dlg_help_title"));
 		setIconImages(MainGUI.MOBAC_ICONS);
 		setLayout(new GridBagLayout());
 		JLabel text = new JLabel();
-		JButton closeButton = new JButton("Close");
+		JButton closeButton = new JButton(I18nUtils.localizedStringForKey("Close"));
 		closeButton.setDefaultCapable(true);
 		closeButton.addActionListener(new ActionListener() {
 
@@ -73,6 +74,7 @@ public class Help extends JFrame implements WindowListener {
 			// Strip out all line breaks because JOptionPane shows
 			// the raw HTML code otherwise
 			//helpMessage = helpMessage.replaceAll("\n", "");
+			//text.setFont(mobac.gui.MainGUI.defaultFont());
 			text.setText(helpMessage);
 		} catch (IOException e) {
 		}

@@ -26,6 +26,7 @@ import mobac.gui.gpxtree.GpxEntry;
 import mobac.gui.mapview.PreviewMap;
 import mobac.gui.mapview.controller.GpxMapController;
 import mobac.gui.panels.JGpxPanel;
+import mobac.utilities.I18nUtils;
 
 
 
@@ -43,8 +44,9 @@ public class GpxAddPoint implements ActionListener {
 	public synchronized void actionPerformed(ActionEvent event) {
 		GpxEntry entry = panel.getSelectedEntry();
 		if (entry == null) {
-			int answer = JOptionPane.showConfirmDialog(null, "No GPX file selected.\n"
-					+ "Do you want to create a new GPX file?", "Add point to new GPX file?",
+			int answer = JOptionPane.showConfirmDialog(null,
+					I18nUtils.localizedStringForKey("rp_gpx_msg_ask_create_new"),
+					I18nUtils.localizedStringForKey("rp_gpx_msg_ask_create_new_title"),
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (answer != JOptionPane.YES_OPTION)
 				return;
@@ -52,8 +54,10 @@ public class GpxAddPoint implements ActionListener {
 		}
 		
 		if (!entry.isWaypointParent()) {
-			JOptionPane.showMessageDialog(null, "Way points can only be added to the gpx " +
-										"file, routes or track segments.", "Error", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, 
+					I18nUtils.localizedStringForKey("rp_gpx_msg_add_point_failed"), 
+					I18nUtils.localizedStringForKey("Error"), 
+					JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 		

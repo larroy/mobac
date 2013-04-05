@@ -104,7 +104,7 @@ public class NaviComputer extends AtlasCreator implements RequiresSQLite {
 		try {
 			SQLiteLoader.loadSQLite();
 		} catch (SQLException e) {
-			throw new IOException(SQLiteLoader.MSG_SQLITE_MISSING, e);
+			throw new IOException(SQLiteLoader.getMsgSqliteMissing(), e);
 		}
 		try {
 			Utilities.mkDir(atlasDir);

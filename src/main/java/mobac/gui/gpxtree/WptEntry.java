@@ -18,15 +18,16 @@ package mobac.gui.gpxtree;
 
 import mobac.data.gpx.gpx11.WptType;
 import mobac.gui.mapview.layer.GpxLayer;
+import mobac.utilities.I18nUtils;
 
 public class WptEntry extends GpxEntry {
 	private WptType wpt;
-	
+
 	public WptEntry(WptType wpt, GpxLayer layer) {
 		this.wpt = wpt;
 		this.setLayer(layer);
-	}	
-	
+	}
+
 	public String toString() {
 		String name = "";
 		try {
@@ -37,11 +38,11 @@ public class WptEntry extends GpxEntry {
 		if (name != null && !name.equals("")) {
 			return name;
 		} else {
-			return "unnamed waypoint";
+			return I18nUtils.localizedStringForKey("rp_gpx_unname_wpt_name");
 		}
 	}
 
 	public WptType getWpt() {
 		return wpt;
-	}		
+	}
 }

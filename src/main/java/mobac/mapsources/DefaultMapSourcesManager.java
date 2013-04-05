@@ -38,6 +38,7 @@ import mobac.mapsources.loader.EclipseMapPackLoader;
 import mobac.mapsources.loader.MapPackManager;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.Settings;
+import mobac.utilities.I18nUtils;
 
 import org.apache.log4j.Logger;
 
@@ -73,9 +74,9 @@ public class DefaultMapSourcesManager extends MapSourcesManager {
 				throw new RuntimeException("Map sources directory is unset");
 			if (!mapSourcesDir.isDirectory()) {
 				JOptionPane.showMessageDialog(null,
-						"Map sources directory does not exist - path:\n" + mapSourcesDir.getAbsolutePath()
-								+ "\nPlease make sure you extracted the release zip file\n"
-								+ "of MOBAC correctly including all subdirectories!", "Error",
+						String.format(I18nUtils.localizedStringForKey("msg_environment_mapsrc_dir_not_exist"),
+								mapSourcesDir.getAbsolutePath()), 
+						I18nUtils.localizedStringForKey("Error"),
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}

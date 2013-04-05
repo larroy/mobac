@@ -25,9 +25,25 @@ package mobac.exceptions;
 public class UnrecoverableDownloadException extends TileException {
 
 	private static final long serialVersionUID = 1L;
+		
+	public static int ERROR_CODE_NORMAL = 0;
+	public static int ERROR_CODE_CONTENT_TYPE = 1;
+	
+	private int errorCode = ERROR_CODE_NORMAL;
 
 	public UnrecoverableDownloadException(String message) {
 		super(message);
+		errorCode = ERROR_CODE_NORMAL;
+	}
+	
+	public UnrecoverableDownloadException(String message, int errorCode) {
+		super(message);
+		this.errorCode = errorCode;
+	}
+	
+	public int getErrorCode()
+	{
+		return errorCode;
 	}
 
 }

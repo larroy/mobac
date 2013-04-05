@@ -223,13 +223,21 @@ public class Tile {
 	public void paint(Graphics g, int x, int y) {
 		if (image == null)
 			return;
-		g.drawImage(image, x, y, Color.WHITE, null);
+		
+		int tileSize = mapSource.getMapSpace().getTileSize();
+		//Google Scale = 2, retina support
+		g.drawImage(image, x, y, tileSize, tileSize, Color.WHITE, null);
+		//g.drawImage(image, x, y, Color.WHITE);
 	}
 
 	public void paintTransparent(Graphics g, int x, int y) {
 		if (image == null)
 			return;
-		g.drawImage(image, x, y, null);
+		
+		int tileSize = mapSource.getMapSpace().getTileSize();
+		//Google Scale = 2, retina support
+		g.drawImage(image, x, y, tileSize, tileSize, null);
+		//g.drawImage(image, x, y, null);
 	}
 
 	@Override

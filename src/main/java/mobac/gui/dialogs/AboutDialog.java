@@ -17,10 +17,12 @@
 package mobac.gui.dialogs;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -33,12 +35,13 @@ import javax.swing.UIManager;
 import mobac.gui.MainGUI;
 import mobac.program.ProgramInfo;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 public class AboutDialog extends JDialog implements MouseListener {
 
 	public AboutDialog() throws HeadlessException {
-		super(MainGUI.getMainGUI(), "About");
+		super(MainGUI.getMainGUI(), I18nUtils.localizedStringForKey("dlg_about_title"));
 		setIconImages(MainGUI.MOBAC_ICONS);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -60,18 +63,31 @@ public class AboutDialog extends JDialog implements MouseListener {
 		JPanel infoPanel = new JPanel(new GridBagLayout());
 		infoPanel.setBackground(Color.WHITE);
 		infoPanel.setOpaque(false);
-		// infoPanel.add(new JLabel("<html><h2>" + ProgramInfo.PROG_NAME + "</h2></html>"), eol);
-		infoPanel.add(new JLabel("Version:"), std);
-		infoPanel.add(new JLabel(ProgramInfo.getVersion()), eol);
-		infoPanel.add(new JLabel("Program revision:"), std);
-		infoPanel.add(new JLabel(ProgramInfo.getRevisionStr()), eol);
-		// infoPanel.add(new JLabel("Map sources revision:"), std);
-		// infoPanel.add(new JLabel(Integer.toString(MapSourcesUpdater.getCurrentMapSourcesRev())), eol);
+		//infoPanel.add(new JLabel(MainGUI.localizedStringForKey("dlg_about_version")), std);
+		infoPanel.add(new JLabel(ProgramInfo.getVersion() + "("+ ProgramInfo.getRevisionStr() +")"), eol);
+		//infoPanel.add(new JLabel(MainGUI.localizedStringForKey("dlg_about_program_version")), std);
+		infoPanel.add(new JLabel(String.format(I18nUtils.localizedStringForKey("mobac_version_subfix_dev"), ProgramInfo.getRevisionStr())), eol);
+		
+		//MP:
+		JLabel downladMapPlusLabel = new JLabel(I18nUtils.localizedStringForKey("dlg_about_download_mapplus"));
+		downladMapPlusLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		downladMapPlusLabel.addMouseListener(new MouseAdapter(){
+			@Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    java.awt.Desktop.getDesktop().browse(new java.net.URI(I18nUtils.localizedStringForKey("dlg_about_download_mapplus_url")));
+                    setVisible(false);
+                } catch (Exception ex) {
+                	ex.printStackTrace();
+                }
+			}
+		});
+		infoPanel.add(downladMapPlusLabel, eol);
 
 		panel.add(infoPanel);
 		panel.add(splashLabel);
 
-		infoPanel.setBounds(270, 155, 200, 200);
+		infoPanel.setBounds(200, 155, 320, 200);
 		splashLabel.setBounds(0, 0, splash.getIconWidth(), splash.getIconHeight());
 
 		add(panel);

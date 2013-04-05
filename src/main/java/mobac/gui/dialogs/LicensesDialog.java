@@ -39,6 +39,7 @@ import javax.swing.event.ChangeListener;
 import mobac.gui.MainGUI;
 import mobac.program.ProgramInfo;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 public class LicensesDialog extends JFrame implements ChangeListener, ActionListener {
@@ -57,7 +58,7 @@ public class LicensesDialog extends JFrame implements ChangeListener, ActionList
 	private String currentLicense = null;
 
 	public LicensesDialog() {
-		super("Licenses");
+		super(I18nUtils.localizedStringForKey("dlg_license_title"));
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setLayout(new GridBagLayout());
 		setIconImages(MainGUI.MOBAC_ICONS);

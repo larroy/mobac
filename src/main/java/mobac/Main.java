@@ -46,6 +46,7 @@ public class Main {
 			parseCommandLine();
 			if (cmdAction.showSplashScreen())
 				SplashFrame.showFrame();
+
 			DirectoryManager.initialize();
 			Logging.configureLogging();
 
@@ -55,9 +56,11 @@ public class Main {
 			GUIExceptionHandler.installToolkitEventQueueProxy();
 			// Logging.logSystemProperties();
 			ImageIO.setUseCache(false);
+
+			Settings.loadOrQuit();
 			EnvironmentSetup.checkMemory();
 			EnvironmentSetup.checkFileSetup();
-			Settings.loadOrQuit();
+
 			EnvironmentSetup.copyMapPacks();
 			DefaultMapSourcesManager.initialize();
 			EnvironmentSetup.createDefaultAtlases();

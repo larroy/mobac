@@ -18,6 +18,8 @@ package mobac.gui.components;
 
 import java.util.Vector;
 
+import mobac.utilities.I18nUtils;
+
 import org.apache.log4j.Logger;
 
 public class JTileSizeCombo extends JIntCombo {
@@ -59,8 +61,7 @@ public class JTileSizeCombo extends JIntCombo {
 
 	@Override
 	protected void createEditorComponent() {
-		editorComponent = new JIntField(MIN, MAX, 4, "<html>Invalid tile size!<br>"
-				+ "Please enter a number between %d and %d</html>");
+		editorComponent = new JIntField(MIN, MAX, 4, I18nUtils.localizedStringForKey("msg_invalid_tile_size"));
 	}
 
 }

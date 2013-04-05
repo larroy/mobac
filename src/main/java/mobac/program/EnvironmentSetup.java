@@ -31,6 +31,7 @@ import mobac.program.model.Layer;
 import mobac.program.model.Profile;
 import mobac.program.model.Settings;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.file.FileExtFilter;
 import mobac.utilities.file.NamePatternFileFilter;
@@ -54,16 +55,8 @@ public class EnvironmentSetup {
 		String heapMBFormatted = String.format(Locale.ENGLISH, "%3.2f MiB", maxHeap / 1048576d);
 		log.info("Total available memory to MOBAC: " + heapMBFormatted);
 		if (maxHeap < 200000000) {
-			String msg = "<html><b>WARNING:</b> Mobile Atlas Creator has been started "
-					+ "with a very small amount of memory assigned.<br>"
-					+ "The current maximum usable amount of memory to Mobile Atlas Creator is <b>" + heapMBFormatted
-					+ "</b>.<br><br>Please make sure to start Mobile Atlas Creator in "
-					+ "the future via the provided start scripts <i>Mobile Atlas Creator.exe</i><br>"
-					+ "on Windows or <i>start.sh</i> on Linux/Unix/OSX or add the "
-					+ "parameter <b>-Xmx 512M</b> to your startup command.<br><br>"
-					+ "Example: <i>java -Xmx512M -jar Mobile_Atlas_Creator.jar</i><br>"
-					+ "<br><center>Press OK to continue and start Mobile Atlas Creator</center></html>";
-			JOptionPane.showMessageDialog(null, msg, "Warning: low memory", JOptionPane.WARNING_MESSAGE);
+			String msg = String.format(I18nUtils.localizedStringForKey("msg_environment_lack_memory"), heapMBFormatted);
+			JOptionPane.showMessageDialog(null, msg, I18nUtils.localizedStringForKey("msg_environment_lack_memory_title"), JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -93,8 +86,8 @@ public class EnvironmentSetup {
 			FileUtils.copyDirectory(progMapSourcesDir, userMapSourcesDir, new FileExtFilter(".jar"));
 		} catch (IOException e) {
 			log.error(e);
-			JOptionPane.showMessageDialog(null, "Error on initializing mapsources directory:\n" + e.getMessage(),
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_environment_error_init_mapsrc_dir") + e.getMessage(),
+					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
@@ -111,8 +104,8 @@ public class EnvironmentSetup {
 			} catch (Exception e) {
 				log.error("Error while creating settings.xml: " + e.getMessage(), e);
 				String[] options = { "Exit", "Show error report" };
-				int a = JOptionPane.showOptionDialog(null, "Could not create file settings.xml - program will exit.",
-						"Error", 0, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+				int a = JOptionPane.showOptionDialog(null, I18nUtils.localizedStringForKey("msg_environment_error_create_setting"),
+						I18nUtils.localizedStringForKey("Error"), 0, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 				if (a == 1)
 					GUIExceptionHandler.showExceptionDialog(e);
 				System.exit(1);
@@ -124,8 +117,8 @@ public class EnvironmentSetup {
 		try {
 			Utilities.mkDirs(dir);
 		} catch (IOException e) {
-			GUIExceptionHandler.processFatalExceptionSimpleDialog("Error while creating " + dirName + " directory\n"
-					+ dir.getAbsolutePath() + "\nProgram will exit.", e);
+			GUIExceptionHandler.processFatalExceptionSimpleDialog(String.format(I18nUtils.localizedStringForKey("msg_environment_error_create_dir"), dirName, 
+					dir.getAbsolutePath()), e);
 		}
 		if (!checkIsWriteable)
 			return;
@@ -137,14 +130,14 @@ public class EnvironmentSetup {
 			testFile.delete();
 		} catch (IOException e) {
 			GUIExceptionHandler.processFatalExceptionSimpleDialog(
-					"Unable to write to " + dirName + "\n" + dir.getAbsolutePath()
-							+ "\nPlease correct file permissions and restart MOBAC", e);
+					String.format(I18nUtils.localizedStringForKey("msg_environment_error_write_file"),dirName, dir.getAbsolutePath()), e);
 		}
 	}
 
 	public static void createDefaultAtlases() {
 		if (!FIRST_START)
 			return;
+		//TODO:MP change sample to Chinese 
 		Profile p = new Profile("Google Maps New York");
 		Atlas atlas = Atlas.newInstance();
 		try {

@@ -36,6 +36,7 @@ import mobac.gui.MainGUI;
 import mobac.gui.mapview.layer.GpxLayer;
 import mobac.gui.panels.JGpxPanel;
 import mobac.program.model.Settings;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.file.GpxFileFilter;
 
 import org.apache.log4j.Logger;
@@ -78,8 +79,10 @@ public class GpxLoad implements ActionListener {
 				break;
 		}
 		if (dublicates) {
-			int answer = JOptionPane.showConfirmDialog(mainGUI, "One or more Gpx files are already opened.\n"
-					+ "Do you want to open new instances of these files?", "Warning", JOptionPane.YES_NO_OPTION,
+			int answer = JOptionPane.showConfirmDialog(mainGUI,
+					I18nUtils.localizedStringForKey("rp_gpx_msg_confirm_reopen_file"),
+					I18nUtils.localizedStringForKey("Warning"),
+					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 			if (answer != JOptionPane.YES_OPTION)
 				return;

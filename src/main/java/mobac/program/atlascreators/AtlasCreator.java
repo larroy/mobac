@@ -177,6 +177,7 @@ public abstract class AtlasCreator {
 		yMax = map.getMaxTileCoordinate().y / tileSize;
 		this.zoom = map.getZoom();
 		this.atlasOutputFormat = layer.getAtlas().getOutputFormat();
+
 		Thread t = Thread.currentThread();
 		if (!(t instanceof AtlasThread))
 			throw new RuntimeException("Calling thread must be AtlasThread!");

@@ -57,8 +57,6 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 
 	private StringBuilder otrk2MapsContent;
 
-	private int customTileCount;
-
 	public OruxMapsSqlite() {
 		super();
 		SQLiteLoader.loadSQLiteOrShowError();
@@ -77,7 +75,7 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 		try {
 			SQLiteLoader.loadSQLite();
 		} catch (SQLException e) {
-			throw new AtlasTestException(SQLiteLoader.MSG_SQLITE_MISSING, e);
+			throw new AtlasTestException(SQLiteLoader.getMsgSqliteMissing(), e);
 		}
 	}
 
@@ -147,7 +145,7 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 			mapDlTileProvider = ctp;
 			MapTileWriter mtw = new OruxMapTileWriterDB();
 			OruxMapTileBuilder mapTileBuilder = new OruxMapTileBuilder(this, mtw);
-			customTileCount = mapTileBuilder.getCustomTileCount();
+			//customTileCount = mapTileBuilder.getCustomTileCount();
 			atlasProgress.initMapCreation(mapTileBuilder.getCustomTileCount());
 			mapTileBuilder.createTiles();
 			mtw.finalizeMap();

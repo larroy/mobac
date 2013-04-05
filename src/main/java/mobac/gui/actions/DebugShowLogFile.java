@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import mobac.gui.MainGUI;
 import mobac.program.Logging;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 
 import org.apache.log4j.Logger;
 
@@ -37,15 +38,18 @@ public class DebugShowLogFile implements ActionListener {
 		String logFile = Logging.getLogFile();
 		if (logFile == null) {
 			log.error("No file logger configured");
-			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), "No file logger configured", "Error",
+			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), 
+					I18nUtils.localizedStringForKey("msg_no_log_file_config"), 
+					I18nUtils.localizedStringForKey("Error"),
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		File f = new File(logFile);
 		if (!f.isFile()) {
 			log.error("Log file does not exists: " + f.getAbsolutePath());
-			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), "<html>Log file does not exists:<br><br>"
-					+ f.getAbsolutePath() + "</html>", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), 
+					String.format(I18nUtils.localizedStringForKey("msg_no_log_file"), f.getAbsolutePath()),
+					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		try {

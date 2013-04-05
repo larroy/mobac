@@ -19,6 +19,7 @@ package mobac.gui.gpxtree;
 import mobac.data.gpx.gpx11.Gpx;
 import mobac.data.gpx.gpx11.MetadataType;
 import mobac.gui.mapview.layer.GpxLayer;
+import mobac.utilities.I18nUtils;
 
 public class GpxRootEntry extends GpxEntry {
 
@@ -33,9 +34,10 @@ public class GpxRootEntry extends GpxEntry {
 			return name;
 		} else {
 			if (getLayer().getFile() == null) {
-				return "unnamed (new gpx)";
+				return I18nUtils.localizedStringForKey("rp_gpx_root_default_name_nofile");
 			} else {
-				return "unnamed (file " + getLayer().getFile().getName() + ")";
+				return String.format(I18nUtils.localizedStringForKey("rp_gpx_root_default_name_hasfile"), getLayer()
+						.getFile().getName());
 			}
 		}
 	}

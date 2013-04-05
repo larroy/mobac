@@ -75,7 +75,13 @@ public abstract class PaperAtlas extends AtlasCreator {
 
 	protected final SettingsPaperAtlas s;
 
+	private int tileImageScale = 1;
+
 	private File layerFolder;
+	// base: page Size整数倍区域，
+	// bottom：最底下的不能被page Height整除的区域
+	// right：最右侧的不能被page Width整除的区域
+	// corner：右下角区域，不能被page Size整除的部分
 	private Dimension base, bottom, right, corner;
 
 	protected PaperAtlas(final boolean usePadding) {
@@ -112,8 +118,10 @@ public abstract class PaperAtlas extends AtlasCreator {
 	public void createMap() throws MapCreationException, InterruptedException {
 		corner = right = bottom = null;
 
-		int mapWidth = (xMax - xMin + 1) * tileSize;
-		int mapHeight = (yMax - yMin + 1) * tileSize;
+		tileImageScale = getTileImageScale();
+
+		int mapWidth = (xMax - xMin + 1) * tileSize * tileImageScale;
+		int mapHeight = (yMax - yMin + 1) * tileSize * tileImageScale;
 
 		if (base == null) {
 			base = new Dimension(mapWidth, mapHeight);
@@ -121,6 +129,7 @@ public abstract class PaperAtlas extends AtlasCreator {
 			base = null;
 		} else {
 
+			// 最后一页少于页宽度的crop百分百的，会裁剪掉，即抛弃。
 			int sWidth = (mapWidth) % (base.width - overlap);
 			if ((double) sWidth / base.getWidth() * 100d < s.crop) {
 				sWidth = 0;
@@ -156,6 +165,42 @@ public abstract class PaperAtlas extends AtlasCreator {
 		Utilities.mkDirs(layerFolder);
 	}
 
+	/**
+	 * check first existing image and return its scale. 2 means for retina( 512x512), 1 means normal
+	 * 
+	 * @return
+	 */
+	protected int getTileImageScale() {
+		int tileImageScale = 1;
+
+		if (mapDlTileProvider == null) {
+			return tileImageScale;
+		}
+
+		// init tileScale for check if there has retina tile
+		try {
+			// use loop because xMin, xMax may has no data
+			for (int x = xMin; x <= xMax; x++) {
+				for (int y = yMin; y <= yMax; y++) {
+					BufferedImage tile = mapDlTileProvider.getTileImage(x, y);
+					if (tile != null) {
+						tileImageScale = tile.getWidth() / tileSize;
+						break; // skip when get
+					}
+				}
+			}
+
+			// for invalid tileScale
+			if (tileImageScale != 2) {
+				log.debug("invalid tile Scale for Paper Atlas " + tileImageScale);
+				tileImageScale = 1;
+			}
+		} catch (IOException e) {
+			tileImageScale = 1;
+		}
+		return tileImageScale;
+	}
+
 	protected abstract void processPage(BufferedImage image, int pageNumber) throws MapCreationException;
 
 	private void processPages(final int ROWS, final int COLS) throws MapCreationException, InterruptedException {
@@ -185,17 +230,18 @@ public abstract class PaperAtlas extends AtlasCreator {
 					// Compute values
 					int pageXMin = col * base.width - col * overlap;
 					int pageYMin = row * base.height - row * overlap;
-					int firstTileX = pageXMin / tileSize + xMin;
-					int firstTileY = pageYMin / tileSize + yMin;
-					int firstTileXOffset = pageXMin % tileSize;
-					int firstTileYOffset = pageYMin % tileSize;
-					int tilesInCol = (size.height + firstTileYOffset - 1) / tileSize + 1;
-					int tilesInRow = (size.width + firstTileXOffset - 1) / tileSize + 1;
+					int firstTileX = pageXMin / (tileSize * tileImageScale) + xMin;
+					int firstTileY = pageYMin / (tileSize * tileImageScale) + yMin;
+					int firstTileXOffset = pageXMin % (tileSize * tileImageScale);
+					int firstTileYOffset = pageYMin % (tileSize * tileImageScale);
+					int tilesInCol = (size.height + firstTileYOffset - 1) / (tileSize * tileImageScale) + 1;
+					int tilesInRow = (size.width + firstTileXOffset - 1) / (tileSize * tileImageScale) + 1;
 
 					// Create image and graphics
 					int imageWidth = size.width + insets.left + insets.right;
 					int imageHeight = size.height + insets.top + insets.bottom;
-					BufferedImage image = Utilities.safeCreateBufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+					BufferedImage image = Utilities.safeCreateBufferedImage(imageWidth, imageHeight,
+							BufferedImage.TYPE_4BYTE_ABGR);
 					Graphics2D g = image.createGraphics();
 					g.translate(insets.left, insets.top);
 					g.clipRect(0, 0, size.width, size.height);
@@ -208,19 +254,19 @@ public abstract class PaperAtlas extends AtlasCreator {
 						for (int tileCol = 0; tileCol < tilesInRow; tileCol++) {
 							int tileX = firstTileX + tileCol;
 							int tileY = firstTileY + tileRow;
-							int x = tileCol * tileSize;
-							int y = tileRow * tileSize;
+							int x = tileCol * tileSize * tileImageScale;
+							int y = tileRow * tileSize * tileImageScale;
 							BufferedImage tile = mapDlTileProvider.getTileImage(tileX, tileY);
 							if (tile != null)
-								g.drawImage(tile, null, x, y);
+								g.drawImage(tile, x, y, tileSize * tileImageScale, tileSize * tileImageScale, null);
 						}
 					}
 					g.translate(firstTileXOffset, firstTileYOffset);
 
 					// Paint additions
 					dummy.setSize(size);
-					Point tlc = new Point(firstTileX * tileSize + firstTileXOffset, firstTileY * tileSize
-							+ firstTileYOffset);
+					Point tlc = new Point(firstTileX * tileSize * tileImageScale + firstTileXOffset, firstTileY
+							* tileSize * tileImageScale + firstTileYOffset);
 					if (s.wgsEnabled)
 						wgsGrid.paintWgsGrid(g, mapSource.getMapSpace(), tlc, zoom);
 					if (s.scaleBar)

@@ -25,6 +25,7 @@ import mobac.gui.MainGUI;
 import mobac.mapsources.MapSourcesManager;
 import mobac.program.interfaces.FileBasedMapSource;
 import mobac.program.interfaces.MapSource;
+import mobac.utilities.I18nUtils;
 
 public class RefreshCustomMapsources implements ActionListener {
 
@@ -50,7 +51,7 @@ public class RefreshCustomMapsources implements ActionListener {
 			 */
 			gui.mapSourceChanged(selectedMapSource);
 		}
-		JOptionPane.showMessageDialog(gui, String.format("%d custom file based mapsources has been refreshed", count));
+		JOptionPane.showMessageDialog(gui, String.format(I18nUtils.localizedStringForKey("msg_refresh_all_map_source_done"), count));
 	}
 
 }

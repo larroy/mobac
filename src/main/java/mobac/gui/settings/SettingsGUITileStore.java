@@ -42,6 +42,7 @@ import mobac.program.interfaces.MapSource;
 import mobac.program.tilestore.TileStore;
 import mobac.program.tilestore.TileStoreInfo;
 import mobac.program.tilestore.berkeleydb.DelayedInterruptThread;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 public class SettingsGUITileStore extends JPanel {
@@ -58,12 +59,12 @@ public class SettingsGUITileStore extends JPanel {
 	public SettingsGUITileStore(SettingsGUI gui) {
 		super();
 
-		gui.addTab("Tile store", this);
+		gui.addTab(I18nUtils.localizedStringForKey("set_tile_store_title"), this);
 
-		tileStoreEnabled = new JCheckBox("Enable tile store for map preview and atlas download");
+		tileStoreEnabled = new JCheckBox(I18nUtils.localizedStringForKey("set_tile_store_enable_checkbox"));
 
 		JPanel tileStorePanel = new JPanel(new BorderLayout());
-		tileStorePanel.setBorder(SettingsGUI.createSectionBorder("Tile store settings"));
+		tileStorePanel.setBorder(SettingsGUI.createSectionBorder(I18nUtils.localizedStringForKey("set_tile_store_settings")));
 		tileStorePanel.add(tileStoreEnabled, BorderLayout.CENTER);
 		tileStoreInfoPanel = new JPanel(new GridBagLayout());
 		// tileStoreInfoPanel.setBorder(createSectionBorder("Information"));
@@ -77,7 +78,7 @@ public class SettingsGUITileStore extends JPanel {
 		tileStoreInfoPanel.setMinimumSize(new Dimension(200, 300));
 		// scrollPane.setMinimumSize(new Dimension(100, 100));
 		scrollPane.setPreferredSize(new Dimension(520, 100));
-		scrollPane.setBorder(SettingsGUI.createSectionBorder("Information"));
+		scrollPane.setBorder(SettingsGUI.createSectionBorder(I18nUtils.localizedStringForKey("set_tile_store_information")));
 
 		add(scrollPane, BorderLayout.CENTER);
 	}
@@ -166,9 +167,9 @@ public class SettingsGUITileStore extends JPanel {
 		TileStore tileStore = TileStore.getInstance();
 		MapSourcesManager mapSourcesManager = MapSourcesManager.getInstance();
 
-		tileStoreInfoPanel.add(new JLabel("<html><b>Map source</b></html>"), gbc_mapSource);
-		tileStoreInfoPanel.add(new JLabel("<html><b>Tiles</b></html>"), gbc_mapTiles);
-		tileStoreInfoPanel.add(new JLabel("<html><b>Size</b></html>"), gbc_eol);
+		tileStoreInfoPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_tile_store_info_mapsrc")), gbc_mapSource);
+		tileStoreInfoPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_tile_store_info_tiles")), gbc_mapTiles);
+		tileStoreInfoPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_tile_store_info_size")), gbc_eol);
 
 		ImageIcon trash = Utilities.loadResourceImageIcon("trash.png");
 
@@ -180,7 +181,7 @@ public class SettingsGUITileStore extends JPanel {
 			if (mapSource != null)
 				mapSourceNameLabel = new JLabel(name);
 			else
-				mapSourceNameLabel = new JLabel(name + " (unused)");
+				mapSourceNameLabel = new JLabel(name + I18nUtils.localizedStringForKey("set_tile_store_info_disabled_subfix"));
 			final JLabel mapTileCountLabel = new JLabel(mapTileCountText);
 			final JLabel mapTileSizeLabel = new JLabel(mapTileSizeText);
 			final JButton deleteButton = new JButton(trash);
@@ -190,7 +191,7 @@ public class SettingsGUITileStore extends JPanel {
 			info.sizeLabel = mapTileSizeLabel;
 			tileStoreInfoList.add(info);
 			deleteButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-			deleteButton.setToolTipText("Delete all stored " + name + " tiles.");
+			deleteButton.setToolTipText(String.format(I18nUtils.localizedStringForKey("set_tile_store_info_delete_tips"), name));
 			deleteButton.addActionListener(new ClearTileCacheAction(name));
 
 			tileStoreInfoPanel.add(mapSourceNameLabel, gbc_mapSource);
@@ -205,7 +206,7 @@ public class SettingsGUITileStore extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		tileStoreInfoPanel.add(hr, gbc);
 
-		JLabel totalMapLabel = new JLabel("<html><b>Total</b></html>");
+		JLabel totalMapLabel = new JLabel(I18nUtils.localizedStringForKey("set_tile_store_info_total"));
 		totalTileCountLabel = new JLabel("<html><b>??</b></html>");
 		totalTileSizeLabel = new JLabel("<html><b>??</b></html>");
 		tileStoreInfoPanel.add(totalMapLabel, gbc_mapSource);
@@ -239,7 +240,7 @@ public class SettingsGUITileStore extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			final JButton b = (JButton) e.getSource();
 			b.setEnabled(false);
-			b.setToolTipText("Deleting in progress - please wait");
+			b.setToolTipText(I18nUtils.localizedStringForKey("set_tile_store_info_deleteing_tips"));
 			Thread t = new DelayedInterruptThread("TileStore_" + storeName + "_DeleteThread") {
 
 				@Override

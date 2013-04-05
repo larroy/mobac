@@ -19,8 +19,6 @@ package mobac.program;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -46,6 +44,7 @@ import mobac.program.model.AtlasOutputFormat;
 import mobac.program.model.Settings;
 import mobac.program.tilestore.TileStore;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.tar.TarIndex;
 import mobac.utilities.tar.TarIndexedArchive;
@@ -53,19 +52,6 @@ import mobac.utilities.tar.TarIndexedArchive;
 import org.apache.log4j.Logger;
 
 public class AtlasThread extends Thread implements DownloadJobListener, AtlasCreationController {
-
-	private static final String MSG_TILESMISSING = "Something is wrong with download of atlas tiles.\n"
-			+ "The amount of downladed tiles is not as high as it was calculated.\nTherfore tiles "
-			+ "will be missing in the created atlas.\n %d tiles are missing.\n\n"
-			+ "Are you sure you want to continue " + "and create the atlas anyway?";
-
-	private static final String MSG_DOWNLOADERRORS = "<html>Multiple tile downloads have failed. "
-			+ "Something may be wrong with your connection to the download server or your selected area. "
-			+ "<br>Do you want to:<br><br>"
-			+ "<u>Continue</u> map download and ignore the errors? (results in blank/missing tiles)<br>"
-			+ "<u>Retry</u> to download this map, by starting over?<br>"
-			+ "<u>Skip</u> the current map and continue to process other maps in the atlas?<br>"
-			+ "<u>Abort</u> the current map and atlas creation process?<br></html>";
 
 	private static final Logger log = Logger.getLogger(AtlasThread.class);
 	private static int threadNum = 0;
@@ -134,11 +120,12 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 			System.gc();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					String message = "Mobile Atlas Creator has run out of memory.";
+					String message = I18nUtils.localizedStringForKey("msg_out_of_memory_head");
 					int maxMem = Utilities.getJavaMaxHeapMB();
 					if (maxMem > 0)
-						message += "\nCurrent maximum memory associated to MOBAC: " + maxMem + " MiB";
-					JOptionPane.showMessageDialog(null, message, "Out of memory", JOptionPane.ERROR_MESSAGE);
+						message += String.format(I18nUtils.localizedStringForKey("msg_out_of_memory_detail"), maxMem);
+					JOptionPane.showMessageDialog(null, message,
+							I18nUtils.localizedStringForKey("msg_out_of_memory_title"), JOptionPane.ERROR_MESSAGE);
 					ap.closeWindow();
 				}
 			});
@@ -146,8 +133,8 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 		} catch (InterruptedException e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					JOptionPane.showMessageDialog(null, "Atlas download aborted", "Information",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_atlas_download_abort"),
+							I18nUtils.localizedStringForKey("Information"), JOptionPane.INFORMATION_MESSAGE);
 					ap.closeWindow();
 				}
 			});
@@ -175,13 +162,10 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 		}
 
 		if (totalNrOfOnlineTiles > 500000) {
-			NumberFormat f = DecimalFormat.getInstance();
-			JOptionPane.showMessageDialog(null, "Mobile Atlas Creator has detected that you are trying to\n"
-					+ "download an extra ordinary large atlas " + "with a very high number of tiles.\n"
-					+ "Please reduce the selected areas on high zoom levels and try again.\n"
-					+ "The maximum allowed amount of tiles per atlas is " + f.format(500000)
-					+ "\nThe number of tile in the currently selected atlas is: " + f.format(totalNrOfOnlineTiles),
-					"Atlas download prohibited", JOptionPane.ERROR_MESSAGE);
+			// NumberFormat f = DecimalFormat.getInstance();
+			JOptionPane.showMessageDialog(null, String.format(
+					I18nUtils.localizedStringForKey("msg_too_many_tiles_msg"), 500000, totalNrOfOnlineTiles), I18nUtils
+					.localizedStringForKey("msg_too_many_tiles_title"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		try {
@@ -211,10 +195,14 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 						// Do nothing and continue with next map
 					} catch (Exception e) {
 						log.error("", e);
-						String[] options = { "Continue", "Abort", "Show error report" };
-						int a = JOptionPane.showOptionDialog(null, "An error occured: " + e.getMessage() + "\n["
-								+ e.getClass().getSimpleName() + "]\n\n", "Error", 0, JOptionPane.ERROR_MESSAGE, null,
-								options, options[0]);
+						String[] options = { I18nUtils.localizedStringForKey("Continue"),
+								I18nUtils.localizedStringForKey("Abort"),
+								I18nUtils.localizedStringForKey("dlg_download_show_error_report") };
+						int a = JOptionPane.showOptionDialog(null,
+								I18nUtils.localizedStringForKey("dlg_download_erro_head") + e.getMessage() + "\n["
+										+ e.getClass().getSimpleName() + "]\n\n",
+								I18nUtils.localizedStringForKey("Error"), 0, JOptionPane.ERROR_MESSAGE, null, options,
+								options[0]);
 						switch (a) {
 						case 2:
 							GUIExceptionHandler.processException(e);
@@ -299,10 +287,13 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 					Thread.sleep(500);
 					if (!failedMessageAnswered && (jobsRetryError > 50) && !ap.ignoreDownloadErrors()) {
 						pauseResumeHandler.pause();
-						String[] answers = new String[] { "Continue", "Retry", "Skip", "Abort" };
-						int answer = JOptionPane.showOptionDialog(ap, MSG_DOWNLOADERRORS,
-								"Multiple download errors - how to proceed?", 0, JOptionPane.QUESTION_MESSAGE, null,
-								answers, answers[0]);
+						String[] answers = new String[] { I18nUtils.localizedStringForKey("Continue"),
+								I18nUtils.localizedStringForKey("Retry"), I18nUtils.localizedStringForKey("Skip"),
+								I18nUtils.localizedStringForKey("Abort") };
+						int answer = JOptionPane.showOptionDialog(ap,
+								I18nUtils.localizedStringForKey("dlg_download_errors_todo_msg"),
+								I18nUtils.localizedStringForKey("dlg_download_errors_todo"), 0,
+								JOptionPane.QUESTION_MESSAGE, null, answers, answers[0]);
 						failedMessageAnswered = true;
 						switch (answer) {
 						case 0: // Continue
@@ -333,9 +324,10 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 						int missing = tileCount - tileIndex.size();
 						log.debug("Expected tile count: " + tileCount + " downloaded tile count: " + tileIndex.size()
 								+ " missing: " + missing);
-						int answer = JOptionPane.showConfirmDialog(ap, String.format(MSG_TILESMISSING, missing),
-								"Error - tiles are missing - do you want to continue anyway?",
-								JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+						int answer = JOptionPane.showConfirmDialog(ap, String.format(
+								I18nUtils.localizedStringForKey("dlg_download_errors_missing_tile_msg"), missing),
+								I18nUtils.localizedStringForKey("dlg_download_errors_missing_tile"),
+								JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 						if (answer != JOptionPane.YES_OPTION)
 							throw new InterruptedException();
 					}

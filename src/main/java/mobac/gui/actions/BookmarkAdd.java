@@ -25,6 +25,7 @@ import mobac.gui.MainGUI;
 import mobac.gui.mapview.PreviewMap;
 import mobac.program.model.Bookmark;
 import mobac.program.model.Settings;
+import mobac.utilities.I18nUtils;
 
 public class BookmarkAdd implements ActionListener {
 
@@ -36,7 +37,7 @@ public class BookmarkAdd implements ActionListener {
 
 	public void actionPerformed(ActionEvent arg0) {
 		Bookmark bm = previewMap.getPositionBookmark();
-		String name = JOptionPane.showInputDialog("please select a name for the new bookmark", bm.toString());
+		String name = JOptionPane.showInputDialog(I18nUtils.localizedStringForKey("dlg_add_bookmark_msg"), bm.toString());
 		if (name == null)
 			return;
 		bm.setName(name);

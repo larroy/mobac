@@ -38,6 +38,7 @@ import mobac.gui.dialogs.FontChooser;
 import mobac.program.model.Settings;
 import mobac.program.model.SettingsWgsGrid;
 import mobac.utilities.GBCTable;
+import mobac.utilities.I18nUtils;
 
 public class SettingsGUIWgsGrid extends JPanel {
 
@@ -107,21 +108,20 @@ public class SettingsGUIWgsGrid extends JPanel {
 	}
 
 	public void i18n() {
-		jCheckBoxCompressLabels.setText("Compress labels");
-		jCheckBoxCompressLabels
-				.setToolTipText("If selected, the coordinate labels will not containt explicit information.");
-		setBorder(SettingsGUI.createSectionBorder("WGS Grid"));
-		title = "Choose grid color";
-		jLabelWidth.setText("Width:");
-		String width = "The width of the lines.";
+		jCheckBoxCompressLabels.setText(I18nUtils.localizedStringForKey("set_display_grid_compress"));
+		jCheckBoxCompressLabels.setToolTipText(I18nUtils.localizedStringForKey("set_display_grid_compress_tips"));
+		setBorder(SettingsGUI.createSectionBorder(I18nUtils.localizedStringForKey("set_display_grid")));
+		title = I18nUtils.localizedStringForKey("set_display_grid_title");//TODO: recovery
+		jLabelWidth.setText(I18nUtils.localizedStringForKey("set_display_grid_width"));
+		String width = I18nUtils.localizedStringForKey("set_display_grid_width_tips");
 		jLabelWidth.setToolTipText(width);
 		jSpinnerWidth.setToolTipText(width);
-		jLabelColor.setText("Color:");
-		String color = "The color of the lines and coordinate labels.";
+		jLabelColor.setText(I18nUtils.localizedStringForKey("set_display_grid_color"));
+		String color = I18nUtils.localizedStringForKey("set_display_grid_color_tips");
 		jLabelColor.setToolTipText(color);
 		jPanelColor.setToolTipText(color);
-		jLabelFont.setText("Font:");
-		String font = "Chooses the font to be used for the coordinate labels.";
+		jLabelFont.setText(I18nUtils.localizedStringForKey("set_display_grid_font"));
+		String font = I18nUtils.localizedStringForKey("set_display_grid_font_tips");
 		jLabelFont.setToolTipText(font);
 		jButtonFont.setToolTipText(font);
 	}

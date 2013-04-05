@@ -55,7 +55,7 @@ public abstract class AbstractHttpMapSource implements HttpMapSource {
 	protected HttpMapSource.TileUpdate tileUpdate;
 	protected MapSpace mapSpace = MercatorPower2MapSpace.INSTANCE_256;
 	protected MapSourceLoaderInfo loaderInfo = null;
-
+	
 	public AbstractHttpMapSource(String name, int minZoom, int maxZoom, TileImageType tileType) {
 		this(name, minZoom, maxZoom, tileType, HttpMapSource.TileUpdate.None);
 	}
@@ -74,6 +74,11 @@ public abstract class AbstractHttpMapSource implements HttpMapSource {
 		this.maxZoom = Math.min(maxZoom, JMapViewer.MAX_ZOOM);
 		this.tileType = tileType;
 		this.tileUpdate = tileUpdate;
+	}
+	
+	public boolean ignoreContentMismatch()
+	{
+		return false;
 	}
 
 	public HttpURLConnection getTileUrlConnection(int zoom, int tilex, int tiley) throws IOException {

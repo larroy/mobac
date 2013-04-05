@@ -8,7 +8,7 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
@@ -20,7 +20,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -35,6 +37,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,6 +61,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
@@ -125,6 +129,7 @@ import mobac.program.model.SettingsWgsGrid;
 import mobac.program.model.TileImageParameters;
 import mobac.utilities.GBC;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 import org.apache.log4j.Level;
@@ -137,6 +142,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private static Logger log = Logger.getLogger(MainGUI.class);
 
 	private static Color labelBackgroundColor = new Color(0, 0, 0, 127);
+	private static Color checkboxBackgroundColor = new Color(0, 0, 0, 40);
 	private static Color labelForegroundColor = Color.WHITE;
 
 	private static MainGUI mainGUI = null;
@@ -151,7 +157,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	protected JMenuBar menuBar;
 	protected JMenu toolsMenu = null;
 
-	private JMenu bookmarkMenu = new JMenu("Bookmarks");
+	private JMenu bookmarkMenu = null;
 
 	public final PreviewMap previewMap = new PreviewMap();
 	public final JAtlasTree jAtlasTree = new JAtlasTree(previewMap);
@@ -194,6 +200,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	public static void createMainGui() {
 		if (mainGUI != null)
 			return;
+
 		mainGUI = new MainGUI();
 		mainGUI.setVisible(true);
 		log.trace("MainGUI now visible");
@@ -203,10 +210,42 @@ public class MainGUI extends JFrame implements MapEventListener {
 		return mainGUI;
 	}
 
+	// MP: get custom font
+	static Font sCustomFont = null;
+
+	public static Font customFont() {
+		if (sCustomFont == null) {
+			// force to use Chinese font
+			sCustomFont = new Font("宋体", 9, 13);
+		}
+		return sCustomFont;
+	}
+
+	// MP: update all UI components' default font to custom font
+	public static void setDefaultFontOfAllUIComponents(Font defaultFont) {
+		if (defaultFont != null) {
+			// register custom font to application，system font will return false
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(defaultFont);
+
+			// update all UI's font settings
+			javax.swing.plaf.FontUIResource fontRes = new javax.swing.plaf.FontUIResource(defaultFont);
+			Enumeration<Object> keys = UIManager.getDefaults().keys();
+			while (keys.hasMoreElements()) {
+				Object key = keys.nextElement();
+				Object value = UIManager.get(key);
+				if (value instanceof javax.swing.plaf.FontUIResource) {
+					UIManager.put(key, fontRes);
+				}
+			}
+		}
+	}
+
 	private MainGUI() {
 		super();
 		mainGUI = this;
 		setIconImages(MOBAC_ICONS);
+
 		GUIExceptionHandler.registerForCurrentThread();
 		setTitle(ProgramInfo.getCompleteTitle());
 
@@ -268,22 +307,23 @@ public class MainGUI extends JFrame implements MapEventListener {
 		zoomLevelText.setOpaque(true);
 		zoomLevelText.setBackground(labelBackgroundColor);
 		zoomLevelText.setForeground(labelForegroundColor);
-		zoomLevelText.setToolTipText("The current zoom level");
+		zoomLevelText.setToolTipText(I18nUtils.localizedStringForKey("map_ctrl_zoom_level_title_tips"));
 
 		// grid zoom combo
 		gridZoomCombo = new JComboBox();
 		gridZoomCombo.setEditable(false);
 		gridZoomCombo.addActionListener(new GridZoomComboListener());
-		gridZoomCombo.setToolTipText("Projects a grid of the specified zoom level over the map");
+		gridZoomCombo.setToolTipText(I18nUtils.localizedStringForKey("map_ctrl_zoom_grid_tips"));
 
 		SettingsWgsGrid s = Settings.getInstance().wgsGrid;
 
 		// WGS Grid label
-		wgsGridCheckBox = new JCheckBox(" WGS Grid: ", s.enabled);
+		wgsGridCheckBox = new JCheckBox(I18nUtils.localizedStringForKey("map_ctrl_wgs_grid_title"), s.enabled);
 		// wgsGridCheckBox.setOpaque(true);
-		wgsGridCheckBox.setBackground(labelBackgroundColor);
+		wgsGridCheckBox.setOpaque(true);
+		wgsGridCheckBox.setBackground(checkboxBackgroundColor);
 		wgsGridCheckBox.setForeground(labelForegroundColor);
-		wgsGridCheckBox.setToolTipText("Projects WGS Grid on map preview (not included in atlas)");
+		wgsGridCheckBox.setToolTipText(I18nUtils.localizedStringForKey("map_ctrl_wgs_grid_tips"));
 		wgsGridCheckBox.setMargin(new Insets(0, 0, 0, 0));
 		wgsGridCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -299,7 +339,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		wgsGridCombo.setMaximumRowCount(WgsDensity.values().length);
 		wgsGridCombo.setVisible(s.enabled);
 		wgsGridCombo.setSelectedItem(s.density);
-		wgsGridCombo.setToolTipText("Specifies density for WGS Grid");
+		wgsGridCombo.setToolTipText(I18nUtils.localizedStringForKey("map_ctrl_wgs_grid_density_tips"));
 		wgsGridCombo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WgsDensity d = (WgsDensity) wgsGridCombo.getSelectedItem();
@@ -312,23 +352,23 @@ public class MainGUI extends JFrame implements MapEventListener {
 		mapSourceCombo = new JComboBox(MapSourcesManager.getInstance().getEnabledOrderedMapSources());
 		mapSourceCombo.setMaximumRowCount(20);
 		mapSourceCombo.addActionListener(new MapSourceComboListener());
-		mapSourceCombo.setToolTipText("Select map source");
+		mapSourceCombo.setToolTipText(I18nUtils.localizedStringForKey("lp_map_source_combo_tips"));
 
 		// settings button
-		settingsButton = new JButton("Settings");
+		settingsButton = new JButton(I18nUtils.localizedStringForKey("lp_main_setting_button_title"));
 		settingsButton.addActionListener(new SettingsButtonListener());
-		settingsButton.setToolTipText("Open the preferences dialogue panel.");
+		settingsButton.setToolTipText(I18nUtils.localizedStringForKey("lp_main_setting_button_tips"));
 
 		// atlas name text field
 		atlasNameTextField = new JAtlasNameField();
 		atlasNameTextField.setColumns(12);
 		atlasNameTextField.setActionCommand("atlasNameTextField");
-		atlasNameTextField.setToolTipText("Enter a name for the atlas here");
+		atlasNameTextField.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_name_field_tips"));
 
-		// create atlas button
-		createAtlasButton = new JButton("Create atlas");
+		// main button
+		createAtlasButton = new JButton(I18nUtils.localizedStringForKey("lp_mian_create_btn_title"));
 		createAtlasButton.addActionListener(atlasCreateAction);
-		createAtlasButton.setToolTipText("Create the atlas");
+		createAtlasButton.setToolTipText(I18nUtils.localizedStringForKey("lp_main_create_btn_tips"));
 
 		// zoom level check boxes
 		zoomLevelPanel = new JPanel();
@@ -337,7 +377,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		// amount of tiles to download
 		amountOfTilesLabel = new JLabel();
-		amountOfTilesLabel.setToolTipText("Total amount of tiles to download");
+		amountOfTilesLabel.setToolTipText(I18nUtils.localizedStringForKey("lp_zoom_total_tile_count_tips"));
 		amountOfTilesLabel.setOpaque(true);
 		amountOfTilesLabel.setBackground(labelBackgroundColor);
 		amountOfTilesLabel.setForeground(labelForegroundColor);
@@ -351,72 +391,75 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 	private void prepareMenuBar() {
 		// Atlas menu
-		JMenu atlasMenu = new JMenu("Atlas");
+		JMenu atlasMenu = new JMenu(I18nUtils.localizedStringForKey("menu_atlas"));
 		atlasMenu.setMnemonic(KeyEvent.VK_A);
 
-		JMenuItem newAtlas = new JMenuItem("New Atlas");
+		JMenuItem newAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_new"));
 		newAtlas.setMnemonic(KeyEvent.VK_N);
 		newAtlas.addActionListener(new AtlasNew());
 		atlasMenu.add(newAtlas);
 
-		JMenuItem convertAtlas = new JMenuItem("Convert Atlas Format");
+		JMenuItem convertAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_convert_format"));
 		convertAtlas.setMnemonic(KeyEvent.VK_V);
 		convertAtlas.addActionListener(new AtlasConvert());
 		atlasMenu.add(convertAtlas);
 		atlasMenu.addSeparator();
 
-		JMenuItem createAtlas = new JMenuItem("Create Atlas");
+		JMenuItem createAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_create"));
 		createAtlas.setMnemonic(KeyEvent.VK_C);
 		createAtlas.addActionListener(atlasCreateAction);
 		atlasMenu.add(createAtlas);
 
 		// Maps menu
-		JMenu mapsMenu = new JMenu("Maps");
+		JMenu mapsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_maps"));
 		mapsMenu.setMnemonic(KeyEvent.VK_M);
-		JMenu selectionModeMenu = new JMenu("Selection Mode");
+		JMenu selectionModeMenu = new JMenu(I18nUtils.localizedStringForKey("menu_maps_selection"));
 		selectionModeMenu.setMnemonic(KeyEvent.VK_M);
 		mapsMenu.add(selectionModeMenu);
 
-		smRectangle = new JRadioButtonMenuItem("Rectangle");
+		smRectangle = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_rect"));
 		smRectangle.addActionListener(new SelectionModeRectangle());
 		smRectangle.setSelected(true);
 		selectionModeMenu.add(smRectangle);
 
-		smPolygon = new JRadioButtonMenuItem("Polygon");
+		smPolygon = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_polygon"));
 		smPolygon.addActionListener(new SelectionModePolygon());
 		selectionModeMenu.add(smPolygon);
 
-		smCircle = new JRadioButtonMenuItem("Circle");
+		smCircle = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_circle"));
 		smCircle.addActionListener(new SelectionModeCircle());
 		selectionModeMenu.add(smCircle);
 
-		JMenuItem addSelection = new JMenuItem("Add selection");
+		JMenuItem addSelection = new JMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_add"));
 		addSelection.addActionListener(AddMapLayer.INSTANCE);
 		addSelection.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		addSelection.setMnemonic(KeyEvent.VK_A);
 		mapsMenu.add(addSelection);
 
-		JMenuItem addGpxTrackSelection = new JMenuItem2("Add selection by GPX track", AddGpxTrackPolygonMap.class);
+		JMenuItem addGpxTrackSelection = new JMenuItem2(
+				I18nUtils.localizedStringForKey("menu_maps_selection_add_by_gpx"), AddGpxTrackPolygonMap.class);
 		mapsMenu.add(addGpxTrackSelection);
 
 		// Bookmarks menu
+		bookmarkMenu = new JMenu(I18nUtils.localizedStringForKey("menu_bookmark"));
 		bookmarkMenu.setMnemonic(KeyEvent.VK_B);
-		JMenuItem addBookmark = new JMenuItem("Save current view");
+		JMenuItem addBookmark = new JMenuItem(I18nUtils.localizedStringForKey("menu_bookmark_save"));
 		addBookmark.setMnemonic(KeyEvent.VK_S);
 		addBookmark.addActionListener(new BookmarkAdd(previewMap));
 		bookmarkMenu.add(addBookmark);
-		JMenuItem manageBookmarks = new JMenuItem2("Manage Bookmarks", BookmarkManage.class);
+		JMenuItem manageBookmarks = new JMenuItem2(I18nUtils.localizedStringForKey("menu_bookmark_manage"),
+				BookmarkManage.class);
 		manageBookmarks.setMnemonic(KeyEvent.VK_S);
 		bookmarkMenu.add(addBookmark);
 		bookmarkMenu.add(manageBookmarks);
 		bookmarkMenu.addSeparator();
 
 		// Panels menu
-		JMenu panelsMenu = new JMenu("Panels");
+		JMenu panelsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_panels"));
 		panelsMenu.setMnemonic(KeyEvent.VK_P);
-		JMenuItem showLeftPanel = new JMenuItem("Show/hide left panel");
+		JMenuItem showLeftPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_left_panel"));
 		showLeftPanel.addActionListener(new PanelShowHide(leftPanel));
-		JMenuItem showRightPanel = new JMenuItem("Show/hide GPX editor panel");
+		JMenuItem showRightPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_gpx_panel"));
 		showRightPanel.addActionListener(new PanelShowHide(rightPanel));
 		panelsMenu.add(showLeftPanel);
 		panelsMenu.add(showRightPanel);
@@ -426,31 +469,36 @@ public class MainGUI extends JFrame implements MapEventListener {
 		menuBar.add(bookmarkMenu);
 		menuBar.add(panelsMenu);
 
-		loadToolsMenu();
+		// MP: disbaled by Miocool, seems useless
+		// loadToolsMenu();
 
 		menuBar.add(Box.createHorizontalGlue());
 
 		// Debug menu
-		JMenu debugMenu = new JMenu("Debug");
-		JMenuItem mapGrid = new JCheckBoxMenuItem("Show/Hide map tile borders", false);
+		JMenu debugMenu = new JMenu(I18nUtils.localizedStringForKey("menu_debug"));
+		JMenuItem mapGrid = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("menu_debug_show_hide_tile_border"),
+				false);
 		mapGrid.addActionListener(new DebugShowMapTileGrid());
 		debugMenu.add(mapGrid);
 		debugMenu.addSeparator();
 
 		debugMenu.setMnemonic(KeyEvent.VK_D);
-		JMenuItem mapSourceNames = new JMenuItem2("Show all map source names", DebugShowMapSourceNames.class);
+		JMenuItem mapSourceNames = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_show_all_map_source"),
+				DebugShowMapSourceNames.class);
 		mapSourceNames.setMnemonic(KeyEvent.VK_N);
 		debugMenu.add(mapSourceNames);
 		debugMenu.addSeparator();
 
-		JMenuItem refreshCustomMapSources = new JMenuItem2("Refresh custom map sources", RefreshCustomMapsources.class);
+		JMenuItem refreshCustomMapSources = new JMenuItem2(
+				I18nUtils.localizedStringForKey("menu_debug_refresh_map_source"), RefreshCustomMapsources.class);
 		debugMenu.add(refreshCustomMapSources);
 		debugMenu.addSeparator();
-		JMenuItem showLog = new JMenuItem2("Show log file", DebugShowLogFile.class);
+		JMenuItem showLog = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_show_log_file"),
+				DebugShowLogFile.class);
 		showLog.setMnemonic(KeyEvent.VK_S);
 		debugMenu.add(showLog);
 
-		logLevelMenu = new JMenu("General log level");
+		logLevelMenu = new JMenu(I18nUtils.localizedStringForKey("menu_debug_log_level"));
 		logLevelMenu.setMnemonic(KeyEvent.VK_L);
 		Level[] list = new Level[] { Level.TRACE, Level.DEBUG, Level.INFO, Level.ERROR, Level.FATAL, Level.OFF };
 		ActionListener al = new DebugSetLogLevel();
@@ -464,17 +512,18 @@ public class MainGUI extends JFrame implements MapEventListener {
 		}
 		debugMenu.add(logLevelMenu);
 		debugMenu.addSeparator();
-		JMenuItem report = new JMenuItem2("Generate system report", DebugShowReport.class);
+		JMenuItem report = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_system_report"),
+				DebugShowReport.class);
 		report.setMnemonic(KeyEvent.VK_R);
 		debugMenu.add(report);
 		menuBar.add(debugMenu);
 
 		// Help menu
-		JMenu help = new JMenu("Help");
-		JMenuItem readme = new JMenuItem("Show Readme");
-		JMenuItem howToMap = new JMenuItem("How to use preview map");
-		JMenuItem licenses = new JMenuItem("Licenses");
-		JMenuItem about = new JMenuItem("About");
+		JMenu help = new JMenu(I18nUtils.localizedStringForKey("menu_help"));
+		JMenuItem readme = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_readme"));
+		JMenuItem howToMap = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_how_to_preview"));
+		JMenuItem licenses = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_licenses"));
+		JMenuItem about = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_about"));
 		readme.addActionListener(new ShowReadme());
 		about.addActionListener(new ShowAboutDialog());
 		howToMap.addActionListener(new ShowHelpAction());
@@ -492,7 +541,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	public void loadToolsMenu() {
 		if (ExternalToolsLoader.load()) {
 			if (toolsMenu == null) {
-				toolsMenu = new JMenu("Tools");
+				toolsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_tool"));
 				toolsMenu.addMenuListener(new MenuListener() {
 
 					public void menuSelected(MenuEvent e) {
@@ -522,17 +571,20 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		coordinatesPanel.addButtonActionListener(new ApplySelectionButtonListener());
 
-		JCollapsiblePanel mapSourcePanel = new JCollapsiblePanel("Map source", new GridBagLayout());
+		JCollapsiblePanel mapSourcePanel = new JCollapsiblePanel(
+				I18nUtils.localizedStringForKey("lp_map_source_title"), new GridBagLayout());
 		mapSourcePanel.addContent(mapSourceCombo, GBC.std().insets(2, 2, 2, 2).fill());
 
-		JCollapsiblePanel zoomLevelsPanel = new JCollapsiblePanel("Zoom Levels", new GridBagLayout());
+		JCollapsiblePanel zoomLevelsPanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_zoom_title"),
+				new GridBagLayout());
 		zoomLevelsPanel.addContent(zoomLevelPanel, GBC.eol().insets(2, 4, 2, 0));
 		zoomLevelsPanel.addContent(amountOfTilesLabel, GBC.std().anchor(GBC.WEST).insets(0, 5, 0, 2));
 
 		GBC gbc_std = GBC.std().insets(5, 2, 5, 3);
 		GBC gbc_eol = GBC.eol().insets(5, 2, 5, 3);
 
-		JCollapsiblePanel atlasContentPanel = new JCollapsiblePanel("Atlas Content", new GridBagLayout());
+		JCollapsiblePanel atlasContentPanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_atlas_title"),
+				new GridBagLayout());
 		JScrollPane treeScrollPane = new JScrollPane(jAtlasTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jAtlasTree.getTreeModel().addTreeModelListener(new AtlasModelListener(jAtlasTree, profilesPanel));
@@ -541,13 +593,13 @@ public class MainGUI extends JFrame implements MapEventListener {
 		treeScrollPane.setPreferredSize(new Dimension(100, 200));
 		treeScrollPane.setAutoscrolls(true);
 		atlasContentPanel.addContent(treeScrollPane, GBC.eol().fill().insets(0, 1, 0, 0));
-		JButton clearAtlas = new JButton("New");
+		JButton clearAtlas = new JButton(I18nUtils.localizedStringForKey("lp_atlas_new_btn_title"));
 		atlasContentPanel.addContent(clearAtlas, GBC.std());
 		clearAtlas.addActionListener(new AtlasNew());
-		JButton addLayers = new JButton("Add selection");
+		JButton addLayers = new JButton(I18nUtils.localizedStringForKey("lp_atlas_add_selection_btn_title"));
 		atlasContentPanel.addContent(addLayers, GBC.eol());
 		addLayers.addActionListener(AddMapLayer.INSTANCE);
-		atlasContentPanel.addContent(new JLabel("Name: "), gbc_std);
+		atlasContentPanel.addContent(new JLabel(I18nUtils.localizedStringForKey("lp_atlas_name_label_title")), gbc_std);
 		atlasContentPanel.addContent(atlasNameTextField, gbc_eol.fill(GBC.HORIZONTAL));
 
 		gbc_eol = GBC.eol().insets(5, 2, 5, 2).fill(GBC.HORIZONTAL);
@@ -590,7 +642,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		mapControlPanel.setOpaque(false);
 
 		// zoom label
-		JLabel zoomLabel = new JLabel(" Zoom: ");
+		JLabel zoomLabel = new JLabel(I18nUtils.localizedStringForKey("map_ctrl_zoom_level_title"));
 		zoomLabel.setOpaque(true);
 		zoomLabel.setBackground(labelBackgroundColor);
 		zoomLabel.setForeground(labelForegroundColor);
@@ -647,9 +699,15 @@ public class MainGUI extends JFrame implements MapEventListener {
 	}
 
 	private void loadSettings() {
-		if (Profile.DEFAULT.exists())
-			jAtlasTree.load(Profile.DEFAULT);
-		else
+		if (Profile.DEFAULT.exists()) {
+			try {
+				jAtlasTree.load(Profile.DEFAULT);
+			} catch (Exception e) {
+				log.error("Failed to load atlas",e);
+				GUIExceptionHandler.processException(e);
+				new AtlasNew().actionPerformed(null);
+			}
+		} else
 			new AtlasNew().actionPerformed(null);
 
 		Settings settings = Settings.getInstance();
@@ -738,17 +796,16 @@ public class MainGUI extends JFrame implements MapEventListener {
 			checkAndSaveSettings();
 		} catch (Exception e) {
 			GUIExceptionHandler.showExceptionDialog(e);
-			JOptionPane.showMessageDialog(null, "Error on writing program settings to \"settings.xml\"", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_settings_write_error"),
+					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	public void checkAndSaveSettings() throws JAXBException {
 		if (Settings.checkSettingsFileModified()) {
 			int x = JOptionPane.showConfirmDialog(this,
-					"The settings.xml files has been changed by another application.\n"
-							+ "Do you want to overwrite these changes?\n"
-							+ "All changes made by the other application will be lost!", "Overwrite changes?",
+					I18nUtils.localizedStringForKey("msg_setting_file_is_changed_by_other"),
+					I18nUtils.localizedStringForKey("msg_setting_file_is_changed_by_other_title"),
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (x != JOptionPane.YES_OPTION)
 				return;
@@ -800,7 +857,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 			@Override
 			public String toString() {
-				return "Grid disabled";
+				return I18nUtils.localizedStringForKey("map_ctrl_zoom_grid_disable");
 			}
 
 		});
@@ -984,7 +1041,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private void calculateNrOfTilesToDownload() {
 		MapSelection ms = getMapSelectionCoordinates();
 		String baseText;
-		baseText = " %s tiles ";
+		baseText = I18nUtils.localizedStringForKey("lp_zoom_total_tile_title");
 		if (ms == null || !ms.isAreaSelected()) {
 			amountOfTilesLabel.setText(String.format(baseText, "0"));
 			amountOfTilesLabel.setToolTipText("");
@@ -997,12 +1054,15 @@ public class MainGUI extends JFrame implements MapEventListener {
 				long totalNrOfTiles = 0;
 
 				StringBuilder hint = new StringBuilder(1024);
-				hint.append("Total amount of tiles to download:");
+				hint.append(I18nUtils.localizedStringForKey("lp_zoom_total_tile_hint_head"));
 				for (int i = 0; i < zoomLevels.length; i++) {
 					int zoom = zoomLevels[i];
 					long[] info = ms.calculateNrOfTilesEx(zoom);
 					totalNrOfTiles += info[0];
-					hint.append("<br>Level " + zoomLevels[i] + ": " + info[0] + " (" + info[1] + "*" + info[2] + ")");
+					hint.append(String.format(I18nUtils.localizedStringForKey("lp_zoom_total_tile_hint_row"),
+							zoomLevels[i], info[0], info[1], info[2]));
+					// hint.append("<br>Level " + zoomLevels[i] + ": " + info[0] + " (" + info[1] + "*" + info[2] +
+					// ")");
 				}
 				String hintText = "<html>" + hint.toString() + "</html>";
 				amountOfTilesLabel.setText(String.format(baseText, Long.toString(totalNrOfTiles)));

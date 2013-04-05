@@ -18,16 +18,17 @@ package mobac.gui.gpxtree;
 
 import mobac.data.gpx.gpx11.RteType;
 import mobac.gui.mapview.layer.GpxLayer;
+import mobac.utilities.I18nUtils;
 
 public class RteEntry extends GpxEntry {
 	private RteType rte;
-	
+
 	public RteEntry(RteType rte, GpxLayer layer) {
 		this.setRte(rte);
 		this.setLayer(layer);
 		this.setWaypointParent(true);
-	}	
-		
+	}
+
 	public String toString() {
 		String name = "";
 		try {
@@ -38,7 +39,7 @@ public class RteEntry extends GpxEntry {
 		if (name != null && !name.equals("")) {
 			return name;
 		} else {
-			return "unnamed route";
+			return I18nUtils.localizedStringForKey("rp_gpx_unname_route_name");
 		}
 	}
 
@@ -48,5 +49,5 @@ public class RteEntry extends GpxEntry {
 
 	public RteType getRte() {
 		return rte;
-	}		
+	}
 }

@@ -39,6 +39,7 @@ import mobac.program.model.EastNorthCoordinate;
 import mobac.program.model.MapSelection;
 import mobac.program.model.MercatorPixelCoordinate;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 
 /**
  * Encapsulates all interface components and code for the panel that shows the coordinates of the current selection and
@@ -48,7 +49,7 @@ public class JCoordinatesPanel extends JCollapsiblePanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String NAME = "Coordinates";
+	public static final String NAME = "Coordinates";//用于持久化
 
 	private JCoordinateField latMinTextField;
 	private JCoordinateField latMaxTextField;
@@ -59,7 +60,7 @@ public class JCoordinatesPanel extends JCollapsiblePanel {
 	private CoordinateStringFormat csf = CoordinateStringFormat.DEG_ENG;
 
 	public JCoordinatesPanel() {
-		super("Selection coordinates (min/max)", new GridBagLayout());
+		super(I18nUtils.localizedStringForKey("lp_coords_title"), new GridBagLayout());
 		setName(NAME);
 		// coordinates panel
 		latMaxTextField = new JCoordinateField(MapSelection.LAT_MIN, MapSelection.LAT_MAX);
@@ -71,12 +72,12 @@ public class JCoordinatesPanel extends JCollapsiblePanel {
 		latMinTextField = new JCoordinateField(MapSelection.LAT_MIN, MapSelection.LAT_MAX);
 		latMinTextField.setActionCommand("latMinTextField");
 
-		applySelectionButton = new JButton("Select entered coordinates");
+		applySelectionButton = new JButton(I18nUtils.localizedStringForKey("lp_coords_select_btn_title"));
 
-		JLabel latMaxLabel = new JLabel("N ", JLabel.CENTER);
-		JLabel lonMinLabel = new JLabel("W ", JLabel.CENTER);
-		JLabel lonMaxLabel = new JLabel("E ", JLabel.CENTER);
-		JLabel latMinLabel = new JLabel("S ", JLabel.CENTER);
+		JLabel latMaxLabel = new JLabel(I18nUtils.localizedStringForKey("lp_coords_label_N"), JLabel.CENTER);
+		JLabel lonMinLabel = new JLabel(I18nUtils.localizedStringForKey("lp_coords_label_W"), JLabel.CENTER);
+		JLabel lonMaxLabel = new JLabel(I18nUtils.localizedStringForKey("lp_coords_label_E"), JLabel.CENTER);
+		JLabel latMinLabel = new JLabel(I18nUtils.localizedStringForKey("lp_coords_label_S"), JLabel.CENTER);
 
 		JPanel northPanel = new JPanel(new BorderLayout());
 		JLayeredPane layeredPane = new FilledLayeredPane();
@@ -87,9 +88,9 @@ public class JCoordinatesPanel extends JCollapsiblePanel {
 
 		JPanel formatButtonPanel = new JPanel(null);
 		formatButtonPanel.setOpaque(false);
-		JDropDownButton formatButton = new JDropDownButton("Fmt");
+		JDropDownButton formatButton = new JDropDownButton(I18nUtils.localizedStringForKey("lp_coords_fmt_list_title"));
 		formatButton.setMargin(new Insets(0, 5, 0, 0));
-		formatButton.setBounds(2, 2, 50, 20);
+		formatButton.setBounds(2, 2, 55, 20);
 		formatButtonPanel.add(formatButton);
 		for (CoordinateStringFormat csf : CoordinateStringFormat.values())
 			formatButton.addDropDownItem(new JNumberFormatMenuItem(csf));
@@ -200,10 +201,11 @@ public class JCoordinatesPanel extends JCollapsiblePanel {
 
 	protected class JNumberFormatMenuItem extends JMenuItem implements ActionListener {
 
+		private static final long serialVersionUID = 1L;
 		private final CoordinateStringFormat csf;
 
 		public JNumberFormatMenuItem(CoordinateStringFormat csf) {
-			super(csf.getDisplayName());
+			super(csf.toString());
 			this.csf = csf;
 			addActionListener(this);
 		}

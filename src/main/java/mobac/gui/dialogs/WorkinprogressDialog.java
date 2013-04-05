@@ -33,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import mobac.program.tilestore.berkeleydb.DelayedInterruptThread;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 import org.apache.log4j.Logger;
@@ -56,7 +57,7 @@ public class WorkinprogressDialog extends JDialog implements WindowListener {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(owner);
 		addWindowListener(this);
-		JButton abort = new JButton("Abort");
+		JButton abort = new JButton(I18nUtils.localizedStringForKey("dlg_progress_about_btn"));
 		abort.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -136,14 +137,14 @@ public class WorkinprogressDialog extends JDialog implements WindowListener {
 		JFrame parentFrame = new JFrame();
 		parentFrame.setSize(500, 150);
 		final JLabel jl = new JLabel();
-		jl.setText("Count : 0");
+		jl.setText(I18nUtils.localizedStringForKey("dlg_progress_count"));
 
 		parentFrame.add(BorderLayout.CENTER, jl);
 		parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		parentFrame.setVisible(true);
 
-		final WorkinprogressDialog dlg = new WorkinprogressDialog(parentFrame, "Progress",
+		final WorkinprogressDialog dlg = new WorkinprogressDialog(parentFrame, I18nUtils.localizedStringForKey("dlg_progress_title"),
 				DelayedInterruptThread.createThreadFactory());
 
 		final Thread t = new Thread() {
@@ -152,7 +153,7 @@ public class WorkinprogressDialog extends JDialog implements WindowListener {
 			public void run() {
 				try {
 					for (int i = 0; i <= 500; i++) {
-						jl.setText("Count : " + i);
+						jl.setText(String.format(I18nUtils.localizedStringForKey("dlg_progress_count_i"),i));
 						if (Thread.currentThread().isInterrupted()) {
 							System.out.println("Aborted");
 							return;

@@ -41,6 +41,7 @@ import mobac.program.interfaces.MapInterface;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.interfaces.ToolTipProvider;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.MyMath;
 import mobac.utilities.Utilities;
 
@@ -224,14 +225,13 @@ public class Layer implements LayerInterface, TreeNode, ToolTipProvider, Capabil
 	public String getToolTip() {
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
-		sw.write("<b>Layer</b><br>");
-		sw.write("Map count: " + maps.size() + "<br>");
-		sw.write("Maximum tiles to download: " + calculateTilesToDownload() + "<br>");
-		sw.write(String.format("Area start: %s %s<br>", Utilities.prettyPrintLatLon(getMaxLat(), true),
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_layer_title"));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_layer_map_count"), maps.size()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"), calculateTilesToDownload()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_start"), Utilities.prettyPrintLatLon(getMaxLat(), true),
 				Utilities.prettyPrintLatLon(getMinLon(), false)));
-		sw.write(String.format("Area end: %s %s<br>", Utilities.prettyPrintLatLon(getMinLat(), true),
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_end"), Utilities.prettyPrintLatLon(getMinLat(), true),
 				Utilities.prettyPrintLatLon(getMaxLon(), false)));
-
 		sw.write("</html>");
 		return sw.toString();
 	}

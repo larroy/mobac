@@ -46,6 +46,7 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.jaxb.ColorAdapter;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.TileImageType;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 import org.apache.log4j.Logger;
@@ -94,16 +95,22 @@ public class CustomLocalTileZipMapSource implements FileBasedMapSource {
 	protected synchronized void openZipFile() {
 		for (File zipFile : zipFiles) {
 			if (!zipFile.isFile()) {
-				JOptionPane.showMessageDialog(null, "The specified sorce zip does not exist:\nMap name: " + name
-						+ "\nZip file: " + zipFile, "\nInvaild source zip", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, 
+						String.format(I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_zip_title"),
+								name, zipFile.toString()), 
+						I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_zip_title"), 
+						JOptionPane.ERROR_MESSAGE);
 			} else {
 				try {
 					Logging.LOG.debug("Opening zip file " + zipFile.getAbsolutePath());
 					zips.add(new ZipFile(zipFile));
 					Logging.LOG.debug("Zip file open completed");
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "The specified sorce zip can not be read:\nMap name: " + name
-							+ "\nZip file: " + zipFile, "\nError reading zip file", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, 
+							String.format(I18nUtils.localizedStringForKey("msg_custom_map_failed_open_source_zip"),
+									name, zipFile.toString()),
+							I18nUtils.localizedStringForKey("msg_custom_map_failed_open_source_zip_title"), 
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}

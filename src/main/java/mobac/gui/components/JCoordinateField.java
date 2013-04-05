@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.geo.CoordinateDms2Format;
 
@@ -37,8 +38,7 @@ public class JCoordinateField extends JTextField {
 
 	private static final Color ERROR_COLOR = new Color(255, 100, 100);
 
-	private static final String INVALID_TEXT = "<html>Invalid coordinate!<br>"
-			+ "Please enter a number between %s and %s</html>";
+	private static final String INVALID_TEXT = I18nUtils.localizedStringForKey("lp_coords_invalid_text");
 
 	private JCoordinateListener coordinateListener;
 	private boolean inputIsValid = true;

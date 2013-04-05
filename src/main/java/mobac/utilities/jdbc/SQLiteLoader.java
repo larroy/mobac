@@ -21,6 +21,8 @@ import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
+import mobac.utilities.I18nUtils;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -35,19 +37,20 @@ public class SQLiteLoader {
 	private static final String SQLITE_DRIVERNAME1 = "SQLite.JDBCDriver";
 	private static final String SQLITE_DRIVERNAME2 = "org.sqlite.JDBC";
 
-	public static final String MSG_SQLITE_MISSING = "Unable to find the SQLite libraries. "
-			+ "These are required for the currently selected atlas format.<br>Please read the README.HTM "
-			+ "section \"SQLite atlas formats\". ";
-
 	public static boolean loadSQLiteOrShowError() {
 		try {
 			SQLiteLoader.loadSQLite();
 			return true;
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "<html>" + MSG_SQLITE_MISSING + "</html>",
-					"Error - SQLite not available", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, SQLiteLoader.getMsgSqliteMissing(),
+					I18nUtils.localizedStringForKey("msg_environment_slqite_lib_missing_title"),
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
+	}
+
+	public static String getMsgSqliteMissing() {
+		return I18nUtils.localizedStringForKey("msg_environment_slqite_lib_missing");
 	}
 
 	public static synchronized void loadSQLite() throws SQLException {

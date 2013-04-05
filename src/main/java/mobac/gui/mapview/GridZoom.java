@@ -16,6 +16,8 @@
  ******************************************************************************/
 package mobac.gui.mapview;
 
+import mobac.utilities.I18nUtils;
+
 public class GridZoom {
 
 	private int zoom;
@@ -30,7 +32,7 @@ public class GridZoom {
 
 	@Override
 	public String toString() {
-		return "Grid zoom " + zoom;
+		return String.format(I18nUtils.localizedStringForKey("map_ctrl_zoom_grid_prefix_fmt"), zoom);
 	}
 
 	@Override

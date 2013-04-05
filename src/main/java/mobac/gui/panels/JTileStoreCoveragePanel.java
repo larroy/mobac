@@ -36,9 +36,13 @@ import mobac.mapsources.AbstractMultiLayerMapSource;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.MercatorPixelCoordinate;
 import mobac.utilities.GBC;
+import mobac.utilities.I18nUtils;
 
 public class JTileStoreCoveragePanel extends JCollapsiblePanel implements MapEventListener, ActionListener {
 
+	//MP-add
+	private static final long serialVersionUID = 1L;
+	
 	private JButton showCoverage;
 	private JButton hideCoverage;
 	private JComboBox layerSelector;
@@ -46,31 +50,27 @@ public class JTileStoreCoveragePanel extends JCollapsiblePanel implements MapEve
 	private PreviewMap mapViewer;
 
 	public JTileStoreCoveragePanel(PreviewMap mapViewer) {
-		super("Map source tile store coverage");
+		super(I18nUtils.localizedStringForKey("lp_tile_store_title"));
 		contentContainer.setLayout(new GridBagLayout());
 		this.mapViewer = mapViewer;
 
-		showCoverage = new JButton("Show coverage");
+		showCoverage = new JButton(I18nUtils.localizedStringForKey("lp_tile_store_show_coverage_btn_title"));
 		showCoverage.addActionListener(this);
-		showCoverage.setToolTipText("<html>Display tile store coverage for the current map "
-				+ "source,<br>the selected zoom level and the current visible map region.<br>"
-				+ "Green regions are present in the cache, gray regions are not covered.</html>");
-		hideCoverage = new JButton("Hide coverage");
+		showCoverage.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_store_show_coverage_btn_tips"));
+		hideCoverage = new JButton(I18nUtils.localizedStringForKey("lp_tile_store_hide_coverage_btn_title"));
 		hideCoverage.addActionListener(this);
 		hideCoverage.setEnabled(false);
 		zoomCombo = new JComboBox();
-		zoomCombo.setToolTipText("Select the zoom level you wish " + "to display tile store coverage");
-		titlePanel.setToolTipText("<html>Displays the regions for the curently "
-				+ "selected map source that has been <br> downloaded and "
-				+ "which are therefore offline available in the tile store (tile cache)</html>");
+		zoomCombo.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_store_zoom_combo_tips"));
+		titlePanel.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_store_title_tips"));
 		layerSelector = new JComboBox();
 
 		GBC gbc_eol = GBC.eol().insets(2, 2, 2, 2);
 		GBC gbc_std = GBC.std().insets(2, 2, 2, 2);
 
-		contentContainer.add(new JLabel("Zoom level: "), gbc_std);
+		contentContainer.add(new JLabel(I18nUtils.localizedStringForKey("lp_tile_store_zoom_title")), gbc_std);
 		contentContainer.add(zoomCombo, gbc_eol);
-		contentContainer.add(new JLabel("Layer: "), gbc_std);
+		contentContainer.add(new JLabel(I18nUtils.localizedStringForKey("lp_tile_store_layer_title")), gbc_std);
 		contentContainer.add(layerSelector, gbc_eol);
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		buttonPanel.add(showCoverage);

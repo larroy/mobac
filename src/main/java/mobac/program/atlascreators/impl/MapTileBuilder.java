@@ -209,9 +209,9 @@ public class MapTileBuilder {
 				try {
 					BufferedImage orgTileImage = loadOriginalMapTile(xTile, yTile);
 					if (orgTileImage != null) {
-						int w = orgTileImage.getWidth();
-						int h = orgTileImage.getHeight();
-						graphics.drawImage(orgTileImage, xTileOffset, yTileOffset, w, h, null);
+						//int w = orgTileImage.getWidth();
+						//int h = orgTileImage.getHeight();
+						graphics.drawImage(orgTileImage, xTileOffset, yTileOffset, tileSize, tileSize, null);
 					}
 				} catch (Exception e) {
 					log.error("Error while painting sub-tile", e);

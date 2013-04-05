@@ -160,10 +160,10 @@ public class TileDownLoader {
 
 		if (code != HttpURLConnection.HTTP_OK)
 			throw new DownloadFailedException(conn, code);
-
+		
 		checkContentType(conn, data);
 		checkContentLength(conn, data);
-
+		
 		String eTag = conn.getHeaderField("ETag");
 		long timeLastModified = conn.getLastModified();
 		long timeExpires = conn.getExpiration();
@@ -382,7 +382,8 @@ public class TileDownLoader {
 				if (log.isTraceEnabled() && contentType.startsWith("text/")) {
 					log.trace("Content (" + contentType + "): " + new String(data));
 				}
-				throw new UnrecoverableDownloadException("Content type of the loaded image is unknown: " + contentType);
+				throw new UnrecoverableDownloadException("Content type of the loaded image is unknown: " + contentType, 
+						UnrecoverableDownloadException.ERROR_CODE_CONTENT_TYPE);
 			}
 		}
 	}

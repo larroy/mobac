@@ -102,8 +102,9 @@ public class OSUtilities {
 					strCmd = new String[] { "/usr/bin/xdg-open", dirPath };
 					break;
 				default:
-					JOptionPane.showMessageDialog(null, "<html>Your environment is not supported.<br>Desktop: " + dt
-							+ "<br>Operating system: " + os + "</html>", "Unsupported environment",
+					JOptionPane.showMessageDialog(null,
+							String.format(I18nUtils.localizedStringForKey("msg_environment_not_support"), dt, os),
+							I18nUtils.localizedStringForKey("msg_environment_not_support_title"),
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -113,16 +114,17 @@ public class OSUtilities {
 			Runtime.getRuntime().exec(strCmd);
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder(512);
-			sb.append("<html><b>Failed to open atlas output directory.</b><br>");
+			sb.append(I18nUtils.localizedStringForKey("msg_environment_failed_open_output"));
 			sb.append(e.getMessage());
-			sb.append("<br>Used command: <tt>" + strCmd[0] + "</tt><br>");
+			sb.append(String.format(I18nUtils.localizedStringForKey("msg_environment_use_commond"), strCmd[0]));
 			for (int i = 1; i < strCmd.length; i++) {
-				sb.append("Parameter " + i + ": " + strCmd[i]);
+				sb.append(String.format(I18nUtils.localizedStringForKey("msg_environment_commond_param"), i, strCmd[i]));
 			}
 			sb.append("</html>");
 			String msg = sb.toString();
-			JOptionPane
-					.showMessageDialog(null, msg, "Failed to open atlas output directory", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, msg,
+					I18nUtils.localizedStringForKey("msg_environment_failed_open_output_title"),
+					JOptionPane.ERROR_MESSAGE);
 			log.error(msg, e);
 		}
 

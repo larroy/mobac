@@ -27,13 +27,16 @@ import javax.swing.JOptionPane;
 import mobac.gui.MainGUI;
 import mobac.program.DirectoryManager;
 import mobac.utilities.GUIExceptionHandler;
+import mobac.utilities.I18nUtils;
 
 public class ShowReadme implements ActionListener {
 
 	public void actionPerformed(ActionEvent event) {
 		File readme = new File(DirectoryManager.programDir, "README.HTM");
 		if (!readme.isFile()) {
-			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), "Unable to find README.HTM", "Error",
+			JOptionPane.showMessageDialog(MainGUI.getMainGUI(), 
+					I18nUtils.localizedStringForKey("msg_no_found_readme_file"), 
+					I18nUtils.localizedStringForKey("Error"),
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}

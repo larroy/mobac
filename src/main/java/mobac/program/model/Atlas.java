@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import mobac.program.interfaces.AtlasInterface;
 import mobac.program.interfaces.LayerInterface;
 import mobac.program.interfaces.ToolTipProvider;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 @XmlRootElement
@@ -43,7 +44,7 @@ public class Atlas implements AtlasInterface, ToolTipProvider, TreeNode {
 	@XmlAttribute
 	private int version = 0;
 
-	private String name = "Unnamed";
+	private String name = I18nUtils.localizedStringForKey("Unnamed");
 
 	@XmlElements({ @XmlElement(name = "Layer", type = Layer.class) })
 	private List<LayerInterface> layers = new LinkedList<LayerInterface>();
@@ -159,14 +160,14 @@ public class Atlas implements AtlasInterface, ToolTipProvider, TreeNode {
 	public String getToolTip() {
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
-		sw.write("<b>Atlas</b><br>");
-		sw.write("Name: " + name + "<br>");
-		sw.write("Layer count: " + layers.size() + "<br>");
-		sw.write("Atlas format: " + outputFormat + "<br>");
-		sw.write("Maximum tiles to download: " + calculateTilesToDownload() + "<br>");
-		sw.write(String.format("Area start: %s %s<br>", Utilities.prettyPrintLatLon(getMaxLat(), true),
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_title"));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_name"), name));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_layer"), layers.size()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_format"), outputFormat.toString()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"), calculateTilesToDownload()));
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_start"), Utilities.prettyPrintLatLon(getMaxLat(), true),
 				Utilities.prettyPrintLatLon(getMinLon(), false)));
-		sw.write(String.format("Area end: %s %s<br>", Utilities.prettyPrintLatLon(getMinLat(), true),
+		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_end"), Utilities.prettyPrintLatLon(getMinLat(), true),
 				Utilities.prettyPrintLatLon(getMaxLon(), false)));
 		sw.write("</html>");
 		return sw.toString();

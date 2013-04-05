@@ -43,6 +43,7 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.jaxb.ColorAdapter;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.TileImageType;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 import mobac.utilities.jdbc.SQLiteLoader;
 
@@ -136,14 +137,20 @@ public class CustomLocalTileSQliteMapSource implements FileBasedMapSource {
 
 	public void reinitialize() {
 		if (atlasType == null) {
-			JOptionPane.showMessageDialog(null, "No database  specified.\nMap name:" + name + "\nFilename: "
-					+ sourceFile, "Invaild source file", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, 
+					String.format(I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_file"), 
+							name, sourceFile), 
+					I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_file_title"), 
+					JOptionPane.ERROR_MESSAGE);
 			initialized = true;
 			return;
 		}
 		if (!sourceFile.isFile()) {
-			JOptionPane.showMessageDialog(null, "The specified source SQLite database does not exist:\nMap name: "
-					+ name + "\nFilename: " + sourceFile, "Invaild source file", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, 
+					String.format(I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_sqlitedb"),
+							name, sourceFile), 
+					I18nUtils.localizedStringForKey("msg_custom_map_invalid_source_file_title"),
+					JOptionPane.ERROR_MESSAGE);
 			initialized = true;
 			return;
 		}
@@ -156,8 +163,10 @@ public class CustomLocalTileSQliteMapSource implements FileBasedMapSource {
 		try {
 			conn = DriverManager.getConnection(url);
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "The specified source SQLite database could not be loaded:\nMap name: "
-					+ name + "\nFilename: " + sourceFile + "\nError: " + e.getMessage(), "Error loading database",
+			JOptionPane.showMessageDialog(null, 
+					String.format(I18nUtils.localizedStringForKey("msg_custom_map_source_failed_load_sqlitedb"),
+							name,sourceFile,e.getMessage()),
+					I18nUtils.localizedStringForKey("msg_custom_map_source_failed_load_sqlitedb_title"),
 					JOptionPane.ERROR_MESSAGE);
 			initialized = true;
 			return;
@@ -224,6 +233,8 @@ public class CustomLocalTileSQliteMapSource implements FileBasedMapSource {
 			switch (atlasType) {
 			case MBTiles:
 				y = (1 << zoom) - y - 1;
+				break;
+			default:
 				break;
 			}
 

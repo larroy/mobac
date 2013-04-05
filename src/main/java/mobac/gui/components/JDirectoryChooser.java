@@ -21,6 +21,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import mobac.utilities.I18nUtils;
+
 public class JDirectoryChooser extends JFileChooser {
 
 	private static final long serialVersionUID = -1954689476383812988L;
@@ -28,7 +30,7 @@ public class JDirectoryChooser extends JFileChooser {
 	public JDirectoryChooser() {
 		super();
 		setDialogType(CUSTOM_DIALOG);
-		setDialogTitle("Select Directory");
+		setDialogTitle(I18nUtils.localizedStringForKey("dlg_select_dir_title"));
 		//setApproveButtonText("Select Directory");
 		setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		setAcceptAllFileFilterUsed(false);
@@ -41,7 +43,7 @@ public class JDirectoryChooser extends JFileChooser {
 
 			@Override
 			public String getDescription() {
-				return "Directories";
+				return I18nUtils.localizedStringForKey("dlg_select_dir_description");
 			}
 		});
 	}

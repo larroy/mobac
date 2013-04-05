@@ -16,9 +16,12 @@
  ******************************************************************************/
 package mobac.program.model;
 
+import mobac.utilities.I18nUtils;
+
 public enum UnitSystem {
 
-	Metric(6367.5d, 1000, 2.54d, "km", "m", "cm"), Imperial(3963.192d, 5280, 1d, "mi", "ft", "in");
+	Metric(6367.5d, 1000, 2.54d, "km", "m", "cm"), //
+	Imperial(3963.192d, 5280, 1d, "mi", "ft", "in");
 
 	/**
 	 * Points per inch, default value for PDF format.
@@ -74,6 +77,14 @@ public enum UnitSystem {
 
 	public double pixelsToUnits(double pixels, int dpi) {
 		return inchesToUnits(pixels / dpi);
+	}
+
+	public String toString() {
+		if (Metric.equals(this)) {
+			return I18nUtils.localizedStringForKey("set_display_unit_system_metric");
+		} else {
+			return I18nUtils.localizedStringForKey("set_display_unit_system_imperial");
+		}
 	}
 
 }

@@ -39,6 +39,7 @@ import mobac.program.model.EastNorthCoordinate;
 import mobac.program.model.MapSelection;
 import mobac.program.model.MercatorPixelCoordinate;
 import mobac.program.model.Settings;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.MyMath;
 
 import org.apache.log4j.Logger;
@@ -198,7 +199,7 @@ public class PreviewMap extends JMapViewer {
 	protected void paintComponent(Graphics graphics) {
 		if (!isEnabled()) {
 			graphics.setFont(LOADING_FONT);
-			graphics.drawString("Please wait - loading map data", 100, 100);
+			graphics.drawString(I18nUtils.localizedStringForKey("map_loading_wait"), 100, 100);
 			return;
 		}
 		if (mapSource == null)

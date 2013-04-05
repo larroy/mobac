@@ -18,16 +18,17 @@ package mobac.gui.gpxtree;
 
 import mobac.data.gpx.gpx11.TrkType;
 import mobac.gui.mapview.layer.GpxLayer;
+import mobac.utilities.I18nUtils;
 
 public class TrkEntry extends GpxEntry {
 	private TrkType trk;
-	
+
 	public TrkEntry(TrkType trk, GpxLayer layer) {
 		this.trk = trk;
 		this.setLayer(layer);
 		this.setWaypointParent(false);
-	}	
-	
+	}
+
 	public String toString() {
 		String name = "";
 		try {
@@ -38,11 +39,11 @@ public class TrkEntry extends GpxEntry {
 		if (name != null && !name.equals("")) {
 			return name;
 		} else {
-			return "unnamed track";
+			return I18nUtils.localizedStringForKey("rp_gpx_unname_track_name");
 		}
 	}
 
 	public TrkType getTrk() {
 		return trk;
-	}		
+	}
 }

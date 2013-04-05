@@ -28,6 +28,7 @@ import mobac.program.DirectoryManager;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.Settings;
 import mobac.program.tilestore.berkeleydb.BerkeleyDbTileStore;
+import mobac.utilities.I18nUtils;
 
 import org.apache.log4j.Logger;
 
@@ -45,12 +46,9 @@ public abstract class TileStore {
 		try {
 			INSTANCE = new BerkeleyDbTileStore();
 		} catch (TileStoreException e) {
-			String errMsg = "Multiple instances of Mobile Atlas Creator are trying "
-					+ "to access the same tile store.\n"
-					+ "The tile store can only be used by used by one instance at a time.\n"
-					+ "Please close the other instance and try again.";
-			JOptionPane.showMessageDialog(null, errMsg, "Multiple instances of Mobile " + "Atlas Creator running",
-					JOptionPane.ERROR_MESSAGE);
+			String errMsg = I18nUtils.localizedStringForKey("msg_tile_store_access_confilct");
+			JOptionPane.showMessageDialog(null, errMsg,
+					I18nUtils.localizedStringForKey("msg_tile_store_access_confilct_title"), JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}

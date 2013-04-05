@@ -19,6 +19,8 @@ package mobac;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import mobac.utilities.I18nUtils;
+
 /**
  * Main class for starting Mobile Atlas Creator.
  * 
@@ -44,7 +46,8 @@ public class StartMOBAC {
 			Class.forName(MAIN_CLASS).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Unable to start Mobile Atlas Creator: " + e.getMessage(), "Error",
+			JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_environment_unable_to_start") + e.getMessage(), 
+					I18nUtils.localizedStringForKey("Error"),
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -54,6 +57,7 @@ public class StartMOBAC {
 			if (System.getProperty("swing.defaultlaf") != null)
 				return;
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//MainGUI.setDefaultFontOfAllUIComponents(MainGUI.customFont());
 		} catch (Exception e) {
 		}
 	}
@@ -74,10 +78,8 @@ public class StartMOBAC {
 		// 1.5 -> 1005; 1.6 -> 1006; 1.7 -> 1007
 		if (version < 1006) {
 			JOptionPane.showMessageDialog(null,
-					"The used Java Runtime Environment does not meet the minimum requirements.\n"
-							+ "Mobile Atlas Creator requires at least Java 6 (1.6) or higher.\n"
-							+ "Please update your Java Runtime before starting Mobile Atlas Creator.\n\n"
-							+ "Detected Java Runtime Version: " + ver, "Java Runtime version problem detected",
+					String.format(I18nUtils.localizedStringForKey("msg_environment_jre_bellow"), ver), 
+					I18nUtils.localizedStringForKey("msg_environment_jre_bellow_title"),
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}

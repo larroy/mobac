@@ -18,22 +18,23 @@ package mobac.gui.gpxtree;
 
 import mobac.data.gpx.gpx11.TrksegType;
 import mobac.gui.mapview.layer.GpxLayer;
+import mobac.utilities.I18nUtils;
 
 public class TrksegEntry extends GpxEntry {
 	private TrksegType trkseg;
 	private String name;
-	
+
 	public TrksegEntry(TrksegType trkseg, int segnum, GpxLayer layer) {
 		this.trkseg = trkseg;
-		this.name = "segment " + Integer.toString(segnum);
+		this.name = String.format(I18nUtils.localizedStringForKey("rp_gpx_node_seg_name"), Integer.toString(segnum));
 		this.setLayer(layer);
 		this.setWaypointParent(true);
-	}	
-	
+	}
+
 	public String toString() {
 		return name;
-	}		
-	
+	}
+
 	public TrksegType getTrkSeg() {
 		return trkseg;
 	}

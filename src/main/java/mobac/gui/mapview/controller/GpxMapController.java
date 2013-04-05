@@ -33,6 +33,7 @@ import mobac.gui.gpxtree.TrksegEntry;
 import mobac.gui.mapview.PreviewMap;
 import mobac.gui.panels.JGpxPanel;
 import mobac.program.interfaces.MapSpace;
+import mobac.utilities.I18nUtils;
 
 /**
  * Allows to create new GPX way-points by clicking on the preview map
@@ -63,7 +64,7 @@ public class GpxMapController extends JMapController implements MouseListener {
 				return; // outside of world region
 			double lon = mapSpace.cXToLon(p.x, map.getZoom());
 			double lat = mapSpace.cYToLat(p.y, map.getZoom());
-			String name = JOptionPane.showInputDialog(null, "Plase input a name for the new point:");
+			String name = JOptionPane.showInputDialog(null, I18nUtils.localizedStringForKey("dlg_gpx_inpu_point_name"));
 			if (name == null)
 				return;
 			Gpx gpx11 = (Gpx) gpx;

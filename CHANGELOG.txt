@@ -9,6 +9,7 @@
  ~ = Changes   since previous version
  - = Features that has been removed
 
+=======
 1.9.12 (2013-03-??)
  ! Mapsource OpenStreetMap Maps4u.eu updated
  ~ Reduced the number of decimal places of coordinates in GPX files created by 
@@ -18,6 +19,16 @@
     element
  ! Bufix of conversion between different coordinate formats (degree, deg/min, 
     deg/min/sec)
+ ! Bug fix of Null Pointer Exception. 
+ ~ localImageFile support using <retinaDisplay>
+ ~ More atlas format support retina (scale = 2) images, including Paper(PNG), 
+    Paper(pdf). 
+ ! More atlas format can display retina (scale = 2) images correctly 
+    (convert to scale = 1), such as iPhone v5  
+ + Add <localImageFile> map source support
+ ! Bug fix of 512x512 map tile images in Multiple layer
+ + Multiple language for Simplify-Chinese, Traditional Chinese and English
+ + View 512x512 map tile images for retina display 
 
 1.9.11 (2013-02-19)
  ! Bugfix for servers that send case insensitive content-types
