@@ -57,6 +57,7 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 	private static int threadNum = 0;
 
 	private File customAtlasDir = null;
+	private boolean quitMobacAfterAtlasCreation = false;
 
 	private DownloadJobProducerThread djp = null;
 	private JobDispatcher downloadJobDispatcher;
@@ -111,11 +112,15 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 
 	public void run() {
 		GUIExceptionHandler.registerForCurrentThread();
-		log.info("Starting altas creation");
+		log.info("Starting creation of " + atlas.getOutputFormat() + " atlas \"" + atlas.getName() + "\"");
+		if (customAtlasDir != null)
+			log.debug("Target directory: " + customAtlasDir);
 		ap.setDownloadControlerListener(this);
 		try {
 			createAtlas();
 			log.info("Altas creation finished");
+			if (quitMobacAfterAtlasCreation)
+				System.exit(0);
 		} catch (OutOfMemoryError e) {
 			System.gc();
 			SwingUtilities.invokeLater(new Runnable() {
@@ -144,6 +149,13 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 			GUIExceptionHandler.showExceptionDialog(e);
 		}
 		System.gc();
+		if (quitMobacAfterAtlasCreation) {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+			}
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -435,6 +447,10 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 
 	public void setCustomAtlasDir(File customAtlasDir) {
 		this.customAtlasDir = customAtlasDir;
+	}
+
+	public void setQuitMobacAfterAtlasCreation(boolean quitMobacAfterAtlasCreation) {
+		this.quitMobacAfterAtlasCreation = quitMobacAfterAtlasCreation;
 	}
 
 }

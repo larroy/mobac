@@ -69,6 +69,7 @@ public class CreateAtlas implements CommandLineAction {
 			AtlasThread atlasThread = new AtlasThread(atlas);
 			if (outputDir != null)
 				atlasThread.setCustomAtlasDir(outputDir);
+			atlasThread.setQuitMobacAfterAtlasCreation(true);
 			atlasThread.start();
 		} catch (Exception e) {
 			GUIExceptionHandler.processException(e);
