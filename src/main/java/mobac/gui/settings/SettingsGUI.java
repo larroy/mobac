@@ -102,8 +102,12 @@ public class SettingsGUI extends JDialog {
 	private static final long MBIT1 = 1000000 / 8;
 
 	private enum Bandwidth {
-		UNLIMUTED(I18nUtils.localizedStringForKey("set_net_bandwidth_unlimited"), 0), MBit1("1 MBit", MBIT1), MBit5("5 MBit", MBIT1 * 5), MBit10("10 MBit", MBIT1 * 10), MBit15(
-				"15 MBit", MBIT1 * 15), MBit20("20 MBit", MBIT1 * 20);
+		UNLIMITED(I18nUtils.localizedStringForKey("set_net_bandwidth_unlimited"), 0), //
+		MBit1("1 MBit", MBIT1), //
+		MBit5("5 MBit", MBIT1 * 5), //
+		MBit10("10 MBit", MBIT1 * 10), //
+		MBit15("15 MBit", MBIT1 * 15), //
+		MBit20("20 MBit", MBIT1 * 20);
 
 		public final long limit;
 		public final String description;
@@ -118,51 +122,41 @@ public class SettingsGUI extends JDialog {
 			return description;
 		}
 	};
-	
+
 	private enum SupportLocale {
-		SupportLocaleEn(new Locale("en")), //default
-		SupportLocaleZhCN(new Locale("zh", "CN")),
+		SupportLocaleEn(new Locale("en")), // default
+		SupportLocaleZhCN(new Locale("zh", "CN")), //
 		SupportLocaleZhTW(new Locale("zh", "TW"));
 
 		Locale locale;
 
-		private SupportLocale(Locale locale)
-		{
+		private SupportLocale(Locale locale) {
 			this.locale = locale;
 		}
-		
-		public static SupportLocale localeOf(String lang, String contry)
-		{
-			for(SupportLocale l : SupportLocale.values())
-			{
-				System.out.printf("%s", l.toString());
-				System.out.printf("%s, %s, %d", l.locale.getLanguage(), lang, (l.locale.getLanguage() == lang)? 1: 0);
-				System.out.printf("%s, %s, %d", l.locale.getCountry(), contry, (l.locale.getCountry() == contry)? 1: 0);
-				if(l.locale.getLanguage().equals(lang) &&
-					l.locale.getCountry().equals(contry))
-				{
+
+		public static SupportLocale localeOf(String lang, String contry) {
+			for (SupportLocale l : SupportLocale.values()) {
+				SettingsGUI.log.trace(l.toString());
+				SettingsGUI.log.trace(String.format("%s, %s, %d", l.locale.getLanguage(), lang,
+						(l.locale.getLanguage() == lang) ? 1 : 0));
+				SettingsGUI.log.trace(String.format("%s, %s, %d", l.locale.getCountry(), contry,
+						(l.locale.getCountry() == contry) ? 1 : 0));
+				if (l.locale.getLanguage().equals(lang) && l.locale.getCountry().equals(contry)) {
 					return l;
 				}
 			}
 			return SupportLocaleEn;
 		}
-		
+
 		@Override
 		public String toString() {
-			if(this == SupportLocaleEn)
-			{
+			if (this == SupportLocaleEn) {
 				return "English";
-			}
-			else if(this == SupportLocaleZhCN)
-			{
+			} else if (this == SupportLocaleZhCN) {
 				return "简体中文";
-			}
-			else if(this == SupportLocaleZhTW)
-			{
+			} else if (this == SupportLocaleZhTW) {
 				return "繁體中文";
-			}
-			else
-			{
+			} else {
 				return I18nUtils.localizedStringForKey("Undefined");
 			}
 		}
@@ -171,7 +165,7 @@ public class SettingsGUI extends JDialog {
 	private final Settings settings = Settings.getInstance();
 
 	private JComboBox unitSystem;
-	
+
 	private JComboBox languageCombo;
 
 	private JButton mapSourcesOnlineUpdate;
@@ -184,7 +178,7 @@ public class SettingsGUI extends JDialog {
 	private JTimeSlider maxExpirationTime;
 
 	private JMapSizeCombo mapSize;
-	
+
 	private JSpinner mapOverlapTiles;
 
 	private JTextField atlasOutputDirectory;
@@ -292,54 +286,62 @@ public class SettingsGUI extends JDialog {
 		tab.setLayout(new GridBagLayout());
 
 		JPanel unitSystemPanel = new JPanel(new GridBagLayout());
-		unitSystemPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_display_unit_system_title")));
-		
-		//Language Panel
+		unitSystemPanel
+				.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_display_unit_system_title")));
+
+		// Language Panel
 		JPanel languagePanel = new JPanel(new GridBagLayout());
 		languagePanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_display_language")));
-		languageCombo= new JComboBox(SupportLocale.values());
+		languageCombo = new JComboBox(SupportLocale.values());
 		languageCombo.setToolTipText(I18nUtils.localizedStringForKey("set_display_language_choose_tips"));
 		languageCombo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				Locale locale = ((SupportLocale)languageCombo.getSelectedItem()).locale;
+
+				Locale locale = ((SupportLocale) languageCombo.getSelectedItem()).locale;
 				String currentLocaleStr = "" + settings.localeLanguage + settings.localeCountry;
 				String LocaleStr = "" + locale.getLanguage() + locale.getCountry();
-				if(!currentLocaleStr.equals(LocaleStr) && isVisible())
-				{
+				if (!currentLocaleStr.equals(LocaleStr) && isVisible()) {
 					settings.localeLanguage = locale.getLanguage();
 					settings.localeCountry = locale.getCountry();
+
+					int result = JOptionPane.showConfirmDialog(null,
+							I18nUtils.localizedStringForKey("set_display_language_restart_desc"),
+							I18nUtils.localizedStringForKey("set_display_language_msg_title"),
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					I18nUtils.updateLocalizedStringFormSettings();
-					
-					int result = JOptionPane.showConfirmDialog(null, 
-							I18nUtils.localizedStringForKey("set_display_language_restart_desc"), 
-							I18nUtils.localizedStringForKey("set_display_language_msg_title"), 
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
 					if (result == JOptionPane.YES_OPTION) {
 						applySettings();
-						
-						try{
-							final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-							final File currentJar = new File(SettingsGUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-	
+
+						try {
+							final String javaBin = System.getProperty("java.home") + File.separator + "bin"
+									+ File.separator + "java";
+							final File currentJar = new File(SettingsGUI.class.getProtectionDomain().getCodeSource()
+									.getLocation().toURI());
+
 							/* is it a jar file? */
-							if(currentJar.getName().endsWith(".jar"))
-							{
+							if (currentJar.getName().endsWith(".jar")) {
 								/* Build command: java -jar application.jar */
+
+								Runtime r = Runtime.getRuntime();
+								long maxMem = r.maxMemory();
 								final ArrayList<String> command = new ArrayList<String>();
 								command.add(javaBin);
 								command.add("-jar");
 								command.add("-Xms64m");
-								command.add("-Xmx1024M");
+								if ((Long.MAX_VALUE == maxMem)) {
+									command.add("-Xmx1024M");
+								} else {
+									command.add("-Xmx" + (maxMem / 1048576) + "M");
+								}
 								command.add(currentJar.getPath());
-	
+
+								log.debug("restarting MOBAC using the following command: \n\t"
+										+ Arrays.toString(command.toArray()));
 								final ProcessBuilder builder = new ProcessBuilder(command);
 								builder.start();
 							}
-						}catch(Exception ex)
-						{
-							
+						} catch (Exception ex) {
+
 						}
 						System.exit(0);
 					}
@@ -353,12 +355,13 @@ public class SettingsGUI extends JDialog {
 
 		UnitSystem[] us = UnitSystem.values();
 		unitSystem = new JComboBox(us);
-		unitSystemPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_display_unit_system_scale_bar")), GBC.std());
+		unitSystemPanel
+				.add(new JLabel(I18nUtils.localizedStringForKey("set_display_unit_system_scale_bar")), GBC.std());
 		unitSystemPanel.add(unitSystem, GBC.std());
 		unitSystemPanel.add(Box.createHorizontalGlue(), GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(unitSystemPanel, GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(display, GBC.eol().fill(GBC.HORIZONTAL));
-		tab.add(languagePanel,GBC.eol().fill(GBC.HORIZONTAL));
+		tab.add(languagePanel, GBC.eol().fill(GBC.HORIZONTAL));
 		tab.add(Box.createVerticalGlue(), GBC.std().fill(GBC.VERTICAL));
 	}
 
@@ -379,10 +382,12 @@ public class SettingsGUI extends JDialog {
 
 		osmHikingTicket = new JTextField(20);
 
-		osmHikingPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_purchased")), GBC.std());
+		osmHikingPanel.add(new JLabel(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_purchased")),
+				GBC.std());
 		osmHikingPanel.add(osmHikingTicket, GBC.std().insets(2, 0, 10, 0));
 		JLabel osmHikingTicketUrl = new JLabel(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_howto"));
-		osmHikingTicketUrl.addMouseListener(new OpenInWebbrowser(I18nUtils.localizedStringForKey("set_mapsrc_config_osmhiking_howto_url")));
+		osmHikingTicketUrl.addMouseListener(new OpenInWebbrowser(I18nUtils
+				.localizedStringForKey("set_mapsrc_config_osmhiking_howto_url")));
 		osmHikingPanel.add(osmHikingTicketUrl, GBC.eol());
 
 		tab.add(updatePanel, GBC.eol().fill(GBC.HORIZONTAL));
@@ -533,7 +538,8 @@ public class SettingsGUI extends JDialog {
 		defaultExpirationPanel.setBorder(createSectionBorder(""));
 		defaultExpirationTime = new JTimeSlider();
 		defaultExpirationTime.addChangeListener(sliderChangeListener);
-		JLabel descr = new JLabel(I18nUtils.localizedStringForKey("set_tile_update_default_expiration_desc"), JLabel.CENTER);
+		JLabel descr = new JLabel(I18nUtils.localizedStringForKey("set_tile_update_default_expiration_desc"),
+				JLabel.CENTER);
 
 		defaultExpirationPanel.add(descr, gbc_ef);
 		defaultExpirationPanel.add(defaultExpirationTime, gbc_ef);
@@ -575,10 +581,10 @@ public class SettingsGUI extends JDialog {
 		JLabel mapSizeLabel = new JLabel(I18nUtils.localizedStringForKey("set_map_size_max_size_of_rect"));
 		JLabel mapSizeText = new JLabel(I18nUtils.localizedStringForKey("set_map_size_desc"));
 
-		mapOverlapTiles = new JSpinner(new SpinnerNumberModel(0,0,5,1));
+		mapOverlapTiles = new JSpinner(new SpinnerNumberModel(0, 0, 5, 1));
 
 		JLabel mapOverlapTilesLabel = new JLabel(I18nUtils.localizedStringForKey("set_map_size_overlap_tiles"));
-		
+
 		JPanel leftPanel = new JPanel(new GridBagLayout());
 		leftPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_map_size_settings")));
 
@@ -601,15 +607,15 @@ public class SettingsGUI extends JDialog {
 		atlasOutputDirPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_directory_output")));
 
 		atlasOutputDirectory = new JTextField();
-		atlasOutputDirectory.setToolTipText(
-				String.format(I18nUtils.localizedStringForKey("set_directory_output_tips"), settings.getAtlasOutputDirectory()));
+		atlasOutputDirectory.setToolTipText(String.format(I18nUtils.localizedStringForKey("set_directory_output_tips"),
+				settings.getAtlasOutputDirectory()));
 		JButton selectAtlasOutputDirectory = new JButton(I18nUtils.localizedStringForKey("set_directory_output_select"));
 		selectAtlasOutputDirectory.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				JDirectoryChooser dc = new JDirectoryChooser();
 				dc.setCurrentDirectory(settings.getAtlasOutputDirectory());
-				if (dc.showDialog(SettingsGUI.this, 
+				if (dc.showDialog(SettingsGUI.this,
 						I18nUtils.localizedStringForKey("set_directory_output_select_dlg_title")) != JFileChooser.APPROVE_OPTION)
 					return;
 				atlasOutputDirectory.setText(dc.getSelectedFile().getAbsolutePath());
@@ -632,8 +638,8 @@ public class SettingsGUI extends JDialog {
 		threadCount = new JComboBox(THREADCOUNT_LIST);
 		threadCount.setMaximumRowCount(THREADCOUNT_LIST.length);
 		panel.add(threadCount, GBC.std().insets(5, 5, 5, 5).anchor(GBC.EAST));
-		panel.add(new JLabel(I18nUtils.localizedStringForKey("set_net_connection_desc")),
-				GBC.eol().fill(GBC.HORIZONTAL));
+		panel.add(new JLabel(I18nUtils.localizedStringForKey("set_net_connection_desc")), GBC.eol()
+				.fill(GBC.HORIZONTAL));
 
 		bandwidth = new JComboBox(Bandwidth.values());
 		bandwidth.setMaximumRowCount(bandwidth.getItemCount());
@@ -699,7 +705,8 @@ public class SettingsGUI extends JDialog {
 
 		backGround.add(panel, GBC.eol().fillH());
 
-		ignoreDlErrors = new JCheckBox(I18nUtils.localizedStringForKey("set_net_default_ignore_error"), settings.ignoreDlErrors);
+		ignoreDlErrors = new JCheckBox(I18nUtils.localizedStringForKey("set_net_default_ignore_error"),
+				settings.ignoreDlErrors);
 		JPanel jPanel = new JPanel(new GridBagLayout());
 		jPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_net_default")));
 		jPanel.add(ignoreDlErrors, GBC.std());
@@ -719,14 +726,14 @@ public class SettingsGUI extends JDialog {
 		buttonPanel.add(cancelButton, gbc);
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
-	
+
 	private void loadSettings() {
 		Settings s = settings;
-		
+
 		unitSystem.setSelectedItem(s.unitSystem);
 		tileStoreTab.tileStoreEnabled.setSelected(s.tileStoreEnabled);
-		
-		//language
+
+		// language
 		languageCombo.setSelectedItem(SupportLocale.localeOf(s.localeLanguage, s.localeCountry));
 
 		mapSize.setValue(s.maxMapSize);
@@ -778,7 +785,7 @@ public class SettingsGUI extends JDialog {
 		s.maxMapSize = mapSize.getValue();
 		s.mapOverlapTiles = (Integer) mapOverlapTiles.getValue();
 
-		Locale locale = ((SupportLocale)languageCombo.getSelectedItem()).locale;
+		Locale locale = ((SupportLocale) languageCombo.getSelectedItem()).locale;
 		s.localeLanguage = locale.getLanguage();
 		s.localeCountry = locale.getCountry();
 
@@ -823,9 +830,9 @@ public class SettingsGUI extends JDialog {
 			MainGUI.getMainGUI().checkAndSaveSettings();
 		} catch (Exception e) {
 			log.error("Error saving settings to file", e);
-			JOptionPane.showMessageDialog(null, 
-					String.format(I18nUtils.localizedStringForKey("set_error_saving_msg"),e.getClass().getSimpleName()), 
-					I18nUtils.localizedStringForKey("set_error_saving_title"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, String.format(I18nUtils.localizedStringForKey("set_error_saving_msg"),
+					e.getClass().getSimpleName()), I18nUtils.localizedStringForKey("set_error_saving_title"),
+					JOptionPane.ERROR_MESSAGE);
 		}
 
 		MainGUI.getMainGUI().previewMap.repaint();
@@ -854,8 +861,8 @@ public class SettingsGUI extends JDialog {
 				if (tabbedPane.getSelectedComponent() == null)
 					return;
 				// First time the tile store tab is selected start updating the tile store information
-				if(tabbedPane.getSelectedComponent() == tileStoreTab){
-				//if ("Tile store".equals(tabbedPane.getSelectedComponent().getName())) {
+				if (tabbedPane.getSelectedComponent() == tileStoreTab) {
+					// if ("Tile store".equals(tabbedPane.getSelectedComponent().getName())) {
 					tabbedPane.removeChangeListener(this);
 					tileStoreTab.updateTileStoreInfoPanelAsync(null);
 				}
@@ -916,24 +923,24 @@ public class SettingsGUI extends JDialog {
 				switch (result) {
 				case -1:
 					JOptionPane.showMessageDialog(SettingsGUI.this,
-							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_outdate"), 
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_outdate"),
 							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_no_update"),
 							JOptionPane.ERROR_MESSAGE);
 					break;
 				case 0:
-					JOptionPane.showMessageDialog(SettingsGUI.this, 
+					JOptionPane.showMessageDialog(SettingsGUI.this,
 							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_noneed"),
-							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_no_update"), 
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_no_update"),
 							JOptionPane.INFORMATION_MESSAGE);
 					break;
 				default:
-					JOptionPane.showMessageDialog(SettingsGUI.this, 
-							String.format(I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_done"), result),
-							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_done"), 
+					JOptionPane.showMessageDialog(SettingsGUI.this, String.format(
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_msg_done"), result),
+							I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_done"),
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			} catch (UpdateFailedException e) {
-				JOptionPane.showMessageDialog(SettingsGUI.this, e.getMessage(), 
+				JOptionPane.showMessageDialog(SettingsGUI.this, e.getMessage(),
 						I18nUtils.localizedStringForKey("set_mapsrc_config_online_update_failed"),
 						JOptionPane.ERROR_MESSAGE);
 			} catch (Exception e) {

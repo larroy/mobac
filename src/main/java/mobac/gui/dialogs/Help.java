@@ -31,12 +31,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mobac.Main;
 import mobac.gui.MainGUI;
 import mobac.utilities.Charsets;
 import mobac.utilities.GBC;
 import mobac.utilities.I18nUtils;
-
 
 public class Help extends JFrame implements WindowListener {
 
@@ -63,8 +61,8 @@ public class Help extends JFrame implements WindowListener {
 			}
 		});
 
-		DataInputStream in = new DataInputStream(Main.class
-				.getResourceAsStream("resources/text/help_dialog.html"));
+		DataInputStream in = new DataInputStream(
+				I18nUtils.getI18nResourceAsStream("resources/text/help_dialog", "html"));
 		byte[] buf;
 		try {
 			buf = new byte[in.available()];
@@ -73,8 +71,8 @@ public class Help extends JFrame implements WindowListener {
 			String helpMessage = new String(buf, Charsets.UTF_8);
 			// Strip out all line breaks because JOptionPane shows
 			// the raw HTML code otherwise
-			//helpMessage = helpMessage.replaceAll("\n", "");
-			//text.setFont(mobac.gui.MainGUI.defaultFont());
+			// helpMessage = helpMessage.replaceAll("\n", "");
+			// text.setFont(mobac.gui.MainGUI.defaultFont());
 			text.setText(helpMessage);
 		} catch (IOException e) {
 		}

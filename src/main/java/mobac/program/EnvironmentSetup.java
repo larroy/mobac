@@ -56,7 +56,8 @@ public class EnvironmentSetup {
 		log.info("Total available memory to MOBAC: " + heapMBFormatted);
 		if (maxHeap < 200000000) {
 			String msg = String.format(I18nUtils.localizedStringForKey("msg_environment_lack_memory"), heapMBFormatted);
-			JOptionPane.showMessageDialog(null, msg, I18nUtils.localizedStringForKey("msg_environment_lack_memory_title"), JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, msg,
+					I18nUtils.localizedStringForKey("msg_environment_lack_memory_title"), JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -86,12 +87,17 @@ public class EnvironmentSetup {
 			FileUtils.copyDirectory(progMapSourcesDir, userMapSourcesDir, new FileExtFilter(".jar"));
 		} catch (IOException e) {
 			log.error(e);
-			JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_environment_error_init_mapsrc_dir") + e.getMessage(),
+			JOptionPane.showMessageDialog(null,
+					I18nUtils.localizedStringForKey("msg_environment_error_init_mapsrc_dir") + e.getMessage(),
 					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
 
+	/**
+	 * Note: This method has be be called before {@link Settings#loadOrQuit()}. Therefore no localization is available at
+	 * this point.
+	 */
 	public static void checkFileSetup() {
 		checkDirectory(DirectoryManager.userSettingsDir, "user settings", true);
 		checkDirectory(DirectoryManager.atlasProfilesDir, "atlas profile", true);
@@ -104,8 +110,8 @@ public class EnvironmentSetup {
 			} catch (Exception e) {
 				log.error("Error while creating settings.xml: " + e.getMessage(), e);
 				String[] options = { "Exit", "Show error report" };
-				int a = JOptionPane.showOptionDialog(null, I18nUtils.localizedStringForKey("msg_environment_error_create_setting"),
-						I18nUtils.localizedStringForKey("Error"), 0, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+				int a = JOptionPane.showOptionDialog(null, "Could not create file settings.xml - program will exit.",
+						"Error", 0, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 				if (a == 1)
 					GUIExceptionHandler.showExceptionDialog(e);
 				System.exit(1);
@@ -117,8 +123,9 @@ public class EnvironmentSetup {
 		try {
 			Utilities.mkDirs(dir);
 		} catch (IOException e) {
-			GUIExceptionHandler.processFatalExceptionSimpleDialog(String.format(I18nUtils.localizedStringForKey("msg_environment_error_create_dir"), dirName, 
-					dir.getAbsolutePath()), e);
+			GUIExceptionHandler.processFatalExceptionSimpleDialog(
+					String.format(I18nUtils.localizedStringForKey("msg_environment_error_create_dir"), dirName,
+							dir.getAbsolutePath()), e);
 		}
 		if (!checkIsWriteable)
 			return;
@@ -130,14 +137,15 @@ public class EnvironmentSetup {
 			testFile.delete();
 		} catch (IOException e) {
 			GUIExceptionHandler.processFatalExceptionSimpleDialog(
-					String.format(I18nUtils.localizedStringForKey("msg_environment_error_write_file"),dirName, dir.getAbsolutePath()), e);
+					String.format(I18nUtils.localizedStringForKey("msg_environment_error_write_file"), dirName,
+							dir.getAbsolutePath()), e);
 		}
 	}
 
 	public static void createDefaultAtlases() {
 		if (!FIRST_START)
 			return;
-		//TODO:MP change sample to Chinese 
+		// TODO:MP change sample to Chinese
 		Profile p = new Profile("Google Maps New York");
 		Atlas atlas = Atlas.newInstance();
 		try {

@@ -57,9 +57,9 @@ public class Main {
 			// Logging.logSystemProperties();
 			ImageIO.setUseCache(false);
 
+			EnvironmentSetup.checkFileSetup();
 			Settings.loadOrQuit();
 			EnvironmentSetup.checkMemory();
-			EnvironmentSetup.checkFileSetup();
 
 			EnvironmentSetup.copyMapPacks();
 			DefaultMapSourcesManager.initialize();

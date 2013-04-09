@@ -26,6 +26,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
+import mobac.Main;
 import mobac.program.model.Settings;
 
 public class I18nUtils {
@@ -95,5 +96,21 @@ public class I18nUtils {
 			}
 			return bundle;
 		}
+	}
+
+	public static InputStream getI18nResourceAsStream(String name, String extension) {
+
+		Settings s = Settings.getInstance();
+		String country = s.localeCountry;
+		String language = s.localeLanguage;
+		InputStream in;
+		in = Main.class.getResourceAsStream(String.format("%s_%s_%s.%s", name, language, country, extension));
+		if (in != null)
+			return in;
+		in = Main.class.getResourceAsStream(String.format("%s_%s.%s", name, language, extension));
+		if (in != null)
+			return in;
+		in = Main.class.getResourceAsStream(String.format("%s.%s", name, extension));
+		return in;
 	}
 }
