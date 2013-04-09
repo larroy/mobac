@@ -19,16 +19,16 @@
     element
  ! Bufix of conversion between different coordinate formats (degree, deg/min, 
     deg/min/sec)
- ! Bug fix of Null Pointer Exception. 
- ~ localImageFile support using <retinaDisplay>
+ ~ localImageFile support using <retinaDisplay> (patch by miocool)
  ~ More atlas format support retina (scale = 2) images, including Paper(PNG), 
-    Paper(pdf). 
+    Paper(pdf). (patch by miocool) 
  ! More atlas format can display retina (scale = 2) images correctly 
-    (convert to scale = 1), such as iPhone v5  
- + Add <localImageFile> map source support
- ! Bug fix of 512x512 map tile images in Multiple layer
+    (convert to scale = 1), such as iPhone v5 (patch by miocool)  
+ + Add <localImageFile> map source support (patch by miocool)
+ ! Bug fix of 512x512 map tile images in Multiple layer (patch by miocool)
  + Multiple language for Simplify-Chinese, Traditional Chinese and English
- + View 512x512 map tile images for retina display 
+    (patch by miocool)
+ + View 512x512 map tile images for retina display (patch by miocool) 
 
 1.9.11 (2013-02-19)
  ! Bugfix for servers that send case insensitive content-types
