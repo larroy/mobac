@@ -27,7 +27,7 @@ import mobac.program.annotations.AtlasCreatorName;
 import mobac.utilities.Utilities;
 
 /**
- * http://sourceforge.net/tracker/?func=detail&atid=1105497&aid=3147526&group_id=238075
+ * http://sourceforge.net/p/mobac/feature-requests/136/
  */
 @AtlasCreatorName("PNG + Worldfile (PNG & PGW)")
 public class PNGWorldfile extends Glopus {

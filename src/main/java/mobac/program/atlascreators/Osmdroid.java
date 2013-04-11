@@ -34,7 +34,7 @@ import mobac.utilities.stream.ZipStoreOutputStream;
 
 /**
  * 
- * @see http://sourceforge.net/tracker/?func=detail&atid=1105497&aid=3078443&group_id=238075
+ * http://sourceforge.net/p/mobac/feature-requests/162/
  */
 @AtlasCreatorName("Osmdroid ZIP")
 public class Osmdroid extends OSMTracker {

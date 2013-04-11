@@ -30,7 +30,7 @@ import mobac.program.model.TileImageParameters.Name;
 import mobac.program.model.TileImageType;
 
 /**
- * http://sourceforge.net/tracker/index.php?func=detail&aid=3456454&group_id=238075&atid=1105497
+ * http://sourceforge.net/p/mobac/feature-requests/219/
  */
 @AtlasCreatorName("Viewranger")
 @SupportedParameters(names = { Name.format_png })

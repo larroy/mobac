@@ -48,7 +48,7 @@ import mobac.utilities.Utilities;
 
 /**
  * 
- * https://sourceforge.net/tracker/?func=detail&aid=3489104&group_id=238075&atid=1105497
+ * http://sourceforge.net/p/mobac/feature-requests/225/
  * http://create.tomtom.com/manuals/create-your-own-content/index.html?map_overlays.htm
  * 
  * @author r_x

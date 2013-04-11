@@ -41,7 +41,7 @@ import mobac.program.model.TileImageParameters.Name;
 import mobac.utilities.jdbc.SQLiteLoader;
 
 /**
- * http://sourceforge.net/tracker/?func=detail&aid=3154177&group_id=238075&atid=1105496
+ * http://sourceforge.net/p/mobac/patches/22/
  */
 @AtlasCreatorName("Osmdroid SQLite")
 @SupportedParameters(names = { Name.format })
