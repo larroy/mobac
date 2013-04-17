@@ -10,7 +10,7 @@
  - = Features that has been removed
 
 =======
-1.9.12 (2013-03-??)
+1.9.12 (2013-04-17)
  ! Mapsource OpenStreetMap Maps4u.eu updated
  ~ Reduced the number of decimal places of coordinates in GPX files created by 
     MOBAC to 5 places (#242)
