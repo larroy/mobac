@@ -469,8 +469,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		menuBar.add(bookmarkMenu);
 		menuBar.add(panelsMenu);
 
-		// MP: disbaled by Miocool, seems useless
-		// loadToolsMenu();
+		loadToolsMenu();
 
 		menuBar.add(Box.createHorizontalGlue());
 
@@ -546,7 +545,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 					public void menuSelected(MenuEvent e) {
 						loadToolsMenu();
-						System.out.println("Loaded");
+						log.debug("Tools menu Loaded");
 					}
 
 					public void menuDeselected(MenuEvent e) {
@@ -703,7 +702,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 			try {
 				jAtlasTree.load(Profile.DEFAULT);
 			} catch (Exception e) {
-				log.error("Failed to load atlas",e);
+				log.error("Failed to load atlas", e);
 				GUIExceptionHandler.processException(e);
 				new AtlasNew().actionPerformed(null);
 			}
