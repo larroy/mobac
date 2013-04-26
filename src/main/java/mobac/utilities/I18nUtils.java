@@ -34,12 +34,14 @@ public class I18nUtils {
 	// MP: return application's resource strings
 	private static ResourceBundle STRING_RESOURCE = null;
 
-	public static String localizedStringForKey(String key) {
+	public static String localizedStringForKey(String key, Object... args) {
 		if (STRING_RESOURCE == null)
 			I18nUtils.updateLocalizedStringFormSettings();
 		String str = null;
 		try {
 			str = STRING_RESOURCE.getString(key);
+			if (args.length > 0)
+				str = String.format(str, args);
 		} catch (Exception e) {
 			str = key;
 		}

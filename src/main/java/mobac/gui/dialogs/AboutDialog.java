@@ -17,12 +17,10 @@
 package mobac.gui.dialogs;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -63,26 +61,10 @@ public class AboutDialog extends JDialog implements MouseListener {
 		JPanel infoPanel = new JPanel(new GridBagLayout());
 		infoPanel.setBackground(Color.WHITE);
 		infoPanel.setOpaque(false);
-		//infoPanel.add(new JLabel(MainGUI.localizedStringForKey("dlg_about_version")), std);
-		infoPanel.add(new JLabel(ProgramInfo.getVersion() + "("+ ProgramInfo.getRevisionStr() +")"), eol);
-		//infoPanel.add(new JLabel(MainGUI.localizedStringForKey("dlg_about_program_version")), std);
-		infoPanel.add(new JLabel(String.format(I18nUtils.localizedStringForKey("mobac_version_subfix_dev"), ProgramInfo.getRevisionStr())), eol);
-		
-		//MP:
-		JLabel downladMapPlusLabel = new JLabel(I18nUtils.localizedStringForKey("dlg_about_download_mapplus"));
-		downladMapPlusLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		downladMapPlusLabel.addMouseListener(new MouseAdapter(){
-			@Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    java.awt.Desktop.getDesktop().browse(new java.net.URI(I18nUtils.localizedStringForKey("dlg_about_download_mapplus_url")));
-                    setVisible(false);
-                } catch (Exception ex) {
-                	ex.printStackTrace();
-                }
-			}
-		});
-		infoPanel.add(downladMapPlusLabel, eol);
+		infoPanel.add(new JLabel(I18nUtils.localizedStringForKey("dlg_about_version")), std);
+		infoPanel.add(new JLabel(ProgramInfo.getVersion()), eol);
+		infoPanel.add(new JLabel(I18nUtils.localizedStringForKey("dlg_about_program_version")), std);
+		infoPanel.add(new JLabel(ProgramInfo.getRevisionStr()), eol);
 
 		panel.add(infoPanel);
 		panel.add(splashLabel);
