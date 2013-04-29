@@ -121,7 +121,7 @@ public class OruxMaps extends AtlasCreator {
 		super.initLayerCreation(layer);
 		currentLayer = layer;
 		oruxMapsMainDir = new File(atlasDir, layer.getName());
-		Utilities.mkDir(oruxMapsMainDir);
+		Utilities.mkDirs(oruxMapsMainDir);
 
 	}
 
