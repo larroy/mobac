@@ -226,12 +226,12 @@ public class Layer implements LayerInterface, TreeNode, ToolTipProvider, Capabil
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
 		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_layer_title"));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_layer_map_count"), maps.size()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"), calculateTilesToDownload()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_start"), Utilities.prettyPrintLatLon(getMaxLat(), true),
-				Utilities.prettyPrintLatLon(getMinLon(), false)));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_end"), Utilities.prettyPrintLatLon(getMinLat(), true),
-				Utilities.prettyPrintLatLon(getMaxLon(), false)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_layer_map_count", maps.size()));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile", calculateTilesToDownload()));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_area_start",
+				Utilities.prettyPrintLatLon(getMaxLat(), true), Utilities.prettyPrintLatLon(getMinLon(), false)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_area_end",
+				Utilities.prettyPrintLatLon(getMinLat(), true), Utilities.prettyPrintLatLon(getMaxLon(), false)));
 		sw.write("</html>");
 		return sw.toString();
 	}

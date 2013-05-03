@@ -36,6 +36,8 @@ import mobac.program.interfaces.ToolTipProvider;
 import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 @XmlRootElement
 public class Atlas implements AtlasInterface, ToolTipProvider, TreeNode {
 
@@ -161,14 +163,14 @@ public class Atlas implements AtlasInterface, ToolTipProvider, TreeNode {
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
 		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_title"));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_name"), name));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_layer"), layers.size()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_format"), outputFormat.toString()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"), calculateTilesToDownload()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_start"), Utilities.prettyPrintLatLon(getMaxLat(), true),
-				Utilities.prettyPrintLatLon(getMinLon(), false)));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_area_end"), Utilities.prettyPrintLatLon(getMinLat(), true),
-				Utilities.prettyPrintLatLon(getMaxLon(), false)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_name", StringEscapeUtils.escapeHtml4(name)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_layer", layers.size()));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_atlas_format", outputFormat.toString()));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile", calculateTilesToDownload()));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_area_start",
+				Utilities.prettyPrintLatLon(getMaxLat(), true), Utilities.prettyPrintLatLon(getMinLon(), false)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_area_end",
+				Utilities.prettyPrintLatLon(getMinLat(), true), Utilities.prettyPrintLatLon(getMaxLon(), false)));
 		sw.write("</html>");
 		return sw.toString();
 	}

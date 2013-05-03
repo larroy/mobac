@@ -31,6 +31,7 @@
 		<fileset dir="lib" includes="itextpdf-5.1.0.jar" />
 		<fileset dir="lib" includes="commons-codec-1.4.jar" />
 		<fileset dir="lib" includes="commons-io-2.0.jar" />
+		<fileset dir="lib" includes="commons-lang3-3.1.jar" />
 		<fileset dir="lib" includes="je-${je-version}.jar" />
 	</path>
 
@@ -172,7 +173,8 @@
 			<zipfileset src="lib/bsh-2.0b4.jar" includes="**/*.class" />
 			<zipfileset src="lib/commons-codec-1.4.jar" includes="**/*.class" />
 			<zipfileset src="lib/commons-io-2.0.jar" includes="**/*.class" />
-			<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
+			<zipfileset src="lib/commons-lang3-3.1.jar" includes="**/*.class" />
+						<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
 			<zipfileset src="lib/Tidy.jar" includes="org/w3c/tidy/**" />
 			<zipfileset src="lib/itextpdf-5.1.0.jar" includes="com/**" />
 			<fileset dir="build/mobac">
@@ -203,24 +205,19 @@
 			build/temp.jar
 			-keepattributes *Annotation*
 			-keep class ${main.class} {
-			public static void
-			main(java.lang.String[]); }
+			public static void main(java.lang.String[]); }
 			-keep class
 			mobac.program.* { public *; }
 			-keep class mobac.program.interfaces.* {
 			public *; }
+			-keep class mobac.program.model.package-info
 			-keep class
-			mobac.program.model.package-info
-			-keep class
-			mobac.program.model.* {
-			public *; }
+			mobac.program.model.* { public *; }
 			-keep class mobac.program.jaxb.* {
 			public *; }
-			-keep class
-			mobac.program.interfaces.* { public *; }
+			-keep class mobac.program.interfaces.* { public *; }
 			-keep
-			class
-			mobac.program.download.UserAgent { public *; }
+			class mobac.program.download.UserAgent { public *; }
 			-keep class
 			mobac.program.tilestore.berkeleydb.* { *; }
 			-keep class
@@ -244,6 +241,8 @@
 			-keep class org.apache.log4j.Layout {
 			public *; }
 			-keep class org.apache.log4j.Level { public *; }
+			-keep
+			class org.apache.commons.lang3.StringEscapeUtils { public *; }
 			-keep
 			class org.apache.log4j.Category { public *; }
 			-keep class

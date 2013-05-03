@@ -10,6 +10,10 @@
  - = Features that has been removed
 
 =======
+
+1.9.13 (2013-05-??)
+ ! HTML injection via Atlas name bug #242
+
 1.9.12 (2013-04-17)
  ! Mapsource OpenStreetMap Maps4u.eu updated
  ~ Reduced the number of decimal places of coordinates in GPX files created by 

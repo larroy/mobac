@@ -42,6 +42,7 @@ import mobac.program.tilefilter.DummyTileFilter;
 import mobac.utilities.I18nUtils;
 import mobac.utilities.tar.TarIndexedArchive;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 public class Map implements MapInterface, ToolTipProvider, CapabilityDeletable, TreeNode, DownloadableElement {
@@ -150,20 +151,24 @@ public class Map implements MapInterface, ToolTipProvider, CapabilityDeletable, 
 		StringWriter sw = new StringWriter(1024);
 		sw.write("<html>");
 		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_title"));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_source"), mapSource.toString(), mapSource.getName().toString()));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_zoom_lv"), zoom));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_start"), tl.toString(), minTileCoordinate.x, minTileCoordinate.y));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_end"), br.toString(), maxTileCoordinate.x, maxTileCoordinate.y));
-		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_map_size"),
-				(maxTileCoordinate.x - minTileCoordinate.x + 1), 
-				(maxTileCoordinate.y - minTileCoordinate.y + 1)));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_source",
+				StringEscapeUtils.escapeHtml4(mapSource.toString()), StringEscapeUtils.escapeHtml4(mapSource.getName())));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_zoom_lv", zoom));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_start", tl.toString(), minTileCoordinate.x,
+				minTileCoordinate.y));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_area_end", br.toString(), maxTileCoordinate.x,
+				maxTileCoordinate.y));
+		sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_map_size",
+				(maxTileCoordinate.x - minTileCoordinate.x + 1), (maxTileCoordinate.y - minTileCoordinate.y + 1)));
 		if (parameters != null) {
-			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_size"), parameters.getWidth(), parameters.getHeight()));
-			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_format"), parameters.getFormat().toString()));
+			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_size"), parameters.getWidth(),
+					parameters.getHeight()));
+			sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_tile_format"), parameters.getFormat()
+					.toString()));
 		} else {
 			sw.write(I18nUtils.localizedStringForKey("lp_atlas_info_tile_format_origin"));
 		}
-		
+
 		sw.write(String.format(I18nUtils.localizedStringForKey("lp_atlas_info_max_tile"), calculateTilesToDownload()));
 		sw.write("</html>");
 		return sw.toString();
