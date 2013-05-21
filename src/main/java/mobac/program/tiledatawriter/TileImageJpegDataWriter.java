@@ -16,6 +16,7 @@
  ******************************************************************************/
 package mobac.program.tiledatawriter;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -90,6 +91,18 @@ public class TileImageJpegDataWriter implements TileImageDataWriter {
 	}
 
 	public void processImage(BufferedImage image, OutputStream out) throws IOException {
+
+		if (image.getColorModel().hasAlpha()) {
+			// Javas JPEG writes has a bug when the image has alpha transparency
+			// see http://stackoverflow.com/questions/4386446/problem-using-imageio-write-jpg-file
+
+			BufferedImage imageRGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = imageRGB.createGraphics();
+			g.drawImage(image, null, 0, 0);
+			g.dispose();
+			image = imageRGB;
+		}
+
 		ImageOutputStream imageOut = ImageIO.createImageOutputStream(out);
 		jpegImageWriter.setOutput(imageOut);
 		IIOImage ioImage = new IIOImage(image, null, null);
