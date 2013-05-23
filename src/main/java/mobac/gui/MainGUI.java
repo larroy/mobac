@@ -1018,13 +1018,9 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private void setSelectionByEnteredCoordinates() {
 		coordinatesPanel.correctMinMax();
 		MapSelection ms = coordinatesPanel.getMapSelection(previewMap.getMapSource());
-		if (ms.isAreaSelected()) {
-			mapSelectionMax = ms.getBottomRightPixelCoordinate();
-			mapSelectionMin = ms.getTopLeftPixelCoordinate();
-			previewMap.setSelectionAndZoomTo(ms, false);
-		} else {
-			Toolkit.getDefaultToolkit().beep();
-		}
+		mapSelectionMax = ms.getBottomRightPixelCoordinate();
+		mapSelectionMin = ms.getTopLeftPixelCoordinate();
+		previewMap.setSelectionAndZoomTo(ms, false);
 	}
 
 	public MapSelection getMapSelectionCoordinates() {

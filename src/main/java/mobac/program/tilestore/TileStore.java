@@ -46,9 +46,9 @@ public abstract class TileStore {
 		try {
 			INSTANCE = new BerkeleyDbTileStore();
 		} catch (TileStoreException e) {
-			String errMsg = I18nUtils.localizedStringForKey("msg_tile_store_access_confilct");
+			String errMsg = I18nUtils.localizedStringForKey("msg_tile_store_access_conflict");
 			JOptionPane.showMessageDialog(null, errMsg,
-					I18nUtils.localizedStringForKey("msg_tile_store_access_confilct_title"), JOptionPane.ERROR_MESSAGE);
+					I18nUtils.localizedStringForKey("msg_tile_store_access_conflict_title"), JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}

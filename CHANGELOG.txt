@@ -14,7 +14,8 @@
 1.9.13 (2013-05-??)
  ! HTML injection via Atlas name bug #242
  ! Workaround for Java bug in JPEG writer (if source image has alpha 
-    transparency) implemented 
+    transparency) implemented
+ + French translation added (thanks to Jean-Claude Repetto) [patch #31]
 
 1.9.12 (2013-04-17)
  ! Mapsource OpenStreetMap Maps4u.eu updated

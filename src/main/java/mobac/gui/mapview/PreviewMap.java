@@ -325,8 +325,6 @@ public class PreviewMap extends JMapViewer {
 	 * @param notifyListeners
 	 */
 	public void setSelectionAndZoomTo(MapSelection ms, boolean notifyListeners) {
-		if (!ms.isAreaSelected())
-			return;
 		log.trace("Setting selection to: " + ms);
 		Point max = ms.getBottomRightPixelCoordinate(MAX_ZOOM);
 		Point min = ms.getTopLeftPixelCoordinate(MAX_ZOOM);
