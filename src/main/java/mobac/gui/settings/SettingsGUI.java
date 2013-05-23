@@ -124,15 +124,17 @@ public class SettingsGUI extends JDialog {
 	};
 
 	private enum SupportLocale {
-		SupportLocaleEn(new Locale("en")), // default
-		SupportLocaleFrFR(new Locale("fr", "FR")), // French
-		SupportLocaleZhCN(new Locale("zh", "CN")), //
-		SupportLocaleZhTW(new Locale("zh", "TW"));
+		SupportLocaleEn(new Locale("en"), "English"), // default
+		SupportLocaleFrFR(new Locale("fr", "FR"), "Française"), // French
+		SupportLocaleZhCN(new Locale("zh", "CN"), "简体中文"), //
+		SupportLocaleZhTW(new Locale("zh", "TW"), "繁體中文");
 
-		Locale locale;
+		private final Locale locale;
+		private final String displayName;
 
-		private SupportLocale(Locale locale) {
+		private SupportLocale(Locale locale, String displayName) {
 			this.locale = locale;
+			this.displayName = displayName;
 		}
 
 		public static SupportLocale localeOf(String lang, String contry) {
@@ -151,15 +153,7 @@ public class SettingsGUI extends JDialog {
 
 		@Override
 		public String toString() {
-			if (this == SupportLocaleEn) {
-				return "English";
-			} else if (this == SupportLocaleZhCN) {
-				return "简体中文";
-			} else if (this == SupportLocaleZhTW) {
-				return "繁體中文";
-			} else {
-				return I18nUtils.localizedStringForKey("Undefined");
-			}
+			return displayName;
 		}
 	};
 

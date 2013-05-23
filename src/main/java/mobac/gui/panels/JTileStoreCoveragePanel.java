@@ -72,10 +72,8 @@ public class JTileStoreCoveragePanel extends JCollapsiblePanel implements MapEve
 		contentContainer.add(zoomCombo, gbc_eol);
 		contentContainer.add(new JLabel(I18nUtils.localizedStringForKey("lp_tile_store_layer_title")), gbc_std);
 		contentContainer.add(layerSelector, gbc_eol);
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-		buttonPanel.add(showCoverage);
-		buttonPanel.add(hideCoverage);
-		contentContainer.add(buttonPanel, gbc_eol.fillH());
+		contentContainer.add(showCoverage, gbc_eol.fillH());
+		contentContainer.add(hideCoverage, gbc_eol.fillH());
 		mapSourceChanged(mapViewer.getMapSource());
 		mapViewer.addMapEventListener(this);
 	}
