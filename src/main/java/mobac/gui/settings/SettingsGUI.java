@@ -125,9 +125,9 @@ public class SettingsGUI extends JDialog {
 
 	private enum SupportLocale {
 		SupportLocaleEn(new Locale("en"), "English"), // default
-		SupportLocaleFrFR(new Locale("fr", "FR"), "Française"), // French
-		SupportLocaleZhCN(new Locale("zh", "CN"), "简体中文"), //
-		SupportLocaleZhTW(new Locale("zh", "TW"), "繁體中文");
+		SupportLocaleFrFR(new Locale("fr", "FR"), "Français"), // French
+		SupportLocaleZhCN(new Locale("zh", "CN"), "简体中文"), // Chinese (simplified)
+		SupportLocaleZhTW(new Locale("zh", "TW"), "繁體中文"); // Chinese (Taiwan)
 
 		private final Locale locale;
 		private final String displayName;
@@ -139,11 +139,6 @@ public class SettingsGUI extends JDialog {
 
 		public static SupportLocale localeOf(String lang, String contry) {
 			for (SupportLocale l : SupportLocale.values()) {
-				SettingsGUI.log.trace(l.toString());
-				SettingsGUI.log.trace(String.format("%s, %s, %d", l.locale.getLanguage(), lang,
-						(l.locale.getLanguage() == lang) ? 1 : 0));
-				SettingsGUI.log.trace(String.format("%s, %s, %d", l.locale.getCountry(), contry,
-						(l.locale.getCountry() == contry) ? 1 : 0));
 				if (l.locale.getLanguage().equals(lang) && l.locale.getCountry().equals(contry)) {
 					return l;
 				}
