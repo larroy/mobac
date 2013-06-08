@@ -159,7 +159,7 @@ public class CustomLocalTileSQliteMapSource implements FileBasedMapSource {
 			return;
 		}
 		log.debug("Loading SQLite database " + sourceFile);
-		String url = "jdbc:sqlite:/" + this.sourceFile;
+		String url = "jdbc:sqlite:" + this.sourceFile;
 		try {
 			conn = DriverManager.getConnection(url);
 		} catch (SQLException e) {
