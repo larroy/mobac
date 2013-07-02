@@ -19,19 +19,16 @@ package mobac.program.atlascreators;
 import mobac.program.annotations.AtlasCreatorName;
 
 /**
- * Creates maps using the BCNav atlas format.
+ * Creates maps using the BCNav SQLite atlas format.
  * 
- * Please note that this atlas format ignores the defined atlas structure. It uses a separate directory for each used
- * map source and inside one directory for each zoom level.
- * 
+ *  
  * @see http://www.backcountrynavigator.com
  */
-@AtlasCreatorName("BackCountry Navigator")
-public class BackCountryNavigator extends OSMTracker {
+@AtlasCreatorName("BackCountry Navigator (SQLite)")
+public class BackCountryNavigator extends RMapsSQLite {
 
 	public BackCountryNavigator() {
 		super();
-		tileFileNamePattern += ".bcnav";
 	}
 
 }

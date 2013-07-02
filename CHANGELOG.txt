@@ -12,7 +12,8 @@
 =======
 
 1.9.13 (2013-07-??)
- ~ Custom SQlite map sources can now be specified using a relative path 
+ ~ Custom SQlite map sources can now be specified using a relative path
+ ~ BackCountry Navigator format updated - now SQLite based atlases are created 
 
 1.9.13 (2013-05-29)
  ! HTML injection via Atlas name bug #242
