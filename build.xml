@@ -174,7 +174,7 @@
 			<zipfileset src="lib/commons-codec-1.4.jar" includes="**/*.class" />
 			<zipfileset src="lib/commons-io-2.0.jar" includes="**/*.class" />
 			<zipfileset src="lib/commons-lang3-3.1.jar" includes="**/*.class" />
-						<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
+			<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
 			<zipfileset src="lib/Tidy.jar" includes="org/w3c/tidy/**" />
 			<zipfileset src="lib/itextpdf-5.1.0.jar" includes="com/**" />
 			<fileset dir="build/mobac">
@@ -218,6 +218,8 @@
 			-keep class mobac.program.interfaces.* { public *; }
 			-keep
 			class mobac.program.download.UserAgent { public *; }
+			-keep class
+			mobac.exceptions.* { public *; }
 			-keep class
 			mobac.program.tilestore.berkeleydb.* { *; }
 			-keep class
