@@ -2,7 +2,7 @@
 <!-- 
 
 Example custom map definition that uses an existing OSMTracker atlas. 
-Atlases that very similar to OSMTracker like AndNav, BackCountry Navigator,
+Atlases that very similar to OSMTracker like AndNav,
 Maverick and OSMAND are also supported.
 
 Quad-key based map sources as they are created by MapCruncher are also supported.
