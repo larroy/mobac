@@ -58,7 +58,7 @@ public class JProfilesPanel extends JCollapsiblePanel {
 		// delete profile button
 		deleteButton = new JButton(I18nUtils.localizedStringForKey("lp_atlas_profile_delete_btn_title"));
 		deleteButton.addActionListener(new DeleteProfileListener());
-		deleteButton.setToolTipText("Delete atlas profile from list");
+		deleteButton.setToolTipText(I18nUtils.localizedStringForKey("lp_atlas_profile_delete_btn_tips"));
 
 		// save as profile button
 		saveAsButton = new JButton(I18nUtils.localizedStringForKey("lp_atlas_profile_save_btn_title"));
