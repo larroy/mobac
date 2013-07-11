@@ -126,6 +126,7 @@ public class SettingsGUI extends JDialog {
 	private enum SupportLocale {
 		SupportLocaleEn(new Locale("en"), "English"), // default
 		SupportLocaleFrFR(new Locale("fr", "FR"), "Français"), // French
+		SupportLocaleJaJP(new Locale("ja", "JP"), "日本語"), // Japanese
 		SupportLocaleZhCN(new Locale("zh", "CN"), "简体中文"), // Chinese (simplified)
 		SupportLocaleZhTW(new Locale("zh", "TW"), "繁體中文"); // Chinese (Taiwan)
 

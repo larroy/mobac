@@ -251,6 +251,9 @@ public class Settings {
 		} else if (defaultLocale.equals(new Locale("zh", "TW"))) {
 			localeLanguage = "zh";
 			localeCountry = "TW";
+		} else if (defaultLocale.equals(new Locale("ja", "JP"))) {
+			localeLanguage = "ja";
+			localeCountry = "JP";
 		} else if (defaultLocale.equals(new Locale("fr", "FR"))) {
 			localeLanguage = "fr";
 			localeCountry = "FR";
