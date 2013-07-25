@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -206,7 +205,8 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 		mapDownloadTitle = new JLabel(TEXT_MAP_DOWNLOAD + "000");
 		mapDownloadElementsDone = new JLabel(I18nUtils.localizedStringForKey("dlg_download_tile_done_count_default"));
 		mapDownloadPercent = new JLabel(String.format(TEXT_PERCENT, 100));
-		mapDownloadTimeLeft = new JLabel(I18nUtils.localizedStringForKey("dlg_download_remain_time_default"), JLabel.RIGHT);
+		mapDownloadTimeLeft = new JLabel(I18nUtils.localizedStringForKey("dlg_download_remain_time_default"),
+				JLabel.RIGHT);
 		mapDownloadProgressBar = new JProgressBar();
 
 		mapCreation = new JLabel(I18nUtils.localizedStringForKey("dlg_download_map_create_title"));
@@ -243,7 +243,8 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 		dismissWindowButton.setToolTipText(I18nUtils.localizedStringForKey("dlg_download_btn_close_win_tips_disable"));
 		dismissWindowButton.setVisible(false);
 		openProgramFolderButton = new JButton(I18nUtils.localizedStringForKey("dlg_download_btn_open_folder"));
-		openProgramFolderButton.setToolTipText(I18nUtils.localizedStringForKey("dlg_download_btn_open_folder_tips_disabled"));
+		openProgramFolderButton.setToolTipText(I18nUtils
+				.localizedStringForKey("dlg_download_btn_open_folder_tips_disabled"));
 		openProgramFolderButton.setEnabled(false);
 		pauseResumeDownloadButton = new JButton(I18nUtils.localizedStringForKey("dlg_download_btn_pause_resume"));
 
@@ -428,8 +429,14 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 			int minutes = (int) (longSeconds / 60);
 			int seconds = (int) (longSeconds % 60);
 			if (minutes > 0)
-				timeString += Integer.toString(minutes) + " " + (minutes == 1 ? I18nUtils.localizedStringForKey("minute") : I18nUtils.localizedStringForKey("minutes")) + " ";
-			timeString += Integer.toString(seconds) + " " + (seconds == 1 ? I18nUtils.localizedStringForKey("second") : I18nUtils.localizedStringForKey("seconds"));
+				timeString += Integer.toString(minutes)
+						+ " "
+						+ (minutes == 1 ? I18nUtils.localizedStringForKey("minute") : I18nUtils
+								.localizedStringForKey("minutes")) + " ";
+			timeString += Integer.toString(seconds)
+					+ " "
+					+ (seconds == 1 ? I18nUtils.localizedStringForKey("second") : I18nUtils
+							.localizedStringForKey("seconds"));
 		}
 		return timeString;
 	}
@@ -455,16 +462,18 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 					setTitle(I18nUtils.localizedStringForKey("dlg_download_succeed_title"));
 				}
 				// mapInfoLabel.setText("");
-				atlasMapsDone.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_map_done_count"), 
+				atlasMapsDone.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_map_done_count"),
 						data.currentMapNumber, data.totalNumberOfMaps));
-						 
+
 				abortAtlasCreationButton.setVisible(false);
 
-				dismissWindowButton.setToolTipText(I18nUtils.localizedStringForKey("dlg_download_btn_close_win_tips_enable"));
+				dismissWindowButton.setToolTipText(I18nUtils
+						.localizedStringForKey("dlg_download_btn_close_win_tips_enable"));
 				dismissWindowButton.setVisible(true);
 
 				if (!aborted) {
-					openProgramFolderButton.setToolTipText(I18nUtils.localizedStringForKey("dlg_download_btn_open_folder_tips_enabled"));
+					openProgramFolderButton.setToolTipText(I18nUtils
+							.localizedStringForKey("dlg_download_btn_open_folder_tips_enabled"));
 					openProgramFolderButton.setEnabled(true);
 				}
 			}
@@ -573,7 +582,7 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 					statusText = I18nUtils.localizedStringForKey("dlg_download_status_paused");
 				else
 					statusText = I18nUtils.localizedStringForKey("dlg_download_status_running");
-				statusLabel.setText(I18nUtils.localizedStringForKey("dlg_download_status_title") + statusText);
+				statusLabel.setText(I18nUtils.localizedStringForKey("dlg_download_status_title") + " " + statusText);
 
 				if (data.totalProgressTenthPercent != newTenthPercent || pauseState != data.paused) {
 					data.totalProgressTenthPercent = newTenthPercent;
@@ -583,7 +592,7 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 								data.totalProgressTenthPercent / 10, data.atlasInterface.getName(),
 								data.atlasInterface.getOutputFormat());
 						if (pauseState)
-							text += " ["+ I18nUtils.localizedStringForKey("dlg_download_status_paused") +"]";
+							text += " [" + I18nUtils.localizedStringForKey("dlg_download_status_paused") + "]";
 						AtlasProgress.this.setTitle(text);
 					}
 				}
@@ -599,7 +608,8 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 				long totalElapsedTime = System.currentTimeMillis() - initialTotalTime;
 				seconds = (totalElapsedTime * totalTilesRemaining / (1000L * totalProgress));
 			}
-			atlasTimeLeft.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_remain_time"),formatTime(seconds)));
+			atlasTimeLeft.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_remain_time"),
+					formatTime(seconds)));
 
 			// layer progress
 			mapDownloadProgressBar.setMaximum(data.mapDownloadNumberOfTiles);
@@ -608,15 +618,16 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 			mapDownloadPercent.setText(String.format(TEXT_PERCENT,
 					(int) (mapDownloadProgressBar.getPercentComplete() * 100)));
 
-			mapDownloadElementsDone.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_tile_done_count"),
-					data.mapDownloadProgress, data.mapDownloadNumberOfTiles));
+			mapDownloadElementsDone.setText(String.format(
+					I18nUtils.localizedStringForKey("dlg_download_tile_done_count"), data.mapDownloadProgress,
+					data.mapDownloadNumberOfTiles));
 
 			seconds = -1;
 			int mapDlProgress = data.mapDownloadProgress;
 			if (mapDlProgress != 0 && initialMapDownloadTime > 0)
 				seconds = ((System.currentTimeMillis() - initialMapDownloadTime)
 						* (data.mapDownloadNumberOfTiles - mapDlProgress) / (1000L * mapDlProgress));
-			mapDownloadTimeLeft.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_remain_time"), 
+			mapDownloadTimeLeft.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_remain_time"),
 					formatTime(seconds)));
 
 			// map progress
@@ -634,8 +645,9 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 					nrOfDownloadedBytesPerSecondValue.setText("??");
 				} else {
 					rate = rate / time;
-					nrOfDownloadedBytesPerSecondValue.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_avg_speed_value")
-							,Utilities.formatBytes(rate)));
+					nrOfDownloadedBytesPerSecondValue.setText(String.format(
+							I18nUtils.localizedStringForKey("dlg_download_avg_speed_value"),
+							Utilities.formatBytes(rate)));
 				}
 			}
 
@@ -654,12 +666,14 @@ public class AtlasProgress extends JFrame implements ActionListener, MapSourceLi
 			activeDownloadsValue.repaint();
 
 			int totalRetryableErrors = data.prevMapsRetryErrors + data.mapRetryErrors;
-			retryableDownloadErrorsValue.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_retry_count_value"),
-					data.mapRetryErrors, totalRetryableErrors));
+			retryableDownloadErrorsValue.setText(String.format(
+					I18nUtils.localizedStringForKey("dlg_download_retry_count_value"), data.mapRetryErrors,
+					totalRetryableErrors));
 			retryableDownloadErrorsValue.repaint();
 			int totalPermanentErrors = data.prevMapsPermanentErrors + data.mapPermanentErrors;
-			permanentDownloadErrorsValue.setText(String.format(I18nUtils.localizedStringForKey("dlg_download_failed_count_value"),
-					data.mapPermanentErrors, totalPermanentErrors));
+			permanentDownloadErrorsValue.setText(String.format(
+					I18nUtils.localizedStringForKey("dlg_download_failed_count_value"), data.mapPermanentErrors,
+					totalPermanentErrors));
 			permanentDownloadErrorsValue.repaint();
 		}
 	}
