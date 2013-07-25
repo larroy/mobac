@@ -49,11 +49,11 @@ import mobac.program.interfaces.LayerInterface;
 import mobac.program.interfaces.MapInterface;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
-import mobac.program.interfaces.TileImageDataWriter;
 import mobac.program.interfaces.MapSpace.ProjectionCategory;
+import mobac.program.interfaces.TileImageDataWriter;
 import mobac.program.model.TileImageFormat;
-import mobac.program.model.TileImageType;
 import mobac.program.model.TileImageParameters.Name;
+import mobac.program.model.TileImageType;
 import mobac.program.tiledatawriter.TileImageJpegDataWriter;
 import mobac.utilities.Utilities;
 
@@ -123,7 +123,7 @@ public class TwoNavRMAP extends AtlasCreator {
 			return ImageIO.read(input);
 		}
 
-		private byte[] getTileData(ZoomLevel source, int x, int y) throws IOException {
+		private byte[] getTileData(TileImageDataWriter writer, ZoomLevel source, int x, int y) throws IOException {
 			log.trace(String.format("Shrinking jpegs (%d,%d,%d - %d,%d,%d)", source.index, x, y, source.index,
 					(x + 1 < source.xTiles) ? x + 1 : x, (y + 1 < source.yTiles) ? y + 1 : y));
 			BufferedImage bi11 = loadJpegAtOffset(source.jpegOffsets[x][y]);
@@ -150,14 +150,15 @@ public class TwoNavRMAP extends AtlasCreator {
 			BufferedImage biOut = new BufferedImage(biWidth / 2, biHeight / 2, BufferedImage.TYPE_3BYTE_BGR);
 			op.filter(bi, biOut);
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream(biOut.getWidth() * biOut.getHeight() * 4);
-			TileImageDataWriter writer = new TileImageJpegDataWriter(0.9);
-			writer.initialize();
 			writer.processImage(biOut, buffer);
+			g.dispose();
 			return buffer.toByteArray();
 		}
 
 		private void shrinkFrom(ZoomLevel source) {
 			try {
+				TileImageDataWriter writer = new TileImageJpegDataWriter(0.9);
+				writer.initialize();
 				writeHeader();
 				atlasProgress.initMapCreation(xTiles * yTiles);
 				for (int x = 0; x < xTiles; x++) {
@@ -165,13 +166,14 @@ public class TwoNavRMAP extends AtlasCreator {
 						checkUserAbort();
 						atlasProgress.incMapCreationProgress();
 						jpegOffsets[x][y] = rmapFile.getFilePointer();
-						byte[] tileData = getTileData(source, 2 * x, 2 * y);
+						byte[] tileData = getTileData(writer, source, 2 * x, 2 * y);
 						rmapFile.seek(jpegOffsets[x][y]);
-						log.trace(String.format("Writing shrunk jpeg (%d,%d,%d) at offset %d", index, x, y,
+						log.trace(String.format("Writing shrunken jpeg (%d,%d,%d) at offset %d", index, x, y,
 								jpegOffsets[x][y]));
 						rmapFile.writeIntI(7);
 						rmapFile.writeIntI(tileData.length);
 						rmapFile.write(tileData);
+						tileData = null;
 					}
 				}
 			} catch (Exception e) {
@@ -281,8 +283,8 @@ public class TwoNavRMAP extends AtlasCreator {
 			df.applyPattern("#0.00000000");
 			sbMap.append(String.format(pointLine, 0, 0, 0, df.format(longitudeMin), df.format(latitudeMax)));
 			sbMap.append(String.format(pointLine, 1, width - 1, 0, df.format(longitudeMax), df.format(latitudeMax)));
-			sbMap.append(String.format(pointLine, 2, width - 1, height - 1, df.format(longitudeMax), df
-					.format(latitudeMin)));
+			sbMap.append(String.format(pointLine, 2, width - 1, height - 1, df.format(longitudeMax),
+					df.format(latitudeMin)));
 			sbMap.append(String.format(pointLine, 3, 0, height - 1, df.format(longitudeMin), df.format(latitudeMin)));
 			sbMap.append("</Calibration>\r\n");
 			sbMap.append("<MainPolygonBitmap>\r\n");
@@ -377,14 +379,14 @@ public class TwoNavRMAP extends AtlasCreator {
 		log.trace("rmap tileHeight = " + rmapFile.tileHeight);
 
 		MapSpace mapSpace = layer.getMap(DefaultMap).getMapSource().getMapSpace();
-		rmapFile.longitudeMin = mapSpace.cXToLon(layer.getMap(DefaultMap).getMinTileCoordinate().x, layer.getMap(
-				DefaultMap).getZoom());
-		rmapFile.longitudeMax = mapSpace.cXToLon(layer.getMap(DefaultMap).getMaxTileCoordinate().x, layer.getMap(
-				DefaultMap).getZoom());
-		rmapFile.latitudeMin = mapSpace.cYToLat(layer.getMap(DefaultMap).getMaxTileCoordinate().y, layer.getMap(
-				DefaultMap).getZoom());
-		rmapFile.latitudeMax = mapSpace.cYToLat(layer.getMap(DefaultMap).getMinTileCoordinate().y, layer.getMap(
-				DefaultMap).getZoom());
+		rmapFile.longitudeMin = mapSpace.cXToLon(layer.getMap(DefaultMap).getMinTileCoordinate().x,
+				layer.getMap(DefaultMap).getZoom());
+		rmapFile.longitudeMax = mapSpace.cXToLon(layer.getMap(DefaultMap).getMaxTileCoordinate().x,
+				layer.getMap(DefaultMap).getZoom());
+		rmapFile.latitudeMin = mapSpace.cYToLat(layer.getMap(DefaultMap).getMaxTileCoordinate().y,
+				layer.getMap(DefaultMap).getZoom());
+		rmapFile.latitudeMax = mapSpace.cYToLat(layer.getMap(DefaultMap).getMinTileCoordinate().y,
+				layer.getMap(DefaultMap).getZoom());
 
 		log.trace("rmap longitudeMin = " + rmapFile.longitudeMin);
 		log.trace("rmap longitudeMax = " + rmapFile.longitudeMax);
