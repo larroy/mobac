@@ -11,7 +11,7 @@
 
 =======
 
-1.9.13 (2013-07-??)
+1.9.14 (2013-07-29)
  ~ Custom SQlite map sources can now be specified using a relative path
  ~ BackCountry Navigator format updated - now SQLite based atlases are created
  + Japanese translation added (thanks to "u/ta-ka") [patch #33]
