@@ -52,6 +52,16 @@ public class ExternalToolDef implements ActionListener {
 	@XmlList
 	public List<ToolParameters> parameters = new ArrayList<ToolParameters>();
 
+	private boolean mapSelNull(MapSelection mapSel) {
+		if (mapSel != null)
+			return false;
+		JOptionPane.showMessageDialog(MainGUI.getMainGUI(),
+				I18nUtils.localizedStringForKey("msg_tools_exec_error_selected_area"),
+				I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
+		return true;
+
+	}
+
 	public void actionPerformed(ActionEvent e) {
 		try {
 
@@ -63,15 +73,23 @@ public class ExternalToolDef implements ActionListener {
 				String add = "";
 				switch (param) {
 				case MAX_LAT:
+					if (mapSelNull(mapSel))
+						return;
 					add = Double.toString(mapSel.getMax().lat);
 					break;
 				case MIN_LAT:
+					if (mapSelNull(mapSel))
+						return;
 					add = Double.toString(mapSel.getMin().lat);
 					break;
 				case MAX_LON:
+					if (mapSelNull(mapSel))
+						return;
 					add = Double.toString(mapSel.getMax().lon);
 					break;
 				case MIN_LON:
+					if (mapSelNull(mapSel))
+						return;
 					add = Double.toString(mapSel.getMin().lon);
 					break;
 				case MAX_ZOOM:
