@@ -336,6 +336,9 @@
 				<include name="Mobile Atlas Creator.exe" />
 				<include name="mapsources/mp-*.jar" />
 			</fileset>
+			<fileset dir="./misc">
+				<include name="mobac.icns" />
+			</fileset>
 			<fileset dir="lib" includes="sqlite-jdbc-3.7.2.jar" />
 		</zip>
 	</target>
