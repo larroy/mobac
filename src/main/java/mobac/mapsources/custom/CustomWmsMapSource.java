@@ -51,14 +51,14 @@ public class CustomWmsMapSource extends CustomMapSource {
 	 * some wms needs more parameters: &amp;EXCEPTIONS=BLANK&amp;Styles= .....
 	 */
 	@XmlElement(required = false, name = "aditionalparameters")
-	private String aditionalparameters = "";
+	private String additionalparameters = "";
 
 	@Override
 	public String getTileUrl(int zoom, int tilex, int tiley) {
 		double[] coords = MapSourceTools.calculateLatLon(this, zoom, tilex, tiley);
 		String url = this.url + "REQUEST=GetMap" + "&LAYERS=" + layers + "&SRS=" + coordinatesystem + "&VERSION="
 				+ version + "&FORMAT=image/" + tileType.getMimeType() + "&BBOX=" + coords[0] + "," + coords[1] + ","
-				+ coords[2] + "," + coords[3] + "&WIDTH=256&HEIGHT=256" + aditionalparameters;
+				+ coords[2] + "," + coords[3] + "&WIDTH=256&HEIGHT=256" + additionalparameters;
 		return url;
 	}
 

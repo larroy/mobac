@@ -11,6 +11,9 @@
 
 =======
 
+1.9.15 (2013-10-??)
+ + Selection around GPX track: preview map selection while selecting distance   
+
 1.9.14 (2013-07-29)
  ~ Custom SQlite map sources can now be specified using a relative path
  ~ BackCountry Navigator format updated - now SQLite based atlases are created

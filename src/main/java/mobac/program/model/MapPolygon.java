@@ -50,7 +50,8 @@ public class MapPolygon extends Map {
 	protected MapPolygon() {
 	}
 
-	public static MapPolygon createFromTrack(Layer layer, String name, MapSource mapSource, int zoom,
+
+	public static MapPolygon createTrackEnclosure(Layer layer, String name, MapSource mapSource, int zoom,
 			EastNorthCoordinate[] trackPoints, int pixelDistance, TileImageParameters parameters) {
 
 		MapSpace mapSpace = mapSource.getMapSpace();

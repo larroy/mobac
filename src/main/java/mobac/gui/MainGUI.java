@@ -70,6 +70,7 @@ import javax.xml.bind.JAXBException;
 
 import mobac.externaltools.ExternalToolDef;
 import mobac.externaltools.ExternalToolsLoader;
+import mobac.gui.actions.AddGpxTrackAreaPolygonMap;
 import mobac.gui.actions.AddGpxTrackPolygonMap;
 import mobac.gui.actions.AddMapLayer;
 import mobac.gui.actions.AtlasConvert;

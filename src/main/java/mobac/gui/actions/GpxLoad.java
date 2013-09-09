@@ -72,18 +72,17 @@ public class GpxLoad implements ActionListener {
 		File[] f = fc.getSelectedFiles();
 
 		// check already opened gpx files
-		boolean dublicates = false;
+		boolean duplicates = false;
 		for (File selectedFile : f) {
-			dublicates = panel.isFileOpen(selectedFile.getAbsolutePath());
-			if (dublicates)
+			duplicates = panel.isFileOpen(selectedFile.getAbsolutePath());
+			if (duplicates)
 				break;
 		}
-		if (dublicates) {
-			int answer = JOptionPane.showConfirmDialog(mainGUI,
-					I18nUtils.localizedStringForKey("rp_gpx_msg_confirm_reopen_file"),
-					I18nUtils.localizedStringForKey("Warning"),
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
+		if (duplicates) {
+			int answer = JOptionPane
+					.showConfirmDialog(mainGUI, I18nUtils.localizedStringForKey("rp_gpx_msg_confirm_reopen_file"),
+							I18nUtils.localizedStringForKey("Warning"), JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
 			if (answer != JOptionPane.YES_OPTION)
 				return;
 		}
@@ -94,6 +93,7 @@ public class GpxLoad implements ActionListener {
 		} else if (f.length == 1) {
 			doLoad(f[0], mainGUI);
 		}
+		mainGUI.previewMap.refreshMap();
 	}
 
 	/**

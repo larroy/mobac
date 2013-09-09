@@ -37,7 +37,6 @@ import mobac.program.interfaces.LayerInterface;
 import mobac.program.interfaces.MapInterface;
 import mobac.program.model.MapPolygon;
 
-
 public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 
 	private final JAtlasTree tree;
@@ -59,6 +58,12 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		}
 	}
 
+	public MapAreaHighlightingLayer(AtlasObject atlasObject) {
+		tree = null;
+		treeListener = null;
+		this.object = atlasObject;
+	}
+
 	public MapAreaHighlightingLayer(JAtlasTree tree) {
 		this.tree = tree;
 		object = (AtlasObject) tree.getSelectionPath().getLastPathComponent();
@@ -78,8 +83,7 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		tree.getModel().addTreeModelListener(this);
 	}
 
-	public void paint(JMapViewer mapViewer, Graphics2D g, int zoom, int minX, int minY, int maxX,
-			int maxY) {
+	public void paint(JMapViewer mapViewer, Graphics2D g, int zoom, int minX, int minY, int maxX, int maxY) {
 		if (object == null)
 			return;
 		if (object instanceof AtlasInterface) {
@@ -97,16 +101,14 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		}
 	}
 
-	protected void paintMap(MapInterface map, Graphics2D g, int zoom, int minX, int minY, int maxX,
-			int maxY) {
+	protected void paintMap(MapInterface map, Graphics2D g, int zoom, int minX, int minY, int maxX, int maxY) {
 		if (map instanceof MapPolygon)
 			paintMapPolygon((MapPolygon) map, g, zoom, minX, minY, maxX, maxY);
 		else
 			paintMapRectangle(map, g, zoom, minX, minY, maxX, maxY);
 	}
 
-	protected void paintMapRectangle(MapInterface map, Graphics2D g, int zoom, int minX, int minY,
-			int maxX, int maxY) {
+	protected void paintMapRectangle(MapInterface map, Graphics2D g, int zoom, int minX, int minY, int maxX, int maxY) {
 		Point max = map.getMaxTileCoordinate();
 		Point min = map.getMinTileCoordinate();
 		int zoomDiff = map.getZoom() - zoom;
@@ -124,8 +126,7 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		g.drawRect(x, y, w, h);
 	}
 
-	protected void paintMapPolygon(MapPolygon map, Graphics2D g, int zoom, int minX, int minY,
-			int maxX, int maxY) {
+	protected void paintMapPolygon(MapPolygon map, Graphics2D g, int zoom, int minX, int minY, int maxX, int maxY) {
 		Polygon p = map.getPolygon();
 		int zoomDiff = map.getZoom() - zoom;
 
@@ -176,5 +177,4 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		MainGUI.getMainGUI().previewMap.repaint();
 	}
 
-	
 }

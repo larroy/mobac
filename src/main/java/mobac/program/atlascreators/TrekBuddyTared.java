@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
 import mobac.program.annotations.AtlasCreatorName;
 import mobac.program.atlascreators.impl.MapTileWriter;
 import mobac.utilities.Utilities;
