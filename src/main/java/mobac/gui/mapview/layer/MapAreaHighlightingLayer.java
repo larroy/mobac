@@ -177,4 +177,13 @@ public class MapAreaHighlightingLayer implements MapLayer, TreeModelListener {
 		MainGUI.getMainGUI().previewMap.repaint();
 	}
 
+	public AtlasObject getObject() {
+		return object;
+	}
+
+	public void setObject(AtlasObject object) {
+		this.object = object;
+	}
+
+	
 }

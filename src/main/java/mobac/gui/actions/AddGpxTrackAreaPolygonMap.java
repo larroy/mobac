@@ -16,19 +16,12 @@
  ******************************************************************************/
 package mobac.gui.actions;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import mobac.data.gpx.gpx11.TrkType;
 import mobac.data.gpx.gpx11.TrksegType;
@@ -36,12 +29,10 @@ import mobac.data.gpx.interfaces.GpxPoint;
 import mobac.exceptions.InvalidNameException;
 import mobac.gui.MainGUI;
 import mobac.gui.atlastree.JAtlasTree;
-import mobac.gui.components.JDistanceSlider;
 import mobac.gui.gpxtree.GpxEntry;
 import mobac.gui.gpxtree.GpxRootEntry;
 import mobac.gui.gpxtree.TrkEntry;
 import mobac.gui.gpxtree.TrksegEntry;
-import mobac.gui.mapview.layer.MapAreaHighlightingLayer;
 import mobac.program.interfaces.AtlasInterface;
 import mobac.program.interfaces.MapInterface;
 import mobac.program.interfaces.MapSource;
@@ -52,17 +43,14 @@ import mobac.program.model.MapPolygon;
 import mobac.program.model.SelectedZoomLevels;
 import mobac.program.model.Settings;
 import mobac.program.model.TileImageParameters;
-import mobac.program.model.UnitSystem;
 import mobac.utilities.I18nUtils;
 
-public class AddGpxTrackPolygonMap implements ActionListener {
+public class AddGpxTrackAreaPolygonMap implements ActionListener {
 
-	public static final AddGpxTrackPolygonMap INSTANCE = new AddGpxTrackPolygonMap();
-
-	private MapAreaHighlightingLayer msl = null;
+	public static final AddGpxTrackAreaPolygonMap INSTANCE = new AddGpxTrackAreaPolygonMap();
 
 	public void actionPerformed(ActionEvent event) {
-		final MainGUI mg = MainGUI.getMainGUI();
+		MainGUI mg = MainGUI.getMainGUI();
 		GpxEntry entry = mg.gpxPanel.getSelectedEntry();
 
 		if (entry == null)
@@ -102,7 +90,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 		final String mapNameFmt = "%s %02d";
 		AtlasInterface atlasInterface = jAtlasTree.getAtlas();
 		String name = mg.getUserText();
-		final MapSource mapSource = mg.getSelectedMapSource();
+		MapSource mapSource = mg.getSelectedMapSource();
 		SelectedZoomLevels sZL = mg.getSelectedZoomLevels();
 		int[] zoomLevels = sZL.getZoomLevels();
 		if (zoomLevels.length == 0) {
@@ -110,7 +98,7 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 			return;
 		}
 		List<? extends GpxPoint> points = trk.getTrkpt();
-		final EastNorthCoordinate[] trackPoints = new EastNorthCoordinate[points.size()];
+		EastNorthCoordinate[] trackPoints = new EastNorthCoordinate[points.size()];
 		EastNorthCoordinate minCoordinate = new EastNorthCoordinate(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 		EastNorthCoordinate maxCoordinate = new EastNorthCoordinate(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 		for (int i = 0; i < trackPoints.length; i++) {
@@ -126,69 +114,6 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 
 		final int maxZoom = zoomLevels[zoomLevels.length - 1];
 		final MapSpace mapSpace = mapSource.getMapSpace();
-		Point p1 = maxCoordinate.toTileCoordinate(mapSpace, maxZoom);
-		Point p2 = minCoordinate.toTileCoordinate(mapSpace, maxZoom);
-
-		final int centerY = p1.y + ((p1.y - p2.y) / 2);
-
-		final UnitSystem unitSystem = Settings.getInstance().getUnitSystem();
-
-		final TileImageParameters customTileParameters = mg.getSelectedTileImageParameters();
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setPreferredSize(new Dimension(300, 100));
-		final JLabel label = new JLabel("");
-		final JDistanceSlider slider = new JDistanceSlider(mapSource.getMapSpace(), maxZoom, centerY, unitSystem, 5,
-				500);
-		ChangeListener cl = new ChangeListener() {
-
-			public void stateChanged(ChangeEvent e) {
-				double d = mapSpace.horizontalDistance(maxZoom, centerY, slider.getValue());
-				d *= unitSystem.earthRadius * unitSystem.unitFactor;
-				String unitName = unitSystem.unitSmall;
-				if (d > unitSystem.unitFactor) {
-					d /= unitSystem.unitFactor;
-					unitName = unitSystem.unitLarge;
-				}
-				label.setText(String.format(I18nUtils.localizedStringForKey("dlg_gpx_track_select_distance"),
-						((int) d), unitName));
-			}
-		};
-		final JButton previewButton = new JButton(I18nUtils.localizedStringForKey("dlg_gpx_track_select_preview"));
-		previewButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int distance = slider.getValue();
-				MapPolygon maxZoomMap = MapPolygon.createTrackEnclosure(null, "Dummy", mapSource, maxZoom, trackPoints,
-						distance, customTileParameters);
-				if (msl != null)
-					msl.setObject(maxZoomMap);
-				msl = new MapAreaHighlightingLayer(maxZoomMap);
-				mg.previewMap.repaint();
-			}
-		});
-
-		cl.stateChanged(null);
-		slider.addChangeListener(cl);
-		panel.add(label, BorderLayout.NORTH);
-		panel.add(slider, BorderLayout.CENTER);
-		panel.add(previewButton, BorderLayout.SOUTH);
-
-		int result = JOptionPane.showConfirmDialog(mg, panel,
-				I18nUtils.localizedStringForKey("dlg_gpx_track_select_title"), JOptionPane.OK_CANCEL_OPTION);
-
-		if (msl != null) {
-			mg.previewMap.mapLayers.remove(msl);
-			msl.setObject(null);
-		}
-
-		if (result != JOptionPane.OK_OPTION)
-			return;
-
-		int distance = slider.getValue();
-		MapPolygon maxZoomMap = MapPolygon.createTrackEnclosure(null, "Dummy", mapSource, maxZoom, trackPoints,
-				distance, customTileParameters);
 
 		String layerName = name;
 		int c = 1;
@@ -203,11 +128,24 @@ public class AddGpxTrackPolygonMap implements ActionListener {
 			}
 		} while (!success);
 
+		TileImageParameters customTileParameters = mg.getSelectedTileImageParameters();
+
+		int[] xPoints = new int[trackPoints.length];
+		int[] yPoints = new int[trackPoints.length];
+		for (int i = 0; i < trackPoints.length; i++) {
+			EastNorthCoordinate coord = trackPoints[i];
+			xPoints[i] = mapSpace.cLonToX(coord.lon, maxZoom);
+			yPoints[i] = mapSpace.cLatToY(coord.lat, maxZoom);
+		}
+
+		Polygon p = new Polygon(xPoints, yPoints, xPoints.length);
+		MapPolygon maxZoomMap = new MapPolygon(null, "Dummy", mapSource, maxZoom, p, customTileParameters);
+
 		int width = maxZoomMap.getMaxTileCoordinate().x - maxZoomMap.getMinTileCoordinate().x;
 		int height = maxZoomMap.getMaxTileCoordinate().y - maxZoomMap.getMinTileCoordinate().y;
 		if (Math.max(width, height) > Settings.getInstance().maxMapSize) {
 			String msg = I18nUtils.localizedStringForKey("msg_add_gpx_polygon_maxsize");
-			result = JOptionPane.showConfirmDialog(mg, msg,
+			int result = JOptionPane.showConfirmDialog(mg, msg,
 					I18nUtils.localizedStringForKey("msg_add_gpx_polygon_maxsize_title"), JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 			if (result != JOptionPane.YES_OPTION)

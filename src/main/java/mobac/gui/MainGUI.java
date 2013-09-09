@@ -438,8 +438,13 @@ public class MainGUI extends JFrame implements MapEventListener {
 		mapsMenu.add(addSelection);
 
 		JMenuItem addGpxTrackSelection = new JMenuItem2(
-				I18nUtils.localizedStringForKey("menu_maps_selection_add_by_gpx"), AddGpxTrackPolygonMap.class);
+				I18nUtils.localizedStringForKey("menu_maps_selection_add_around_gpx"), AddGpxTrackPolygonMap.class);
 		mapsMenu.add(addGpxTrackSelection);
+
+		JMenuItem addGpxTrackAreaSelection = new JMenuItem2(
+				I18nUtils.localizedStringForKey("menu_maps_selection_add_by_gpx"),
+				AddGpxTrackAreaPolygonMap.class);
+		mapsMenu.add(addGpxTrackAreaSelection);
 
 		// Bookmarks menu
 		bookmarkMenu = new JMenu(I18nUtils.localizedStringForKey("menu_bookmark"));

@@ -12,7 +12,8 @@
 =======
 
 1.9.15 (2013-10-??)
- + Selection around GPX track: preview map selection while selecting distance   
+ + Selection around GPX track: preview map selection while selecting distance
+ + Selection enclosed by GPX track (inner region)   
 
 1.9.14 (2013-07-29)
  ~ Custom SQlite map sources can now be specified using a relative path
