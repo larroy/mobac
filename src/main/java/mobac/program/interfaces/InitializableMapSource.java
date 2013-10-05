@@ -16,12 +16,8 @@
  ******************************************************************************/
 package mobac.program.interfaces;
 
-/**
- * Marker interface for file based map sources (map sources that use tiles present in the file system and therefore do
- * not stress online tile servers.
- */
-public interface FileBasedMapSource extends InitializableMapSource {
+public interface InitializableMapSource extends MapSource {
 
-	public void reinitialize();
-
+	public void initialize();
+	
 }

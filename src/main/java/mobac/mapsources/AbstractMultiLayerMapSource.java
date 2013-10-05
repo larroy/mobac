@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import mobac.exceptions.TileException;
 import mobac.gui.mapview.PreviewMap;
+import mobac.program.interfaces.InitializableMapSource;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.model.MapSourceLoaderInfo;
@@ -38,7 +39,7 @@ import mobac.program.model.TileImageType;
 
 import org.apache.log4j.Logger;
 
-public abstract class AbstractMultiLayerMapSource implements MapSource, Iterable<MapSource> {
+public abstract class AbstractMultiLayerMapSource implements InitializableMapSource, Iterable<MapSource> {
 
 	protected Logger log;
 
@@ -71,6 +72,20 @@ public abstract class AbstractMultiLayerMapSource implements MapSource, Iterable
 			minZoom = Math.max(minZoom, ms.getMinZoom());
 			if (!ms.getMapSpace().equals(mapSpace))
 				throw new RuntimeException("Different map spaces used in multi-layer map source");
+		}
+	}
+
+	@Override
+	public void initialize() {
+		MapSource refMapSource = mapSources[0];
+		mapSpace = refMapSource.getMapSpace();
+		maxZoom = PreviewMap.MAX_ZOOM;
+		minZoom = 0;
+		for (MapSource ms : mapSources) {
+			if (ms instanceof InitializableMapSource)
+				((InitializableMapSource) ms).initialize();
+			maxZoom = Math.min(maxZoom, ms.getMaxZoom());
+			minZoom = Math.max(minZoom, ms.getMinZoom());
 		}
 	}
 
