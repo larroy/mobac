@@ -13,7 +13,11 @@
 
 1.9.15 (2013-10-??)
  + Selection around GPX track: preview map selection while selecting distance
- + Selection enclosed by GPX track (inner region)   
+ + Selection enclosed by GPX track (inner region)
+ ! Minimum and maximum zoom level of custom multi-layer map sources in 
+    combination with local file-based map sources corrected
+ ! Maverick: Corrected that all files are expected to have ".jpg.tile" 
+    extension, even if it is a PNG file.   
 
 1.9.14 (2013-07-29)
  ~ Custom SQlite map sources can now be specified using a relative path

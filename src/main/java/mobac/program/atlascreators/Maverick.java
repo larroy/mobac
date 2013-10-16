@@ -28,7 +28,7 @@ public class Maverick extends OSMTracker {
 
 	public Maverick() {
 		super();
-		tileFileNamePattern += ".tile";
+		tileFileNamePattern = "%d/%d/%d.jpg.tile";
 	}
 
 }
