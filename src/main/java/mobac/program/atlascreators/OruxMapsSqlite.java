@@ -92,18 +92,42 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 		try {
 			conn = getConnection();
 			initializeDB();
-			conn.close();
 		} catch (SQLException e) {
 			throw new IOException(e);
+		} finally {
+			closeConnection();
 		}
 
 	}
 
-	private Connection getConnection() throws SQLException {
+	@Override
+	public void finishAtlasCreation() throws IOException, InterruptedException {
+		super.finishAtlasCreation();
+		closeConnection();
+	}
 
+	@Override
+	public void abortAtlasCreation() throws IOException {
+		super.abortAtlasCreation();
+		log.debug("Aborting OruxMapsSqlite atlas creation");
+		closeConnection();
+	}
+
+	private Connection getConnection() throws SQLException {
 		String url = "jdbc:sqlite:/" + this.databaseFile;
 		Connection conn = DriverManager.getConnection(url);
 		return conn;
+	}
+
+	private void closeConnection() {
+		try {
+			if (conn != null) {
+				log.debug("Closing database connection");
+				conn.close();
+			}
+		} catch (Exception e) {
+		}
+		conn = null;
 	}
 
 	private void initializeDB() throws SQLException {
@@ -145,13 +169,13 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 			mapDlTileProvider = ctp;
 			MapTileWriter mtw = new OruxMapTileWriterDB();
 			OruxMapTileBuilder mapTileBuilder = new OruxMapTileBuilder(this, mtw);
-			//customTileCount = mapTileBuilder.getCustomTileCount();
+			// customTileCount = mapTileBuilder.getCustomTileCount();
 			atlasProgress.initMapCreation(mapTileBuilder.getCustomTileCount());
 			mapTileBuilder.createTiles();
 			mtw.finalizeMap();
-		} catch(IOException e){
+		} catch (IOException e) {
 			throw new MapCreationException(map, e);
-		}finally {
+		} finally {
 			ctp.cleanup();
 		}
 	}
