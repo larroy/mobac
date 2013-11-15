@@ -47,7 +47,7 @@ import mobac.utilities.Utilities;
  * @author Werner Keilholz
  */
 @AtlasCreatorName("Maplorer atlas format")
-@SupportedParameters(names = { Name.format })
+@SupportedParameters(names = { Name.format, Name.height, Name.width })
 public class Maplorer extends AtlasCreator {
 
 	private static final String FILENAME_PATTERN = "map_%s%d.%s";

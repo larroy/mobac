@@ -17,7 +17,8 @@
  ! Minimum and maximum zoom level of custom multi-layer map sources in 
     combination with local file-based map sources corrected
  ! Maverick: Corrected that all files are expected to have ".jpg.tile" 
-    extension, even if it is a PNG file.   
+    extension, even if it is a PNG file.
+ ! Maplorer: Custom tile width and height reactivated   
 
 1.9.14 (2013-07-29)
  ~ Custom SQlite map sources can now be specified using a relative path
