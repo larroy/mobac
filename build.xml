@@ -293,6 +293,10 @@
 			boolean
 			equals(java.lang.Object);
 			}
+			-dontnote java.**
+			-dontnote javax.**
+			-dontnote com.sun.**
+			-dontnote sun.**
 			-dontwarn
 			-dontoptimize
 			-dontobfuscate
