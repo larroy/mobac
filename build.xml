@@ -18,7 +18,8 @@
 	</tstamp>
 
 	<property name="je-version" value="3.3.93" />
-
+	<property name="sqlite-version" value="3.7.15-M1" />
+	
 	<!-- Java target version -->
 	<property name="java-target" value="1.6" />
 
@@ -166,7 +167,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="${main.class}" />
 				<attribute name="Class-Path"
-					value="./ sqlite-jdbc-3.7.2.jar sqlite.jar jai_core.jar jai_codec.jar lib/jai_core.jar lib/jai_codec.jar jai_*.jar lib/jai_*.jar" />
+					value="./ sqlite-jdbc-${sqlite-version}.jar sqlite.jar jai_core.jar jai_codec.jar lib/jai_core.jar lib/jai_codec.jar jai_*.jar lib/jai_*.jar" />
 			</manifest>
 			<zipfileset src="lib/log4j-1.2.15.jar" includes="org/apache/log4j/**" />
 			<zipfileset src="lib/je-${je-version}.jar" />
@@ -339,7 +340,7 @@
 			<fileset dir="./misc">
 				<include name="mobac.icns" />
 			</fileset>
-			<fileset dir="lib" includes="sqlite-jdbc-3.7.2.jar" />
+			<fileset dir="lib" includes="sqlite-jdbc-${sqlite-version}.jar" />
 		</zip>
 	</target>
 
