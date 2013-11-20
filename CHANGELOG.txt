@@ -11,7 +11,7 @@
 
 =======
 
-1.9.15 (2013-10-??)
+1.9.15 (2013-11-20)
  + Selection around GPX track: preview map selection while selecting distance
  + Selection enclosed by GPX track (inner region)
  ! Minimum and maximum zoom level of custom multi-layer map sources in 
