@@ -123,40 +123,12 @@ public abstract class AbstractMultiLayerMapSource implements InitializableMapSou
 		BufferedImage image = getTileImage(zoom, x, y, loadMethod);
 		if (image == null)
 			return null;
-		// TODO: here can write with compress
 		ImageIO.write(image, tileType.getFileExt(), buf);
 		return buf.toByteArray();
 	}
 
-	// public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
-	// InterruptedException, TileException {
-	// int tileSize = mapSpace.getTileSize();
-	// BufferedImage image = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_3BYTE_BGR);
-	// Graphics2D g2 = image.createGraphics();
-	// try {
-	// g2.setColor(getBackgroundColor());
-	// g2.fillRect(0, 0, tileSize, tileSize);
-	// boolean used = false;
-	// for (MapSource layerMapSource : mapSources) {
-	// BufferedImage layerImage = layerMapSource.getTileImage(zoom, x, y, loadMethod);
-	// if (layerImage != null) {
-	// log.debug("Multi layer loading: " + layerMapSource + " " + x + " " + y + " " + zoom);
-	// g2.drawImage(layerImage, 0, 0, null);
-	// used = true;
-	// }
-	// }
-	// if (used)
-	// return image;
-	// else
-	// return null;
-	// } finally {
-	// g2.dispose();
-	// }
-	// }
-
 	public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
 			InterruptedException, TileException {
-		// int tileSize = mapSpace.getTileSize();
 		BufferedImage image = null;
 		Graphics2D g2 = null;
 		try {
@@ -175,25 +147,17 @@ public abstract class AbstractMultiLayerMapSource implements InitializableMapSou
 				}
 			}
 
-			// optimize for when only one layer exist
-			if (layerImages.size() == 1) {
-				return layerImages.get(0);
-			} else if (layerImages.size() > 1) {
-				image = new BufferedImage(maxSize, maxSize, BufferedImage.TYPE_3BYTE_BGR);
-				g2 = image.createGraphics();
-				g2.setColor(getBackgroundColor());
-				g2.fillRect(0, 0, maxSize, maxSize);
+			image = new BufferedImage(maxSize, maxSize, BufferedImage.TYPE_3BYTE_BGR);
+			g2 = image.createGraphics();
+			g2.setColor(getBackgroundColor());
+			g2.fillRect(0, 0, maxSize, maxSize);
 
-				for (int i = 0; i < layerImages.size(); i++) {
-					BufferedImage layerImage = layerImages.get(i);
-					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getLayerAlpha(i)));
-					g2.drawImage(layerImage, 0, 0, maxSize, maxSize, null);
-				}
-				return image;
-			} else {
-				return null;
+			for (int i = 0; i < layerImages.size(); i++) {
+				BufferedImage layerImage = layerImages.get(i);
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getLayerAlpha(i)));
+				g2.drawImage(layerImage, 0, 0, maxSize, maxSize, null);
 			}
-
+			return image;
 		} finally {
 			if (g2 != null) {
 				g2.dispose();
