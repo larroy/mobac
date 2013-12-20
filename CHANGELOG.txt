@@ -14,6 +14,8 @@
 1.9.16 (2014-??-??)
  ! Background color does not work in case of a multi-layer map source with 
     only one layer (#252)
+ ~ The atlas format Maverick was changed from OSMTracker format to RMaps 
+    SQLite format (request from Maverick author). 
 
 1.9.15 (2013-11-20)
  + Selection around GPX track: preview map selection while selecting distance
