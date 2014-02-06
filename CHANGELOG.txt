@@ -11,7 +11,7 @@
 
 =======
 
-1.9.16 (2014-??-??)
+1.9.16 (2014-02-06)
  ! Background color does not work in case of a multi-layer map source with 
     only one layer (#252)
  ~ The atlas format Maverick was changed from OSMTracker format to RMaps 
