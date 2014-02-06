@@ -54,7 +54,11 @@ public class DownloadedTileProvider implements TileProvider {
 		byte[] unconvertedTileData = getTileData(x, y);
 		if (unconvertedTileData == null)
 			return null;
-		return ImageIO.read(new ByteArrayInputStream(unconvertedTileData));
+		try {
+			return ImageIO.read(new ByteArrayInputStream(unconvertedTileData));
+		} catch (Exception e) {
+			throw new IOException("Unable to load image x=" + x + " y=" + y + " - error: " + e);
+		}
 	}
 
 	public boolean preferTileImageUsage() {
