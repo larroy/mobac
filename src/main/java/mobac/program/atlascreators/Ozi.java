@@ -142,7 +142,7 @@ public class Ozi extends AtlasCreator {
 		sbMap.append(fileName + "\r\n");
 		sbMap.append(fileName + "\r\n");
 		sbMap.append("1 ,Map Code,\r\n");
-		sbMap.append("D_WGS_1984_MAJOR_AUXILIARY_SPHERE,WGS 84,   0.0000,   0.0000,WGS 84\r\n");
+		sbMap.append("WGS 84,WGS 84,   0.0000,   0.0000,WGS 84\r\n");
 		sbMap.append("Reserved 1\r\n");
 		sbMap.append("Reserved 2\r\n");
 		sbMap.append("Magnetic Variation,,,E\r\n");
