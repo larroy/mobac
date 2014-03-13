@@ -156,8 +156,7 @@ public class OruxMaps extends AtlasCreator {
 		oruxMapsLayerDir = new File(oruxMapsMainDir, mapName);
 		oruxMapsImagesDir = new File(oruxMapsLayerDir, "set");
 		try {
-			Utilities.mkDir(oruxMapsLayerDir);
-			Utilities.mkDir(oruxMapsImagesDir);
+			Utilities.mkDirs(oruxMapsImagesDir);
 			writeOtrk2File();
 			createTiles();
 		} catch (InterruptedException e) {
