@@ -16,7 +16,7 @@
  ******************************************************************************/
 package mobac.gui.panels;
 
-import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,7 +25,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import mobac.gui.components.JCollapsiblePanel;
 import mobac.gui.mapview.PreviewMap;
@@ -49,7 +48,7 @@ public class JTileStoreCoveragePanel extends JCollapsiblePanel implements MapEve
 	private JComboBox zoomCombo;
 	private PreviewMap mapViewer;
 
-	public JTileStoreCoveragePanel(PreviewMap mapViewer) {
+	public JTileStoreCoveragePanel(PreviewMap mapViewer, int layerSelectorWidth) {
 		super(I18nUtils.localizedStringForKey("lp_tile_store_title"));
 		contentContainer.setLayout(new GridBagLayout());
 		this.mapViewer = mapViewer;
@@ -64,6 +63,7 @@ public class JTileStoreCoveragePanel extends JCollapsiblePanel implements MapEve
 		zoomCombo.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_store_zoom_combo_tips"));
 		titlePanel.setToolTipText(I18nUtils.localizedStringForKey("lp_tile_store_title_tips"));
 		layerSelector = new JComboBox();
+		layerSelector.setPreferredSize(new Dimension(layerSelectorWidth, layerSelector.getPreferredSize().height));
 
 		GBC gbc_eol = GBC.eol().insets(2, 2, 2, 2);
 		GBC gbc_std = GBC.std().insets(2, 2, 2, 2);

@@ -1,3 +1,5 @@
+package mobac.utilities.file;
+
 /*******************************************************************************
  * Copyright (c) MOBAC developers
  * 
@@ -14,21 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package mobac.utilities.file;
-
 import java.io.File;
-import java.io.FileFilter;
 
-public class FileExtFilter implements FileFilter {
+/**
+ * @author Maksym "elmuSSo" Kondej
+ * 
+ * This filter will pass-through every directory,
+ * but all files will be filtered by a FileExtFilter.
+ */
+public class DirOrFileExtFilter extends FileExtFilter {
 
-	protected final String acceptedFileExt;
-
-	public FileExtFilter(String acceptedFileExt) {
-		this.acceptedFileExt = acceptedFileExt;
+	public DirOrFileExtFilter(String acceptedFileExt) {
+		super(acceptedFileExt);
 	}
 
+	@Override
 	public boolean accept(File pathname) {
-		return pathname.getName().endsWith(acceptedFileExt);
+		if(pathname.isDirectory()) {
+			// All directories are accepted
+			return true;
+		} else {
+			// Files are passed to the accept method of FileExtFilter
+			return super.accept(pathname);
+		}
 	}
-
 }

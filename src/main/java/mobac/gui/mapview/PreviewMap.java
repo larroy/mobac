@@ -132,7 +132,7 @@ public class PreviewMap extends JMapViewer {
 
 	@Override
 	public void setMapSource(MapSource newMapSource) {
-		if (newMapSource.equals(mapSource))
+		if (newMapSource == null || newMapSource.equals(mapSource))
 			return;
 		log.trace("Preview map source changed from " + mapSource + " to " + newMapSource);
 		super.setMapSource(newMapSource);

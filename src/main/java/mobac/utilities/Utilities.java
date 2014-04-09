@@ -43,6 +43,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.ParsePosition;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +62,7 @@ import mobac.exceptions.MOBACOutOfMemoryException;
 import mobac.program.Logging;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.TileImageType;
+import mobac.utilities.file.DirOrFileExtFilter;
 import mobac.utilities.file.DirectoryFileFilter;
 
 import org.apache.log4j.Logger;
@@ -733,6 +735,33 @@ public class Utilities {
 		if (!m.matches())
 			return -1;
 		return Integer.parseInt(m.group(1));
+	}
+
+	/**
+	 * This method recursively traverse a folder and all its descendants,
+	 * applying to them a FileExtFilter. DirOrFileExtFilter was used,
+	 * to don't filter out the folders, when traversing them. 
+	 * But in the end, only files will be returned
+	 * 
+	 * @param dirOrFile - file or directory that will be traversed and analyzed
+	 * @param dirOFileExtFilter - filter that will pass-through all folders and
+	 * files only with requested extension
+	 * @return a list of files with requested extension
+	 * 
+	 * @author Maksym "elmuSSo" Kondej
+	 */
+	public static List<File> traverseFolder(File dirOrFile, DirOrFileExtFilter dirOFileExtFilter) {
+		ArrayList<File> result = new ArrayList<File>();
+		if (dirOrFile.isDirectory()) {
+			File allFiles[] = dirOrFile.listFiles(dirOFileExtFilter);
+			for (File innerFile : allFiles) {
+				result.addAll(traverseFolder(innerFile, dirOFileExtFilter));
+			}
+		} else if (dirOrFile.isFile()) {
+			// Only files are added to the results list
+			result.add(dirOrFile);
+		}
+		return result;
 	}
 
 }

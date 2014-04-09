@@ -397,22 +397,14 @@ public class SettingsGUI extends JDialog {
 		JPanel rightPanel = new JPanel(new BorderLayout());
 		rightPanel.setBorder(createSectionBorder(I18nUtils.localizedStringForKey("set_mapsrc_mgr_title_disabled")));
 
-		JButton up = new JButton(Utilities.loadResourceImageIcon("arrow_blue_up.png"));
-		up.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_up_tips"));
-		JButton down = new JButton(Utilities.loadResourceImageIcon("arrow_blue_down.png"));
-		down.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_down_tips"));
 		JButton toLeft = new JButton(Utilities.loadResourceImageIcon("arrow_blue_left.png"));
 		toLeft.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_left_tips"));
 		JButton toRight = new JButton(Utilities.loadResourceImageIcon("arrow_blue_right.png"));
 		toRight.setToolTipText(I18nUtils.localizedStringForKey("set_mapsrc_mgr_move_right_tips"));
 		Insets buttonInsets = new Insets(4, 4, 4, 4);
 		Dimension buttonDimension = new Dimension(40, 40);
-		up.setPreferredSize(buttonDimension);
-		down.setPreferredSize(buttonDimension);
 		toLeft.setPreferredSize(buttonDimension);
 		toRight.setPreferredSize(buttonDimension);
-		up.setMargin(buttonInsets);
-		down.setMargin(buttonInsets);
 		toLeft.setMargin(buttonInsets);
 		toRight.setMargin(buttonInsets);
 
@@ -437,46 +429,10 @@ public class SettingsGUI extends JDialog {
 				disabledMapSourcesModel.sort();
 			}
 		});
-		up.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				int[] idx = enabledMapSources.getSelectedIndices();
-				if (idx.length == 0)
-					return;
-				for (int i = 0; i < idx.length; i++) {
-					int index = idx[i];
-					if (index == 0)
-						return;
-					if (enabledMapSourcesModel.moveUp(index))
-						idx[i]--;
-				}
-				enabledMapSources.setSelectedIndices(idx);
-				enabledMapSources.ensureIndexIsVisible(idx[0]);
-			}
-		});
-		down.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				int[] idx = enabledMapSources.getSelectedIndices();
-				if (idx.length == 0)
-					return;
-				for (int i = idx.length - 1; i >= 0; i--) {
-					int index = idx[i];
-					if (index == enabledMapSourcesModel.getSize() - 1)
-						return;
-					if (enabledMapSourcesModel.moveDown(index))
-						idx[i]++;
-				}
-				enabledMapSources.setSelectedIndices(idx);
-				enabledMapSources.ensureIndexIsVisible(idx[idx.length - 1]);
-			}
-		});
 		GBC buttonGbc = GBC.eol();
 		centerPanel.add(Box.createVerticalStrut(25), GBC.eol());
 		centerPanel.add(toLeft, buttonGbc);
 		centerPanel.add(toRight, buttonGbc);
-		centerPanel.add(up, buttonGbc);
-		centerPanel.add(down, buttonGbc);
 		centerPanel.add(Box.createVerticalGlue(), GBC.std().fill());
 
 		MapSourcesManager msManager = MapSourcesManager.getInstance();

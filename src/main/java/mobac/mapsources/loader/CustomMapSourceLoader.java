@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBContext;
@@ -28,7 +28,8 @@ import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.WrappedMapSource;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.MapSourceLoaderInfo.LoaderType;
-import mobac.utilities.file.FileExtFilter;
+import mobac.utilities.Utilities;
+import mobac.utilities.file.DirOrFileExtFilter;
 
 import org.apache.log4j.Logger;
 
@@ -56,8 +57,8 @@ public class CustomMapSourceLoader implements ValidationEventHandler {
 	}
 
 	public void loadCustomMapSources() {
-		File[] customMapSourceFiles = mapSourcesDir.listFiles(new FileExtFilter(".xml"));
-		Arrays.sort(customMapSourceFiles);
+		List<File> customMapSourceFiles = Utilities.traverseFolder(mapSourcesDir, new DirOrFileExtFilter(".xml"));
+		//Arrays.sort(customMapSourceFiles);  //There is probably no need to sort them here, they will be sorted during insertion into a tree
 		for (File f : customMapSourceFiles) {
 			try {
 				MapSource customMapSource;

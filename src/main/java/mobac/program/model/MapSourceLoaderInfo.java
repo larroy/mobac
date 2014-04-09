@@ -17,14 +17,20 @@
 package mobac.program.model;
 
 import java.io.File;
+import java.util.LinkedList;
 
 public class MapSourceLoaderInfo {
 
 	public enum LoaderType {
-		MAPPACK, // map pack file
-		XML, // custom map xml
-		BSH // BeanShell script
+		MAPPACK("Mappack"), // map pack file
+		XML("Custom XML"), // custom map xml
+		BSH("BeanShell") // BeanShell script
 		;
+		public final String displayName;
+
+		private LoaderType(String displayName) {
+			this.displayName = displayName;
+		}
 	};
 
 	protected final LoaderType loaderType;
@@ -56,4 +62,25 @@ public class MapSourceLoaderInfo {
 		return revision;
 	}
 
+	/**
+	 * This method gets a MapSource's path, relative to the /mapsources folder.
+	 * 
+	 * @return Path - relative path to the /mapsources folder, returns null if the file is directly in the /mapsources
+	 *         folder
+	 * 
+	 */
+	public String[] getRelativePath() {
+		File mapSourcesDir = Settings.getInstance().getMapSourcesDirectory();
+		File dir = sourceFile.getParentFile();
+		LinkedList<String> pathList = new LinkedList<String>();
+		while (!mapSourcesDir.equals(dir)) {
+			pathList.offerFirst(dir.getName());
+			dir = dir.getParentFile();
+		}
+		if (pathList.size() == 0) {
+			return null;
+		} else {
+			return pathList.toArray(new String[pathList.size()]);
+		}
+	}
 }

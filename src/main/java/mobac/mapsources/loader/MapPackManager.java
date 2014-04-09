@@ -61,6 +61,7 @@ import mobac.program.model.Settings;
 import mobac.utilities.GUIExceptionHandler;
 import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
+import mobac.utilities.file.DirOrFileExtFilter;
 import mobac.utilities.file.FileExtFilter;
 
 import org.apache.commons.codec.binary.Hex;
@@ -117,12 +118,12 @@ public class MapPackManager {
 		}
 	}
 
-	public File[] getAllMapPackFiles() {
-		return mapPackDir.listFiles(new FileExtFilter(".jar"));
+	public List<File> getAllMapPackFiles() {
+		return Utilities.traverseFolder(mapPackDir, new DirOrFileExtFilter(".jar"));
 	}
 
 	public void loadMapPacks(MapSourcesManager mapSourcesManager) throws IOException, CertificateException {
-		File[] mapPacks = getAllMapPackFiles();
+		List<File> mapPacks = getAllMapPackFiles();
 		for (File mapPackFile : mapPacks) {
 			File oldMapPackFile = new File(mapPackFile.getAbsolutePath() + ".old");
 			try {

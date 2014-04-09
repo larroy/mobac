@@ -14,21 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package mobac.utilities.file;
+package mobac.gui.actions;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class FileExtFilter implements FileFilter {
+import mobac.gui.MainGUI;
+import mobac.gui.settings.SettingsGUI;
 
-	protected final String acceptedFileExt;
+public class SettingsButtonListener implements ActionListener {
 
-	public FileExtFilter(String acceptedFileExt) {
-		this.acceptedFileExt = acceptedFileExt;
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		MainGUI mg = MainGUI.getMainGUI();
+		SettingsGUI.showSettingsDialog(mg);
 	}
-
-	public boolean accept(File pathname) {
-		return pathname.getName().endsWith(acceptedFileExt);
-	}
-
 }

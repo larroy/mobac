@@ -19,6 +19,7 @@ package mobac.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -34,6 +35,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -43,7 +46,8 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -58,7 +62,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -66,6 +72,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBException;
 
 import mobac.externaltools.ExternalToolDef;
@@ -89,6 +98,7 @@ import mobac.gui.actions.RefreshCustomMapsources;
 import mobac.gui.actions.SelectionModeCircle;
 import mobac.gui.actions.SelectionModePolygon;
 import mobac.gui.actions.SelectionModeRectangle;
+import mobac.gui.actions.SettingsButtonListener;
 import mobac.gui.actions.ShowAboutDialog;
 import mobac.gui.actions.ShowHelpAction;
 import mobac.gui.actions.ShowReadme;
@@ -97,6 +107,7 @@ import mobac.gui.components.FilledLayeredPane;
 import mobac.gui.components.JAtlasNameField;
 import mobac.gui.components.JBookmarkMenuItem;
 import mobac.gui.components.JCollapsiblePanel;
+import mobac.gui.components.JMapSourceTree;
 import mobac.gui.components.JMenuItem2;
 import mobac.gui.components.JZoomCheckBox;
 import mobac.gui.listeners.AtlasModelListener;
@@ -114,11 +125,9 @@ import mobac.gui.panels.JGpxPanel;
 import mobac.gui.panels.JProfilesPanel;
 import mobac.gui.panels.JTileImageParametersPanel;
 import mobac.gui.panels.JTileStoreCoveragePanel;
-import mobac.gui.settings.SettingsGUI;
 import mobac.mapsources.MapSourcesManager;
 import mobac.program.ProgramInfo;
 import mobac.program.interfaces.AtlasInterface;
-import mobac.program.interfaces.FileBasedMapSource;
 import mobac.program.interfaces.InitializableMapSource;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.Bookmark;
@@ -147,6 +156,15 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private static Color checkboxBackgroundColor = new Color(0, 0, 0, 40);
 	private static Color labelForegroundColor = Color.WHITE;
 
+	// At this moment, smaller value than 254 will occur in cut right edge of the left panel
+	public static final int LEFT_PANEL_MIN_SIZE = 254;
+	private static final int LEFT_PANEL_MAX_SIZE = LEFT_PANEL_MIN_SIZE + 250;
+	private static final int LEFT_PANEL_SIZE_STEP = 25;
+
+	private static final int LEFT_PANEL_MARGIN = 2;
+
+	public static int leftPanelWidth;
+
 	private static MainGUI mainGUI = null;
 	public static final ArrayList<Image> MOBAC_ICONS = new ArrayList<Image>(3);
 
@@ -157,7 +175,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	}
 
 	protected JMenuBar menuBar;
-	protected JMenu toolsMenu = null;
+	protected JMenu externalToolsMenu = null;
 
 	private JMenu bookmarkMenu = null;
 
@@ -170,13 +188,13 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private JLabel zoomLevelText;
 	private JComboBox gridZoomCombo;
 	private JSlider zoomSlider;
-	private JComboBox mapSourceCombo;
-	private JButton settingsButton;
+	private JMapSourceTree mapSourceTree;
 	private JAtlasNameField atlasNameTextField;
 	private JButton createAtlasButton;
 	private JPanel zoomLevelPanel;
 	private JZoomCheckBox[] cbZoom = new JZoomCheckBox[0];
 	private JLabel amountOfTilesLabel;
+	private JCollapsiblePanel mapSourcePanel;
 
 	private AtlasCreate atlasCreateAction = new AtlasCreate(jAtlasTree);
 
@@ -214,6 +232,9 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 	// MP: get custom font
 	static Font sCustomFont = null;
+
+	private JMenuItem leftPanelShrink;
+	private JMenuItem leftPanelExpand;
 
 	public static Font customFont() {
 		if (sCustomFont == null) {
@@ -350,16 +371,24 @@ public class MainGUI extends JFrame implements MapEventListener {
 			}
 		});
 
-		// map source combo
-		mapSourceCombo = new JComboBox(MapSourcesManager.getInstance().getEnabledOrderedMapSources());
-		mapSourceCombo.setMaximumRowCount(20);
-		mapSourceCombo.addActionListener(new MapSourceComboListener());
-		mapSourceCombo.setToolTipText(I18nUtils.localizedStringForKey("lp_map_source_combo_tips"));
-
-		// settings button
-		settingsButton = new JButton(I18nUtils.localizedStringForKey("lp_main_setting_button_title"));
-		settingsButton.addActionListener(new SettingsButtonListener());
-		settingsButton.setToolTipText(I18nUtils.localizedStringForKey("lp_main_setting_button_tips"));
+		// map source tree
+		mapSourceTree = new JMapSourceTree(MapSourcesManager.getInstance().getEnabledOrderedMapSources());
+		mapSourceTree.setRootVisible(false);
+		mapSourceTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		mapSourceTree.addTreeSelectionListener(new MapSourceTreeListener());
+		mapSourceTree.setExpandsSelectedPaths(true);
+		mapSourceTree.setToggleClickCount(1);
+		mapSourceTree.setToolTipText(I18nUtils.localizedStringForKey("lp_map_source_tree_tips"));
+		mapSourceTree.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				boolean isLocationClickable = ((JMapSourceTree) e.getComponent()).isLocationClickable(e.getPoint());
+				JTree jTree = (JTree) e.getComponent();
+				// If a node is clickable, user will see a "hand" mouse cursor
+				jTree.setCursor(isLocationClickable ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor
+						.getDefaultCursor());
+			}
+		});
 
 		// atlas name text field
 		atlasNameTextField = new JAtlasNameField();
@@ -369,6 +398,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		// main button
 		createAtlasButton = new JButton(I18nUtils.localizedStringForKey("lp_mian_create_btn_title"));
+		createAtlasButton.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/atlas_create.png")));
 		createAtlasButton.addActionListener(atlasCreateAction);
 		createAtlasButton.setToolTipText(I18nUtils.localizedStringForKey("lp_main_create_btn_tips"));
 
@@ -388,102 +418,118 @@ public class MainGUI extends JFrame implements MapEventListener {
 		tileImageParametersPanel = new JTileImageParametersPanel();
 		profilesPanel = new JProfilesPanel(jAtlasTree);
 		profilesPanel.getLoadButton().addActionListener(new LoadProfileListener());
-		tileStoreCoveragePanel = new JTileStoreCoveragePanel(previewMap);
+		// THIS IS A HACK - 90 is fixed width difference for a tileStoreCoveragePanel, but I don't know how to obtain
+		// its real value to avoid hardcoding
+		int tileStoreCoveragePanelWidth = leftPanelWidth - 90;
+		tileStoreCoveragePanel = new JTileStoreCoveragePanel(previewMap, tileStoreCoveragePanelWidth);
 	}
 
 	private void prepareMenuBar() {
 		// Atlas menu
 		JMenu atlasMenu = new JMenu(I18nUtils.localizedStringForKey("menu_atlas"));
+		atlasMenu.setIcon(Utilities.loadResourceImageIcon("atlas.png"));
 		atlasMenu.setMnemonic(KeyEvent.VK_A);
 
 		JMenuItem newAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_new"));
+		newAtlas.setIcon(Utilities.loadResourceImageIcon("atlas_add.png"));
 		newAtlas.setMnemonic(KeyEvent.VK_N);
 		newAtlas.addActionListener(new AtlasNew());
 		atlasMenu.add(newAtlas);
 
 		JMenuItem convertAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_convert_format"));
+		convertAtlas.setIcon(Utilities.loadResourceImageIcon("atlas_convert.png"));
 		convertAtlas.setMnemonic(KeyEvent.VK_V);
 		convertAtlas.addActionListener(new AtlasConvert());
 		atlasMenu.add(convertAtlas);
 		atlasMenu.addSeparator();
 
 		JMenuItem createAtlas = new JMenuItem(I18nUtils.localizedStringForKey("menu_atlas_create"));
+		createAtlas.setIcon(Utilities.loadResourceImageIcon("atlas_create.png"));
 		createAtlas.setMnemonic(KeyEvent.VK_C);
 		createAtlas.addActionListener(atlasCreateAction);
 		atlasMenu.add(createAtlas);
 
-		// Maps menu
-		JMenu mapsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_maps"));
-		mapsMenu.setMnemonic(KeyEvent.VK_M);
-		JMenu selectionModeMenu = new JMenu(I18nUtils.localizedStringForKey("menu_maps_selection"));
+		// Selection menu - before, it was called "Maps menu"
+		JMenu selectionMenu = new JMenu("Selection");
+		selectionMenu.setIcon(Utilities.loadResourceImageIcon("menu_icons/selections.png"));
+		selectionMenu.setMnemonic(KeyEvent.VK_S);
+		JMenu selectionModeMenu = new JMenu(I18nUtils.localizedStringForKey("menu_selection_selection"));
+		selectionModeMenu.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_mode.png"));
 		selectionModeMenu.setMnemonic(KeyEvent.VK_M);
-		mapsMenu.add(selectionModeMenu);
+		selectionMenu.add(selectionModeMenu);
 
-		smRectangle = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_rect"));
+		smRectangle = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("menu_selection_selection_rect"));
+		smRectangle.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_mode.png"));
 		smRectangle.addActionListener(new SelectionModeRectangle());
 		smRectangle.setSelected(true);
 		selectionModeMenu.add(smRectangle);
 
-		smPolygon = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_polygon"));
+		smPolygon = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("menu_selection_selection_polygon"));
+		smPolygon.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_polygon.png"));
 		smPolygon.addActionListener(new SelectionModePolygon());
 		selectionModeMenu.add(smPolygon);
 
-		smCircle = new JRadioButtonMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_circle"));
+		smCircle = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("menu_selection_selection_circle"));
+		smCircle.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_circle.png"));
 		smCircle.addActionListener(new SelectionModeCircle());
 		selectionModeMenu.add(smCircle);
 
-		JMenuItem addSelection = new JMenuItem(I18nUtils.localizedStringForKey("menu_maps_selection_add"));
+		ButtonGroup selectionModeGroup = new ButtonGroup();
+		selectionModeGroup.add(smRectangle);
+		selectionModeGroup.add(smPolygon);
+		selectionModeGroup.add(smCircle);
+
+		JMenuItem addSelection = new JMenuItem(I18nUtils.localizedStringForKey("menu_selection_selection_add"));
+		addSelection.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_add.png"));
 		addSelection.addActionListener(AddMapLayer.INSTANCE);
+		
+		JSeparator selectionSeparator = new JSeparator();
+		selectionMenu.add(selectionSeparator);
 		addSelection.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		addSelection.setMnemonic(KeyEvent.VK_A);
-		mapsMenu.add(addSelection);
+		selectionMenu.add(addSelection);
 
 		JMenuItem addGpxTrackSelection = new JMenuItem2(
-				I18nUtils.localizedStringForKey("menu_maps_selection_add_around_gpx"), AddGpxTrackPolygonMap.class);
-		mapsMenu.add(addGpxTrackSelection);
+				I18nUtils.localizedStringForKey("menu_selection_selection_add_around_gpx"), AddGpxTrackPolygonMap.class);
+		addGpxTrackSelection.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_add.png"));
+		selectionMenu.add(addGpxTrackSelection);
 
 		JMenuItem addGpxTrackAreaSelection = new JMenuItem2(
-				I18nUtils.localizedStringForKey("menu_maps_selection_add_by_gpx"),
-				AddGpxTrackAreaPolygonMap.class);
-		mapsMenu.add(addGpxTrackAreaSelection);
+				I18nUtils.localizedStringForKey("menu_selection_selection_add_by_gpx"), AddGpxTrackAreaPolygonMap.class);
+		addGpxTrackAreaSelection.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_add.png"));
+		selectionMenu.add(addGpxTrackAreaSelection);
 
 		// Bookmarks menu
 		bookmarkMenu = new JMenu(I18nUtils.localizedStringForKey("menu_bookmark"));
+		bookmarkMenu.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_bookmarks.png"));
 		bookmarkMenu.setMnemonic(KeyEvent.VK_B);
 		JMenuItem addBookmark = new JMenuItem(I18nUtils.localizedStringForKey("menu_bookmark_save"));
+		addBookmark.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_save_view.png"));
 		addBookmark.setMnemonic(KeyEvent.VK_S);
 		addBookmark.addActionListener(new BookmarkAdd(previewMap));
 		bookmarkMenu.add(addBookmark);
 		JMenuItem manageBookmarks = new JMenuItem2(I18nUtils.localizedStringForKey("menu_bookmark_manage"),
 				BookmarkManage.class);
+		manageBookmarks.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_manage_bookmarks.png"));
 		manageBookmarks.setMnemonic(KeyEvent.VK_S);
 		bookmarkMenu.add(addBookmark);
 		bookmarkMenu.add(manageBookmarks);
 		bookmarkMenu.addSeparator();
 
-		// Panels menu
-		JMenu panelsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_panels"));
-		panelsMenu.setMnemonic(KeyEvent.VK_P);
-		JMenuItem showLeftPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_left_panel"));
-		showLeftPanel.addActionListener(new PanelShowHide(leftPanel));
-		JMenuItem showRightPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_gpx_panel"));
-		showRightPanel.addActionListener(new PanelShowHide(rightPanel));
-		panelsMenu.add(showLeftPanel);
-		panelsMenu.add(showRightPanel);
-
 		menuBar.add(atlasMenu);
-		menuBar.add(mapsMenu);
+		menuBar.add(selectionMenu);
 		menuBar.add(bookmarkMenu);
-		menuBar.add(panelsMenu);
 
-		loadToolsMenu();
+		loadExternalToolsMenu();
 
 		menuBar.add(Box.createHorizontalGlue());
 
 		// Debug menu
 		JMenu debugMenu = new JMenu(I18nUtils.localizedStringForKey("menu_debug"));
+		debugMenu.setIcon(Utilities.loadResourceImageIcon("icon_debug_ms.png"));
 		JMenuItem mapGrid = new JCheckBoxMenuItem(I18nUtils.localizedStringForKey("menu_debug_show_hide_tile_border"),
 				false);
+		mapGrid.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_show_tile_borders.png"));
 		mapGrid.addActionListener(new DebugShowMapTileGrid());
 		debugMenu.add(mapGrid);
 		debugMenu.addSeparator();
@@ -491,20 +537,24 @@ public class MainGUI extends JFrame implements MapEventListener {
 		debugMenu.setMnemonic(KeyEvent.VK_D);
 		JMenuItem mapSourceNames = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_show_all_map_source"),
 				DebugShowMapSourceNames.class);
+		mapSourceNames.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_show_mapsources.png"));
 		mapSourceNames.setMnemonic(KeyEvent.VK_N);
 		debugMenu.add(mapSourceNames);
 		debugMenu.addSeparator();
 
 		JMenuItem refreshCustomMapSources = new JMenuItem2(
 				I18nUtils.localizedStringForKey("menu_debug_refresh_map_source"), RefreshCustomMapsources.class);
+		refreshCustomMapSources.setIcon(Utilities.loadResourceImageIcon("refresh.png"));
 		debugMenu.add(refreshCustomMapSources);
 		debugMenu.addSeparator();
 		JMenuItem showLog = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_show_log_file"),
 				DebugShowLogFile.class);
+		showLog.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_show_logfile.png"));
 		showLog.setMnemonic(KeyEvent.VK_S);
 		debugMenu.add(showLog);
 
 		logLevelMenu = new JMenu(I18nUtils.localizedStringForKey("menu_debug_log_level"));
+		logLevelMenu.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_log_level.png"));
 		logLevelMenu.setMnemonic(KeyEvent.VK_L);
 		Level[] list = new Level[] { Level.TRACE, Level.DEBUG, Level.INFO, Level.ERROR, Level.FATAL, Level.OFF };
 		ActionListener al = new DebugSetLogLevel();
@@ -520,16 +570,80 @@ public class MainGUI extends JFrame implements MapEventListener {
 		debugMenu.addSeparator();
 		JMenuItem report = new JMenuItem2(I18nUtils.localizedStringForKey("menu_debug_system_report"),
 				DebugShowReport.class);
+		report.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_gen_sysreport.png"));
 		report.setMnemonic(KeyEvent.VK_R);
 		debugMenu.add(report);
 		menuBar.add(debugMenu);
 
+		// Tools menu
+		JMenu toolsMenu = new JMenu("Tools");
+		toolsMenu
+				.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/menu_icons/menu_tools.png")));
+		toolsMenu.setMnemonic(KeyEvent.VK_T);
+		menuBar.add(toolsMenu);
+
+		JMenuItem settingsMenuItem = new JMenuItem2(I18nUtils.localizedStringForKey("menu_tools_settings"),
+				SettingsButtonListener.class);
+		settingsMenuItem.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/menu_settings.png")));
+		toolsMenu.add(settingsMenuItem);
+		JSeparator separator = new JSeparator();
+		toolsMenu.add(separator);
+		JMenuItem showRightPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_gpx_panel"));
+		showRightPanel.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/menu_panels_right.png")));
+		showRightPanel.addActionListener(new PanelShowHide(rightPanel));
+
+		JMenu mnLeftPanel = new JMenu("Left panel");
+		mnLeftPanel.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/menu_panels_left.png")));
+		toolsMenu.add(mnLeftPanel);
+
+		JMenuItem showLeftPanel = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_hide_left_panel"));
+		mnLeftPanel.add(showLeftPanel);
+		showLeftPanel.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/menu_panels_left.png")));
+
+		leftPanelExpand = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_expand_left_panel"));
+		mnLeftPanel.add(leftPanelExpand);
+		leftPanelExpand.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/left_panel_expand.png")));
+
+		leftPanelShrink = new JMenuItem(I18nUtils.localizedStringForKey("menu_show_shrink_left_panel"));
+		mnLeftPanel.add(leftPanelShrink);
+
+		// Should the listeners below be transfered to the mobac.gui.actions ?
+
+		leftPanelShrink.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/left_panel_contract.png")));
+		leftPanelShrink.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				resizeLeftPanel(-LEFT_PANEL_SIZE_STEP);
+			}
+		});
+		leftPanelExpand.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				resizeLeftPanel(LEFT_PANEL_SIZE_STEP);
+			}
+		});
+		ensureLeftPanelResizable();
+		showLeftPanel.addActionListener(new PanelShowHide(leftPanel));
+		toolsMenu.add(showRightPanel);
+
 		// Help menu
 		JMenu help = new JMenu(I18nUtils.localizedStringForKey("menu_help"));
+		help.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/menu_icons/menu_help.png")));
 		JMenuItem readme = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_readme"));
+		readme.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/menu_icons/menu_info.png")));
 		JMenuItem howToMap = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_how_to_preview"));
+		howToMap.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/menu_icons/menu_info.png")));
 		JMenuItem licenses = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_licenses"));
+		licenses.setIcon(new ImageIcon(MainGUI.class
+				.getResource("/mobac/resources/images/menu_icons/menu_licenses.png")));
 		JMenuItem about = new JMenuItem(I18nUtils.localizedStringForKey("menu_help_about"));
+		about.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/mobac16.png")));
 		readme.addActionListener(new ShowReadme());
 		about.addActionListener(new ShowAboutDialog());
 		howToMap.addActionListener(new ShowHelpAction());
@@ -544,15 +658,18 @@ public class MainGUI extends JFrame implements MapEventListener {
 		menuBar.add(help);
 	}
 
-	public void loadToolsMenu() {
+	public void loadExternalToolsMenu() {
 		if (ExternalToolsLoader.load()) {
-			if (toolsMenu == null) {
-				toolsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_tool"));
-				toolsMenu.addMenuListener(new MenuListener() {
+			if (externalToolsMenu == null) {
+				externalToolsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_external_tools"));
+				externalToolsMenu.setIcon(new ImageIcon(MainGUI.class
+						.getResource("/mobac/resources/images/menu_icons/menu_external_tools.png")));
+				externalToolsMenu.setMnemonic(KeyEvent.VK_E);
+				externalToolsMenu.addMenuListener(new MenuListener() {
 
 					public void menuSelected(MenuEvent e) {
-						loadToolsMenu();
-						log.debug("Tools menu Loaded");
+						loadExternalToolsMenu();
+						log.debug("External Tools menu Loaded");
 					}
 
 					public void menuDeselected(MenuEvent e) {
@@ -561,15 +678,27 @@ public class MainGUI extends JFrame implements MapEventListener {
 					public void menuCanceled(MenuEvent e) {
 					}
 				});
-				menuBar.add(toolsMenu);
+				menuBar.add(externalToolsMenu);
 			}
-			toolsMenu.removeAll();
+			externalToolsMenu.removeAll();
 			for (ExternalToolDef t : ExternalToolsLoader.tools) {
-				JMenuItem m = new JMenuItem(t.name);
-				m.addActionListener(t);
-				toolsMenu.add(m);
+				JMenuItem externalToolMenuItem = new JMenuItem(t.name);
+				externalToolMenuItem.addActionListener(t);
+				externalToolMenuItem.setIcon(new ImageIcon(MainGUI.class
+						.getResource("/mobac/resources/images/menu_icons/menu_external_tool_item.png")));
+				externalToolsMenu.add(externalToolMenuItem);
 			}
 		}
+	}
+
+	private void leftPanelUpdateWidth() {
+		leftPanel.setPreferredSize(new Dimension(leftPanelWidth + LEFT_PANEL_MARGIN, (int) leftPanel.getPreferredSize()
+				.getHeight()));
+	}
+
+	private void ensureLeftPanelResizable() {
+		leftPanelShrink.setEnabled(leftPanelWidth > LEFT_PANEL_MIN_SIZE);
+		leftPanelExpand.setEnabled(leftPanelWidth < LEFT_PANEL_MAX_SIZE);
 	}
 
 	private void updateLeftPanel() {
@@ -577,17 +706,25 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		coordinatesPanel.addButtonActionListener(new ApplySelectionButtonListener());
 
-		JCollapsiblePanel mapSourcePanel = new JCollapsiblePanel(
-				I18nUtils.localizedStringForKey("lp_map_source_title"), new GridBagLayout());
-		mapSourcePanel.addContent(mapSourceCombo, GBC.std().insets(2, 2, 2, 2).fill());
+		mapSourcePanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_map_source_title"),
+				new GridBagLayout(), true);
+
+		JScrollPane mapSourceTreeScrollPane = new JScrollPane(mapSourceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		mapSourceTreeScrollPane.setPreferredSize(new Dimension(100, 200));
+		mapSourceTreeScrollPane.setAutoscrolls(true);
+		mapSourcePanel.addContent(mapSourceTreeScrollPane, GBC.eol().fill().insets(0, 1, 0, 0));
 
 		JCollapsiblePanel zoomLevelsPanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_zoom_title"),
 				new GridBagLayout());
 		zoomLevelsPanel.addContent(zoomLevelPanel, GBC.eol().insets(2, 4, 2, 0));
 		zoomLevelsPanel.addContent(amountOfTilesLabel, GBC.std().anchor(GBC.WEST).insets(0, 5, 0, 2));
 
+		int leftPanelVerticalScrollWidth = 14;
+
 		GBC gbc_std = GBC.std().insets(5, 2, 5, 3);
-		GBC gbc_eol = GBC.eol().insets(5, 2, 5, 3);
+		GBC gbc_eol = GBC.eol().insets(LEFT_PANEL_MARGIN, 2, LEFT_PANEL_MARGIN, 3);
 
 		JCollapsiblePanel atlasContentPanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_atlas_title"),
 				new GridBagLayout());
@@ -595,7 +732,6 @@ public class MainGUI extends JFrame implements MapEventListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jAtlasTree.getTreeModel().addTreeModelListener(new AtlasModelListener(jAtlasTree, profilesPanel));
 
-		treeScrollPane.setMinimumSize(new Dimension(100, 150));
 		treeScrollPane.setPreferredSize(new Dimension(100, 200));
 		treeScrollPane.setAutoscrolls(true);
 		atlasContentPanel.addContent(treeScrollPane, GBC.eol().fill().insets(0, 1, 0, 0));
@@ -608,33 +744,36 @@ public class MainGUI extends JFrame implements MapEventListener {
 		atlasContentPanel.addContent(new JLabel(I18nUtils.localizedStringForKey("lp_atlas_name_label_title")), gbc_std);
 		atlasContentPanel.addContent(atlasNameTextField, gbc_eol.fill(GBC.HORIZONTAL));
 
-		gbc_eol = GBC.eol().insets(5, 2, 5, 2).fill(GBC.HORIZONTAL);
-
 		leftPanelContent = new JPanel(new GridBagLayout());
-		leftPanelContent.add(coordinatesPanel, gbc_eol);
 		leftPanelContent.add(mapSourcePanel, gbc_eol);
 		leftPanelContent.add(zoomLevelsPanel, gbc_eol);
-		leftPanelContent.add(tileImageParametersPanel, gbc_eol);
 		leftPanelContent.add(atlasContentPanel, gbc_eol);
-
 		leftPanelContent.add(profilesPanel, gbc_eol);
 		leftPanelContent.add(createAtlasButton, gbc_eol);
-		leftPanelContent.add(settingsButton, gbc_eol);
+		leftPanelContent.add(tileImageParametersPanel, gbc_eol);
 		leftPanelContent.add(tileStoreCoveragePanel, gbc_eol);
+		leftPanelContent.add(coordinatesPanel, gbc_eol);
 		leftPanelContent.add(Box.createVerticalGlue(), GBC.eol().fill(GBC.VERTICAL));
 
 		JScrollPane scrollPane = new JScrollPane(leftPanelContent);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		// Set the scroll pane width large enough so that the
-		// scroll bar has enough space to appear right to it
-		Dimension d = scrollPane.getPreferredSize();
-		d.width += 5 + scrollPane.getVerticalScrollBar().getWidth();
-		// scrollPane.setPreferredSize(d);
-		scrollPane.setMinimumSize(d);
+		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(leftPanelVerticalScrollWidth, 0));
+		leftPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+		leftPanelUpdateWidth();
 		leftPanel.add(scrollPane, GBC.std().fill());
-		// leftPanel.add(leftPanelContent, GBC.std().fill());
+	}
 
+	private void resizeLeftPanel(int pixels) {
+		if ((pixels < 0 && leftPanelWidth <= LEFT_PANEL_MIN_SIZE)
+				|| (pixels > 0 && leftPanelWidth >= LEFT_PANEL_MAX_SIZE)) {
+			return;
+		}
+
+		leftPanelWidth += pixels;
+		leftPanelUpdateWidth();
+		ensureLeftPanelResizable();
+		previewMap.revalidate();
 	}
 
 	private void updateRightPanel() {
@@ -676,11 +815,14 @@ public class MainGUI extends JFrame implements MapEventListener {
 	}
 
 	public void updateMapSourcesList() {
-		MapSource ms = (MapSource) mapSourceCombo.getSelectedItem();
-		mapSourceCombo
-				.setModel(new DefaultComboBoxModel(MapSourcesManager.getInstance().getEnabledOrderedMapSources()));
-		mapSourceCombo.setSelectedItem(ms);
-		MapSource ms2 = (MapSource) mapSourceCombo.getSelectedItem();
+		mapSourceTree.selectClickedMapSource();
+		MapSource ms = mapSourceTree.getSelectedMapSource();
+		mapSourceTree.initialize(MapSourcesManager.getInstance().getEnabledOrderedMapSources());
+		if (!mapSourceTree.selectMapSource(ms)) {
+			mapSourceTree.selectFirstMapSource();
+		}
+		MapSource ms2 = mapSourceTree.getSelectedMapSource();
+
 		if (!ms.equals(ms2))
 			previewMap.setMapSource(ms2);
 	}
@@ -694,13 +836,17 @@ public class MainGUI extends JFrame implements MapEventListener {
 		}
 		bookmarkMenu.removeAll();
 		for (JMenuItem item : items) {
-			if (item != null)
+			if (item != null) {
 				bookmarkMenu.add(item);
-			else
+			} else {
 				bookmarkMenu.addSeparator();
+			}
 		}
-		for (Bookmark b : Settings.getInstance().placeBookmarks) {
-			bookmarkMenu.add(new JBookmarkMenuItem(b));
+		for (Bookmark bookmark : Settings.getInstance().placeBookmarks) {
+			JBookmarkMenuItem bookmarkMenuItem = new JBookmarkMenuItem(bookmark);
+			bookmarkMenuItem.setIcon(new ImageIcon(MainGUI.class
+					.getResource("/mobac/resources/images/menu_icons/menu_bookmark_item.png")));
+			bookmarkMenu.add(bookmarkMenuItem);
 		}
 	}
 
@@ -752,6 +898,9 @@ public class MainGUI extends JFrame implements MapEventListener {
 			setExtendedState(Frame.MAXIMIZED_BOTH);
 
 		leftPanel.setVisible(settings.mainWindow.leftPanelVisible);
+		leftPanelWidth = settings.mainWindow.leftPanelWidth;
+		leftPanelUpdateWidth();
+		ensureLeftPanelResizable();
 		rightPanel.setVisible(settings.mainWindow.rightPanelVisible);
 
 		if (leftPanelContent != null) {
@@ -798,6 +947,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 				}
 			}
 			s.mainWindow.leftPanelVisible = leftPanel.isVisible();
+			s.mainWindow.leftPanelWidth = leftPanelWidth;
 			s.mainWindow.rightPanelVisible = rightPanel.isVisible();
 			checkAndSaveSettings();
 		} catch (Exception e) {
@@ -881,17 +1031,23 @@ public class MainGUI extends JFrame implements MapEventListener {
 		}
 	}
 
-	private class MapSourceComboListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			MapSource mapSource = (MapSource) mapSourceCombo.getSelectedItem();
-			if (mapSource == null) {
-				mapSourceCombo.setSelectedIndex(0);
-				mapSource = (MapSource) mapSourceCombo.getSelectedItem();
+	private class MapSourceTreeListener implements TreeSelectionListener {
+
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			mapSourceTree.selectClickedMapSource();
+			MapSource selectedMapSource = mapSourceTree.getSelectedMapSource();
+			if (selectedMapSource == null) {
+				boolean wasFirstValidSourceSelected = mapSourceTree.selectFirstMapSource();
+				if (!wasFirstValidSourceSelected) {
+					return;
+				}
+				selectedMapSource = mapSourceTree.getSelectedMapSource();
 			}
-			if (mapSource instanceof InitializableMapSource)
+			if (selectedMapSource instanceof InitializableMapSource)
 				// initialize the map source e.g. detect available zoom levels
-				((InitializableMapSource) mapSource).initialize();
-			previewMap.setMapSource(mapSource);
+				((InitializableMapSource) selectedMapSource).initialize();
+			previewMap.setMapSource(selectedMapSource);
 			zoomSlider.setMinimum(previewMap.getMapSource().getMinZoom());
 			zoomSlider.setMaximum(previewMap.getMapSource().getMaxZoom());
 			updateGridSizeCombo();
@@ -910,12 +1066,6 @@ public class MainGUI extends JFrame implements MapEventListener {
 			jAtlasTree.load(profile);
 			previewMap.repaint();
 			tileImageParametersPanel.atlasFormatChanged(jAtlasTree.getAtlas().getOutputFormat());
-		}
-	}
-
-	private class SettingsButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			SettingsGUI.showSettingsDialog(MainGUI.this);
 		}
 	}
 
@@ -979,7 +1129,8 @@ public class MainGUI extends JFrame implements MapEventListener {
 	}
 
 	public MapSource getSelectedMapSource() {
-		return (MapSource) mapSourceCombo.getSelectedItem();
+		mapSourceTree.selectClickedMapSource();
+		return mapSourceTree.getSelectedMapSource();
 	}
 
 	public SelectedZoomLevels getSelectedZoomLevels() {
@@ -987,18 +1138,18 @@ public class MainGUI extends JFrame implements MapEventListener {
 	}
 
 	public void selectNextMapSource() {
-		if (mapSourceCombo.getSelectedIndex() == mapSourceCombo.getItemCount() - 1) {
+		if (!mapSourceTree.selectNextMapSource()) {
 			Toolkit.getDefaultToolkit().beep();
 		} else {
-			mapSourceCombo.setSelectedIndex(mapSourceCombo.getSelectedIndex() + 1);
+			mapSourceChanged(mapSourceTree.getSelectedMapSource());
 		}
 	}
 
 	public void selectPreviousMapSource() {
-		if (mapSourceCombo.getSelectedIndex() == 0) {
+		if (!mapSourceTree.selectPreviousMapSource()) {
 			Toolkit.getDefaultToolkit().beep();
 		} else {
-			mapSourceCombo.setSelectedIndex(mapSourceCombo.getSelectedIndex() - 1);
+			mapSourceChanged(mapSourceTree.getSelectedMapSource());
 		}
 	}
 
@@ -1007,7 +1158,8 @@ public class MainGUI extends JFrame implements MapEventListener {
 		calculateNrOfTilesToDownload();
 		// if (newMapSource != null && newMapSource.equals(mapSourceCombo.getSelectedItem()))
 		// return;
-		mapSourceCombo.setSelectedItem(newMapSource);
+		mapSourceTree.selectMapSource(newMapSource);
+		mapSourcePanel.setMapSourceLabel(newMapSource);
 	}
 
 	public void mapSelectionControllerChanged(JMapController newMapController) {
@@ -1124,5 +1276,4 @@ public class MainGUI extends JFrame implements MapEventListener {
 			s.mainWindow.position = getLocation();
 		}
 	}
-
 }

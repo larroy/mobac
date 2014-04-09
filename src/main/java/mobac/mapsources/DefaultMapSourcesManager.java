@@ -133,7 +133,16 @@ public class DefaultMapSourcesManager extends MapSourcesManager {
 				}
 			}
 		}
-		allMapSources.put(mapSource.getName(), mapSource);
+		
+		String mapSourceName = mapSource.getName();
+		if(allMapSources.containsKey(mapSourceName)) {
+			JOptionPane.showMessageDialog(null,
+					String.format(I18nUtils.localizedStringForKey("msg_environment_error_duplicate_map_source"), mapSourceName, mapSource.getLoaderInfo().getSourceFile() ), 
+					I18nUtils.localizedStringForKey("Error"),
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			allMapSources.put(mapSourceName, mapSource);
+		}
 	}
 
 	public static void initialize() {

@@ -115,7 +115,7 @@ public class MapSourceUrlUpdater {
 		try {
 			document = loadDocument(url, charset);
 		} catch (IOException e) {
-			throw new MapSourceInitializationException("Faile dto retrieve initialization document from url: " + url
+			throw new MapSourceInitializationException("Failed to retrieve initialization document from url: " + url
 					+ "\nError: " + e.getMessage(), e);
 		}
 		Matcher m = Pattern.compile(regex).matcher(document);

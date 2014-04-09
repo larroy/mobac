@@ -1,6 +1,7 @@
 package mobac.mapsources.loader;
 
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -8,7 +9,8 @@ import mobac.mapsources.MapSourcesManager;
 import mobac.mapsources.custom.BeanShellHttpMapSource;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.MapSourceLoaderInfo.LoaderType;
-import mobac.utilities.file.FileExtFilter;
+import mobac.utilities.Utilities;
+import mobac.utilities.file.DirOrFileExtFilter;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +26,7 @@ public class BeanShellMapSourceLoader {
 	}
 
 	public void loadBeanShellMapSources() {
-		File[] customMapSourceFiles = mapSourcesDir.listFiles(new FileExtFilter(".bsh"));
+		List<File> customMapSourceFiles = Utilities.traverseFolder(mapSourcesDir, new DirOrFileExtFilter(".bsh"));
 		for (File f : customMapSourceFiles) {
 			try {
 				BeanShellHttpMapSource mapSource = BeanShellHttpMapSource.load(f);

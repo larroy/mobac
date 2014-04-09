@@ -16,6 +16,9 @@
  ******************************************************************************/
 package mobac.gui.components;
 
+import static mobac.gui.MainGUI.leftPanelWidth;
+import static mobac.gui.components.JMapSourceTree.generateMapSourceTooltip;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -33,11 +36,12 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import mobac.program.interfaces.MapSource;
 import mobac.utilities.GBC;
 import mobac.utilities.Utilities;
-
 
 /**
  * Bases upon "TitleContainer" from project "swivel"
@@ -54,6 +58,8 @@ public class JCollapsiblePanel extends JPanel {
 	protected static final int DEFAULT_TITLE_PADDING = 3;
 	protected static final Color DEFAULT_TITLE_BACKGROUND_COLOR = Color.LIGHT_GRAY;
 	protected static final Color DEFAULT_TITLE_COLOR = Color.BLACK;
+	// initialMapSourceLabel can't be empty to let the mapSourceLabel initialize with a proper height
+	protected static final String initialMapSourceLabel = " ";
 
 	private static ImageIcon arrowClosed;
 	private static ImageIcon arrowOpen;
@@ -72,6 +78,7 @@ public class JCollapsiblePanel extends JPanel {
 	protected final JLabel titleIcon;
 	protected final JLabel titleLabel;
 	protected final JPanel titlePanel;
+	protected final JLabel mapSourceLabel;
 
 	// main component
 	protected Container contentContainer;
@@ -86,16 +93,20 @@ public class JCollapsiblePanel extends JPanel {
 	 * @param container
 	 *            the main container
 	 */
-	public JCollapsiblePanel(Container container) {
-		this(container, "");
-	}
+//	public JCollapsiblePanel(Container container) {
+//		this(container, "", false);
+//	}
 
 	public JCollapsiblePanel(String title) {
-		this(new JPanel(), title);
+		this(new JPanel(), title, false);
 	}
 
 	public JCollapsiblePanel(String title, LayoutManager layout) {
-		this(new JPanel(layout), title);
+		this(title, layout, false);
+	}
+	
+	public JCollapsiblePanel(String title, LayoutManager layout, boolean isMapSourcePanel) {
+		this(new JPanel(layout), title, isMapSourcePanel);
 		setName(title);
 	}
 
@@ -108,12 +119,14 @@ public class JCollapsiblePanel extends JPanel {
 	 * @param title
 	 *            the title
 	 */
-	public JCollapsiblePanel(Container container, String title) {
+	public JCollapsiblePanel(Container container, String title, boolean isMapSourcePanel) {
 		super();
 		setName(title);
 		titleIcon = new JLabel(arrowOpen);
-		titleLabel = new JLabel(title);
-		titlePanel = new JPanel(new GridBagLayout());
+		titleLabel = new JLabel(title + ":");
+		mapSourceLabel = new JLabel(isMapSourcePanel ? initialMapSourceLabel : "", SwingConstants.CENTER);
+		//mapSourceLabel.setBorder(UIManager.getBorder("Button.border"));
+		titlePanel = new JPanel(new GridBagLayout());		
 		// mainComponentPanel = new JPanel(new GridBagLayout());
 		collapsingMouseListener = new CollapsingMouseListener();
 
@@ -122,6 +135,7 @@ public class JCollapsiblePanel extends JPanel {
 
 		// set collapse behavior
 		titlePanel.addMouseListener(collapsingMouseListener);
+		mapSourceLabel.addMouseListener(collapsingMouseListener);
 
 		// look and feel
 		setTitleBackgroundColor(DEFAULT_TITLE_BACKGROUND_COLOR);
@@ -131,13 +145,42 @@ public class JCollapsiblePanel extends JPanel {
 		// layout
 		titlePanel.add(titleIcon, GBC.std());
 		titlePanel.add(titleLabel, GBC.std().insets(5, 0, 1, 0));
-		titlePanel.add(Box.createHorizontalGlue(), GBC.eol().fill());
+		
+		if(isMapSourcePanel) {
+			int mapSourceLabelLeftMargin = 4;
+			int mapSourceLabelRightMargin = 0;
+			// THIS IS A HACK - 36 is hardcoded. I dont't know how to get its real value
+			int mapSourceLabelWidth = leftPanelWidth - 36 - titleLabel.getPreferredSize().width - titleIcon.getPreferredSize().width - mapSourceLabelLeftMargin - mapSourceLabelRightMargin;
+			
+			mapSourceLabel.setPreferredSize(new Dimension(mapSourceLabelWidth, mapSourceLabel.getPreferredSize().height));
+			titlePanel.add(mapSourceLabel, GBC.std().insets(mapSourceLabelLeftMargin, 0, mapSourceLabelRightMargin, 0));
+		}
+		
+		titlePanel.add(Box.createHorizontalGlue(), GBC.eol().fill());		
 		setLayout(new BorderLayout());
 		add(titlePanel, BorderLayout.NORTH);
 		add(container, BorderLayout.CENTER);
 		setContentContainer(container);
 		setBorder(BorderFactory.createEtchedBorder());
+		
+		setTitlePanelPreferredSize();
+	}
 
+	public void setMapSourceLabel(MapSource mapSource) {
+		String mapSourceString = mapSource.toString();
+		if (mapSourceString == null) {
+			mapSourceString = "";
+		} 
+		
+		mapSourceLabel.setText(mapSourceString);
+		mapSourceLabel.setToolTipText(generateMapSourceTooltip(mapSource));
+		mapSourceLabel.setVisible(!mapSourceString.isEmpty());
+	}
+
+	private void setTitlePanelPreferredSize() {
+		Dimension containerPreferredDimension = contentContainer.getLayout().preferredLayoutSize(contentContainer);
+		Dimension titlePanelPreferredDimension = titlePanel.getPreferredSize();
+		titlePanel.setPreferredSize(new Dimension(containerPreferredDimension.width, titlePanelPreferredDimension.height));
 	}
 
 	/**
@@ -156,9 +199,7 @@ public class JCollapsiblePanel extends JPanel {
 
 			// We have to make sure that the panel width does not shrink because
 			// of the hidden content of contentContainer
-			Dimension dcont = contentContainer.getLayout().preferredLayoutSize(contentContainer);
-			Dimension pref = titlePanel.getPreferredSize();
-			titlePanel.setPreferredSize(new Dimension(dcont.width, pref.height));
+			setTitlePanelPreferredSize();
 		} else {
 			titleIcon.setIcon(arrowOpen);
 		}

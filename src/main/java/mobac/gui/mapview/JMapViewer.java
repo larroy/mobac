@@ -47,6 +47,7 @@ import mobac.gui.mapview.layer.DefaultMapTileLayer;
 import mobac.gui.mapview.layer.MapGridLayer;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
+import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
 import org.apache.log4j.Logger;
@@ -467,9 +468,9 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
 	 *            the previous zoom level
 	 */
 	protected void zoomChanged(int oldZoom) {
-		zoomSlider.setToolTipText("Zoom level " + zoom);
-		zoomInButton.setToolTipText("Zoom to level " + (zoom + 1));
-		zoomOutButton.setToolTipText("Zoom to level " + (zoom - 1));
+		zoomSlider.setToolTipText(I18nUtils.localizedStringForKey("map_viewer_zoom_tooltip") + " " + zoom);
+		zoomInButton.setToolTipText(I18nUtils.localizedStringForKey("map_viewer_zoom_to_tooltip") + " " + (zoom + 1));
+		zoomOutButton.setToolTipText(I18nUtils.localizedStringForKey("map_viewer_zoom_to_tooltip") + " " + (zoom - 1));
 		zoomOutButton.setEnabled(zoom > mapSource.getMinZoom());
 		zoomInButton.setEnabled(zoom < mapSource.getMaxZoom());
 	}

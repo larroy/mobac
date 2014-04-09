@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import static mobac.gui.MainGUI.LEFT_PANEL_MIN_SIZE;
 import mobac.gui.actions.GpxLoad;
 import mobac.gui.panels.JCoordinatesPanel;
 import mobac.mapsources.MapSourcesManager;
@@ -185,8 +186,13 @@ public class Settings {
 		public Point position = new Point(-1, -1);
 		public boolean maximized = true;
 
-		public boolean leftPanelVisible = true;
 		public boolean rightPanelVisible = true;
+		public boolean leftPanelVisible = true;
+
+		/**
+		 * Width of the left panel. Default value it taken from MainGUI.LEFT_PANEL_MIN_SIZE
+		 */
+		public int leftPanelWidth = LEFT_PANEL_MIN_SIZE;
 
 		@XmlElementWrapper(name = "collapsedPanels")
 		@XmlElement(name = "collapsedPanel")
