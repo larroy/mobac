@@ -18,7 +18,6 @@ package mobac.utilities;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Locale;
@@ -28,6 +27,9 @@ import java.util.ResourceBundle.Control;
 
 import mobac.Main;
 import mobac.program.model.Settings;
+import mobac.utilities.stream.UnicodeReader;
+
+import org.apache.log4j.Logger;
 
 public class I18nUtils {
 
@@ -90,8 +92,7 @@ public class I18nUtils {
 			}
 			if (stream != null) {
 				try {
-					// Only this line is changed to make it to read properties files as UTF-8.
-					bundle = new PropertyResourceBundle(new InputStreamReader(stream, Charsets.UTF_8));
+					bundle = new PropertyResourceBundle(new UnicodeReader(stream, "UTF-8"));
 				} finally {
 					stream.close();
 				}
