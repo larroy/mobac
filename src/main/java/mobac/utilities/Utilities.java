@@ -118,6 +118,9 @@ public class Utilities {
 	public static BufferedImage safeCreateBufferedImage(int width, int height, int imageType) {
 		try {
 			return new BufferedImage(width, height, imageType);
+		} catch (NegativeArraySizeException e) {
+			String message = String.format("Image size is too large: " + "%dx%d pixels", width, height);
+			throw new RuntimeException(message);
 		} catch (OutOfMemoryError e) {
 			int bytesPerPixel = getBytesPerPixel(imageType);
 			if (bytesPerPixel < 0)
