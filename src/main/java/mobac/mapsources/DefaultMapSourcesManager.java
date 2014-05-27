@@ -63,6 +63,7 @@ public class DefaultMapSourcesManager extends MapSourcesManager {
 	protected void loadMapSources() {
 		try {
 			boolean devMode = Settings.getInstance().devMode;
+			addMapSource(new MapsforgeMapSource());
 			if (devMode) {
 				addMapSource(new DebugMapSource());
 				addMapSource(new DebugLocalMapSource());

@@ -340,6 +340,7 @@
 		<zip destfile="${zip.name}" update="false">
 			<fileset dir="./">
 				<include name="${jar.name}" />
+				<include name="world.map" />
 				<include name="gpl.txt" />
 				<include name="start.jar" />
 				<include name="README.HTM" />

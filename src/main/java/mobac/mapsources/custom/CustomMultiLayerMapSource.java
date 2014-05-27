@@ -49,6 +49,7 @@ public class CustomMultiLayerMapSource extends AbstractMultiLayerMapSource {
 			@XmlElement(name = "customWmsMapSource", type = CustomWmsMapSource.class),
 			@XmlElement(name = "mapSource", type = StandardMapSourceLayer.class),
 			@XmlElement(name = "cloudMade", type = CustomCloudMade.class),
+			@XmlElement(name = "mapsforge", type = CustomMapsforge.class),
 			@XmlElement(name = "localTileSQLite", type = CustomLocalTileSQliteMapSource.class),
 			@XmlElement(name = "localTileFiles", type = CustomLocalTileFilesMapSource.class),
 			@XmlElement(name = "localTileZip", type = CustomLocalTileZipMapSource.class),

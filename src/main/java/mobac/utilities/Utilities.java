@@ -738,14 +738,14 @@ public class Utilities {
 	}
 
 	/**
-	 * This method recursively traverse a folder and all its descendants,
-	 * applying to them a FileExtFilter. DirOrFileExtFilter was used,
-	 * to don't filter out the folders, when traversing them. 
-	 * But in the end, only files will be returned
+	 * This method recursively traverse a folder and all its descendants, applying to them a FileExtFilter.
+	 * DirOrFileExtFilter was used, to don't filter out the folders, when traversing them. But in the end, only files
+	 * will be returned
 	 * 
-	 * @param dirOrFile - file or directory that will be traversed and analyzed
-	 * @param dirOFileExtFilter - filter that will pass-through all folders and
-	 * files only with requested extension
+	 * @param dirOrFile
+	 *            - file or directory that will be traversed and analyzed
+	 * @param dirOFileExtFilter
+	 *            - filter that will pass-through all folders and files only with requested extension
 	 * @return a list of files with requested extension
 	 * 
 	 * @author Maksym "elmuSSo" Kondej
@@ -764,4 +764,21 @@ public class Utilities {
 		return result;
 	}
 
+	/**
+	 * Searches for the file specified by <code>fileName</code> in all supplied directories. Returns the first existing
+	 * (isFile() == <code>true</code>) combination of fileName and searchDir or <code>null</code> in case no match was
+	 * found.
+	 * 
+	 * @param fileName
+	 * @param searchDirs
+	 * @return
+	 */
+	public static File findFile(String fileName, File... searchDirs) {
+		for (File dir : searchDirs) {
+			File f = new File(dir, fileName);
+			if (f.isFile())
+				return f;
+		}
+		return null;
+	}
 }
