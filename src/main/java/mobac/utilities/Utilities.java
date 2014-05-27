@@ -765,17 +765,26 @@ public class Utilities {
 	}
 
 	/**
-	 * Searches for the file specified by <code>fileName</code> in all supplied directories. Returns the first existing
-	 * (isFile() == <code>true</code>) combination of fileName and searchDir or <code>null</code> in case no match was
-	 * found.
+	 * Searches for the file specified by the relative <code>fileName</code> in all supplied directories. Returns the
+	 * first existing (isFile() == <code>true</code>) combination of fileName and searchDir or <code>null</code> in case
+	 * no match was found.
+	 * 
+	 * In case <code>fileName</code> is an absolute path it will be returned as File in case it exists.
 	 * 
 	 * @param fileName
 	 * @param searchDirs
 	 * @return
 	 */
 	public static File findFile(String fileName, File... searchDirs) {
+		File f = new File(fileName);
+		if (f.isAbsolute()) {
+			if (f.isFile())
+				return f;
+			else
+				return null;
+		}
 		for (File dir : searchDirs) {
-			File f = new File(dir, fileName);
+			f = new File(dir, fileName);
 			if (f.isFile())
 				return f;
 		}

@@ -68,7 +68,7 @@ public class CustomMapsforge extends MapsforgeMapSource {
 		File mapSourceXmlFile = this.getLoaderInfo().getSourceFile();
 		File mapSourceXmlDir = mapSourceXmlFile.getParentFile();
 
-		this.mapFile = Utilities.findFile(xmlRenderThemeFileName, mapSourceXmlDir, DirectoryManager.currentDir,
+		this.mapFile = Utilities.findFile(mapFileName, mapSourceXmlDir, DirectoryManager.currentDir,
 				DirectoryManager.mapSourcesDir, DirectoryManager.userAppDataDir);
 		if (mapFile == null) {
 			JOptionPane.showMessageDialog(null, "Unable to find map file \"" + mapFileName + "\"",
