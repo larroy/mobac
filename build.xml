@@ -19,7 +19,8 @@
 
 	<property name="je-version" value="3.3.93" />
 	<property name="sqlite-version" value="3.7.15-M1" />
-	
+	<property name="mapsforge-version" value="0.5.0-SNAPSHOT" />
+		
 	<!-- Java target version -->
 	<property name="java-target" value="1.6" />
 
@@ -34,10 +35,11 @@
 		<fileset dir="lib" includes="commons-io-2.0.jar" />
 		<fileset dir="lib" includes="commons-lang3-3.1.jar" />
 		<fileset dir="lib" includes="je-${je-version}.jar" />
+		<fileset dir="lib" includes="mapsforge*.jar" />
 	</path>
 
 	<target name="all"
-		depends="clean_build,svnversion,build,build_mapsources,sign_mapsources,create_jar,shrink,create_release,create_release_src" />
+		depends="clean_build,svnversion,build,build_mapsources,sign_mapsources,create_jar,create_release,create_release_src" />
 
 	<target name="update_mapsources" depends="build_mapsources,sign_mapsources" />
 
@@ -178,6 +180,10 @@
 			<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
 			<zipfileset src="lib/Tidy.jar" includes="org/w3c/tidy/**" />
 			<zipfileset src="lib/itextpdf-5.1.0.jar" includes="com/**" />
+			<zipfileset src="lib/mapsforge-core-${mapsforge-version}.jar" />
+			<zipfileset src="lib/mapsforge-map-${mapsforge-version}.jar" />
+			<zipfileset src="lib/mapsforge-map-awt-${mapsforge-version}.jar" />
+			<zipfileset src="lib/mapsforge-map-reader-${mapsforge-version}.jar" />
 			<fileset dir="build/mobac">
 				<exclude name="**/unittest/**" />
 				<exclude name="mobac/mapsources/mapapcks/**" />
@@ -212,6 +218,7 @@
 			-keep class mobac.program.interfaces.* {
 			public *; }
 			-keep class mobac.program.model.package-info
+			-keep class mobac.mapsources.custom.* { *; } 
 			-keep class
 			mobac.program.model.* { public *; }
 			-keep class mobac.program.jaxb.* {
@@ -264,6 +271,7 @@
 			org.apache.log4j.FileAppender { public *; }
 			-keep class
 			com.sixlegs.png.PngImage { public *; }
+			-keep class org.mapsforge.map.rendertheme.XmlRenderTheme { public *; }
 			-keep class bsh.This { public
 			*; }
 			-keep class bsh.XThis { public *; }
