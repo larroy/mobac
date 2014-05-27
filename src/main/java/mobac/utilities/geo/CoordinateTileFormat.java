@@ -21,6 +21,7 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 
 import mobac.gui.MainGUI;
+import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 
 import org.apache.log4j.Logger;
@@ -38,7 +39,10 @@ public class CoordinateTileFormat extends NumberFormat {
 	@Override
 	public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
 		MainGUI gui = MainGUI.getMainGUI();
-		MapSpace mapSpace = gui.getSelectedMapSource().getMapSpace();
+		MapSource mapSource = gui.getSelectedMapSource();
+		if (mapSource == null)
+			return toAppendTo;
+		MapSpace mapSpace = mapSource.getMapSpace();
 		int zoom = gui.previewMap.getZoom();
 		int tileNum = 0;
 		if (isLongitude)
