@@ -13,4 +13,10 @@
 	
 	<!-- optional default OSMARENDERER Theme -->
 	<!-- <xmlRenderTheme>mytheme.xml</xmlRenderTheme> -->
+	
+	<transparent>false</transparent>
+	
+	<!-- text size scale factor -->
+	<textScale>1.0</textScale>
+	
 </mapsforge>

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.annotation.XmlElement;
 
 import mobac.exceptions.UnrecoverableDownloadException;
 import mobac.mapsources.mapspace.MercatorPower2MapSpace;
@@ -55,6 +56,12 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	protected DatabaseRenderer renderer;
 	protected XmlRenderTheme xmlRenderTheme;
 	protected DisplayModel displayModel;
+
+	@XmlElement(defaultValue = "false")
+	protected boolean transparent = false;
+
+	@XmlElement(defaultValue = "1.0")
+	protected float textScale = 1.0f;
 
 	public MapsforgeMapSource() {
 		this("world.map");
@@ -114,10 +121,9 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 			UnrecoverableDownloadException, InterruptedException {
 		if (mapFile == null || xmlRenderTheme == null)
 			return null;
-		
+
 		Tile tile = new Tile(x, y, (byte) zoom);
-		RendererJob job = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, displayModel.getScaleFactor(),
-				false);
+		RendererJob job = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, textScale, transparent);
 
 		synchronized (this) {
 			AwtTileBitmap tileBitmap = (AwtTileBitmap) renderer.executeJob(job);
