@@ -57,7 +57,7 @@ public class WorkinprogressDialog extends JDialog implements WindowListener {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(owner);
 		addWindowListener(this);
-		JButton abort = new JButton(I18nUtils.localizedStringForKey("dlg_progress_about_btn"));
+		JButton abort = new JButton(I18nUtils.localizedStringForKey("Abort"));
 		abort.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
