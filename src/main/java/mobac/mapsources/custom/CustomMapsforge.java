@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import mobac.exceptions.MapSourceInitializationException;
 import mobac.mapsources.MapsforgeMapSource;
 import mobac.program.DirectoryManager;
 import mobac.utilities.I18nUtils;
@@ -61,7 +62,7 @@ public class CustomMapsforge extends MapsforgeMapSource {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize() throws MapSourceInitializationException {
 		xmlRenderThemeFileName = xmlRenderThemeFileName.trim();
 
 		// The custom map xml file used for loading this map

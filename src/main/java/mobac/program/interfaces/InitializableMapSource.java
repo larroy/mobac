@@ -16,8 +16,10 @@
  ******************************************************************************/
 package mobac.program.interfaces;
 
+import mobac.exceptions.MapSourceInitializationException;
+
 public interface InitializableMapSource extends MapSource {
 
-	public void initialize();
+	public void initialize() throws MapSourceInitializationException;
 	
 }

@@ -77,6 +77,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBException;
 
+import mobac.exceptions.MapSourceInitializationException;
 import mobac.externaltools.ExternalToolDef;
 import mobac.externaltools.ExternalToolsLoader;
 import mobac.gui.actions.AddGpxTrackAreaPolygonMap;
@@ -482,7 +483,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		JMenuItem addSelection = new JMenuItem(I18nUtils.localizedStringForKey("menu_selection_selection_add"));
 		addSelection.setIcon(Utilities.loadResourceImageIcon("menu_icons/menu_selection_add.png"));
 		addSelection.addActionListener(AddMapLayer.INSTANCE);
-		
+
 		JSeparator selectionSeparator = new JSeparator();
 		selectionMenu.add(selectionSeparator);
 		addSelection.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -1044,9 +1045,18 @@ public class MainGUI extends JFrame implements MapEventListener {
 				}
 				selectedMapSource = mapSourceTree.getSelectedMapSource();
 			}
-			if (selectedMapSource instanceof InitializableMapSource)
+			if (selectedMapSource instanceof InitializableMapSource) {
 				// initialize the map source e.g. detect available zoom levels
-				((InitializableMapSource) selectedMapSource).initialize();
+				try {
+					((InitializableMapSource) selectedMapSource).initialize();
+				} catch (MapSourceInitializationException e1) {
+					JOptionPane.showMessageDialog(
+							null,
+							I18nUtils.localizedStringForKey("msg_map_source_initialization_failed",
+									selectedMapSource.getName(), e1.getLocalizedMessage()),
+							I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
+				}
+			}
 			previewMap.setMapSource(selectedMapSource);
 			zoomSlider.setMinimum(previewMap.getMapSource().getMinZoom());
 			zoomSlider.setMaximum(previewMap.getMapSource().getMaxZoom());

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.xml.bind.annotation.XmlTransient;
 
+import mobac.exceptions.MapSourceInitializationException;
 import mobac.exceptions.TileException;
 import mobac.gui.mapview.PreviewMap;
 import mobac.program.interfaces.InitializableMapSource;
@@ -76,7 +77,7 @@ public abstract class AbstractMultiLayerMapSource implements InitializableMapSou
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize() throws MapSourceInitializationException {
 		MapSource refMapSource = mapSources[0];
 		mapSpace = refMapSource.getMapSpace();
 		maxZoom = PreviewMap.MAX_ZOOM;

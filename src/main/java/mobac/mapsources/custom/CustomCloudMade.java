@@ -16,8 +16,6 @@
  ******************************************************************************/
 package mobac.mapsources.custom;
 
-import java.lang.reflect.Constructor;
-
 import javax.swing.JOptionPane;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,18 +44,12 @@ public class CustomCloudMade implements WrappedMapSource {
 	public String displayName;
 
 	public MapSource getMapSource() {
-		try {
-			Constructor<CloudMade> c = CLOUD_MADE_CLASS.getConstructor(String.class, String.class);
-			return c.newInstance(styleID, displayName);
-		} catch (Exception e) {
-			String errorMsg = I18nUtils.localizedStringForKey("msg_environment_error_load_cloudmade");
-			if (!ERROR) {
-				JOptionPane.showMessageDialog(null, errorMsg, 
-						I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
-				ERROR = true;
-			}
-			throw new RuntimeException(errorMsg, e);
+		if (!ERROR) {
+			JOptionPane.showMessageDialog(null, "CloudMade map sources are no longer supported",
+					I18nUtils.localizedStringForKey("Error"), JOptionPane.ERROR_MESSAGE);
+			ERROR = true;
 		}
+		return null;
 	}
 
 }

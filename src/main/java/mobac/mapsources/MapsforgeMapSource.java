@@ -25,6 +25,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.xml.bind.annotation.XmlElement;
 
+import mobac.exceptions.MapSourceInitializationException;
 import mobac.exceptions.UnrecoverableDownloadException;
 import mobac.mapsources.mapspace.MercatorPower2MapSpace;
 import mobac.program.interfaces.FileBasedMapSource;
@@ -41,6 +42,7 @@ import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 import org.mapsforge.map.layer.renderer.RendererJob;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.reader.MapDatabase;
+import org.mapsforge.map.reader.header.FileOpenResult;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
@@ -74,10 +76,13 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize() throws MapSourceInitializationException {
 		GraphicFactory graphicFactory = AwtGraphicFactory.INSTANCE;
 		MapDatabase mapDatabase = new MapDatabase();
-		mapDatabase.openFile(mapFile);
+		FileOpenResult res = mapDatabase.openFile(mapFile);
+		if (!res.isSuccess())
+			throw new MapSourceInitializationException(res.getErrorMessage());
+
 		renderer = new DatabaseRenderer(mapDatabase, graphicFactory);
 	}
 
@@ -110,6 +115,8 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream(16000);
 		try {
 			BufferedImage image = getTileImage(zoom, x, y, loadMethod);
+			if (image == null)
+				return null;
 			ImageIO.write(image, "png", buf);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -120,6 +127,8 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	public BufferedImage getTileImage(int zoom, int x, int y, LoadMethod loadMethod) throws IOException,
 			UnrecoverableDownloadException, InterruptedException {
 		if (mapFile == null || xmlRenderTheme == null)
+			return null;
+		if (loadMethod == LoadMethod.CACHE)
 			return null;
 
 		Tile tile = new Tile(x, y, (byte) zoom);
