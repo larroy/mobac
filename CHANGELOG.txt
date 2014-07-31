@@ -11,6 +11,12 @@
 
 =======
 
+2.0.0 preview 1 (2014-??-??)
+ ~ GUI design improved
+ + Custom map sources can be grouped by subdirectories   
+ + Direct rendering of bitmap tiles based on mapsforge vector maps
+     (see README.HTM for details).
+
 1.9.16 (2014-02-06)
  ! Background color does not work in case of a multi-layer map source with 
     only one layer (#252)
