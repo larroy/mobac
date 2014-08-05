@@ -98,18 +98,17 @@ public class GUIExceptionHandler implements Thread.UncaughtExceptionHandler, Exc
 
 	public static void processFatalExceptionSimpleDialog(String dialogMessage, Throwable e) {
 		log.error(dialogMessage + ": " + e.getMessage(), e);
-		String[] options = { I18nUtils.localizedStringForKey("Exit"), 
+		String[] options = { I18nUtils.localizedStringForKey("Exit"),
 				I18nUtils.localizedStringForKey("dlg_download_show_error_report") };
-		int a = JOptionPane.showOptionDialog(null, dialogMessage, 
-				I18nUtils.localizedStringForKey("Error"), 0, JOptionPane.ERROR_MESSAGE, null, options,
-				options[0]);
+		int a = JOptionPane.showOptionDialog(null, dialogMessage, I18nUtils.localizedStringForKey("Error"), 0,
+				JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 		if (a == 1)
 			GUIExceptionHandler.showExceptionDialog(e);
 		System.exit(1);
 	}
 
 	public static void processException(Thread thread, Throwable t) {
-		log.error("Uncaught exception: ", t);
+		log.error("Uncaught exception: " + t, t);
 		showExceptionDialog(thread, t, null);
 	}
 
