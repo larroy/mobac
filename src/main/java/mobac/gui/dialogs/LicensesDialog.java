@@ -52,8 +52,8 @@ public class LicensesDialog extends JFrame implements ChangeListener, ActionList
 			new LicenseInfo("<h3>Library BeanShell</h3>", "lgpl-3.0.txt"),
 			new LicenseInfo("<h3>Library JavaPNG</h3>", "gpl.txt"),
 			new LicenseInfo("<h3>Library iTextPDF</h3>", "agpl.txt"),
+			new LicenseInfo("<h3>mapsforge</h3>", "lgpl-3.0.txt"),
 			new LicenseInfo("<h3>Silk Icons</h3>", "cc-attribution-2.5.txt") };
-	
 
 	private final JTextArea textArea;
 	private final JTabbedPane tab;
