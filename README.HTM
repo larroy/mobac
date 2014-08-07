@@ -118,7 +118,8 @@ p,ul,ol {
 				<li><a href="#BeanShellMapSource">Custom BeanShell map
 						sources</a></li>
 				<li><a href="#CustomMapPack">Custom MapPack</a></li>
-				<li><a href="#Mapsforge">MOBAC integrated rendering of tiles based on OpenStreetmap (mapsforge) vector data</a></li>
+				<li><a href="#Mapsforge">MOBAC integrated rendering of
+						tiles based on OpenStreetmap (mapsforge) vector data</a></li>
 				<li><a href="#FileBased">Custom atlas as map source /
 						locally generated tiles</a></li>
 			</ul></li>
@@ -1432,24 +1433,33 @@ MGMapsCache\macos_12 MGMapsCache\macroad_12 MGMapsCache\macsat_12
 		<tt>trunk</tt>
 		version.
 	</p>
-	<h3><a name="Mapsforge">MOBAC integrated rendering of tiles based on OpenStreetmap (mapsforge) vector data</a></h3>
+	<h3>
+		<a name="Mapsforge">MOBAC integrated rendering of tiles based on
+			OpenStreetmap (mapsforge) vector data</a>
+	</h3>
 	<p>
-		Since version 2.0 MOBAC includes the <a href="https://code.google.com/p/mapsforge/">mapsforge</a> rendering engine.
-		This allows MOBAC to render bitmap tiles on-the-fly using Mapsforge vector data files.
-		Those vector data files can be <a href="http://download.mapsforge.org/maps/">downloaded</a> pre-generated for a large number of regions world-wide.
-		Alternatively you can <a href="https://code.google.com/p/mapsforge/wiki/GettingStartedMapWriter">convert OpenStreetMap data to mapsforge format on your own</a>.
-		The map rendering of the vector data can be configured using <a href="https://code.google.com/p/mapsforge/wiki/RenderThemeAPI">xml base render themes</a>.       
+		Since version 2.0 MOBAC includes the <a
+			href="https://code.google.com/p/mapsforge/">mapsforge</a> rendering
+		engine. This allows MOBAC to render bitmap tiles on-the-fly using
+		Mapsforge vector data files. Those vector data files can be <a
+			href="http://download.mapsforge.org/maps/">downloaded</a>
+		pre-generated for a large number of regions world-wide. Alternatively
+		you can <a
+			href="https://code.google.com/p/mapsforge/wiki/GettingStartedMapWriter">convert
+			OpenStreetMap data to mapsforge format on your own</a>. The map rendering
+		of the vector data can be configured using <a
+			href="https://code.google.com/p/mapsforge/wiki/RenderThemeAPI">xml
+			base render themes</a>.
 	</p>
-	<p>
-		For using mapsforge vector data within MOBAC the following steps are required:
-	</p>
+	<p>For using mapsforge vector data within MOBAC the following steps
+		are required:</p>
 	<ol>
-		<li><a href="http://download.mapsforge.org/maps/">Download</a> or create a mapsforge vector data file and save it on your compurter</li>
-		<li>
-			Create a custom XML map source file in the <tt>mapsources</tt> subdirectory 
-			similar to the <a href="http://svn.code.sf.net/p/mobac/code/tags/MOBAC%202.0/v2.0.0%20alpha%201/mapsources/Example custom mapsforge map source.xml">example file</a>.
-		
-<pre>
+		<li><a href="http://download.mapsforge.org/maps/">Download</a> or
+			create a mapsforge vector data file and save it on your compurter</li>
+		<li>Create a custom XML map source file in the <tt>mapsources</tt>
+			subdirectory similar to the <a
+			href="http://svn.code.sf.net/p/mobac/code/tags/MOBAC%202.0/v2.0.0%20alpha%201/mapsources/Example custom mapsforge map source.xml">example
+				file</a>. <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;mapsforge&gt;
 	&lt;!-- name of the map - as shown in map source list --&gt;
@@ -1486,8 +1496,8 @@ MGMapsCache\macos_12 MGMapsCache\macroad_12 MGMapsCache\macsat_12
 		Existing atlases or locally rendered tiles can be directly integrated
 		into MOBAC as custom map source without having to set-up a local
 		web-server. <br> At the moment the formats used by OSMTracker,
-		AndNav, Maverick and OSMAND are supported. For
-		adding such an atlas as map source download the <a
+		AndNav, Maverick and OSMAND are supported. For adding such an atlas as
+		map source download the <a
 			href="http://svn.code.sf.net/p/mobac/code/tags/MOBAC%202.0/v2.0.0%20alpha%201/mapsources/Example%20custom%20tile%20files%20source.xml">Example
 			custom tile files source.xml</a> file, adapt the
 		<tt>&lt;sourceFolder&gt;</tt>
@@ -1503,7 +1513,8 @@ MGMapsCache\macos_12 MGMapsCache\macroad_12 MGMapsCache\macsat_12
 			large ZIP files (more than 4 GB) it is required to use Java 7.</b>
 	</p>
 	<p>
-		SQLite based atlas formats can also be used directly by MOBAC. For
+		SQLite based atlas formats (RMaps, MBTiles, BigPlanetTracks,
+		NaviComputer or OSMAND) can also be used directly by MOBAC. For
 		details please see the <a
 			href="http://svn.code.sf.net/p/mobac/code/tags/MOBAC%202.0/v2.0.0%20alpha%201/mapsources/Example%20custom%20tile%20SQLite%20source.xml">Example
 			custom tile SQLite source.xml</a>
