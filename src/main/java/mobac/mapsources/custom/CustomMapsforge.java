@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import mobac.exceptions.MapSourceInitializationException;
 import mobac.mapsources.MapsforgeMapSource;
 import mobac.program.DirectoryManager;
+import mobac.program.model.MapSourceLoaderInfo;
 import mobac.utilities.I18nUtils;
 import mobac.utilities.Utilities;
 
@@ -66,8 +67,12 @@ public class CustomMapsforge extends MapsforgeMapSource {
 		xmlRenderThemeFileName = xmlRenderThemeFileName.trim();
 
 		// The custom map xml file used for loading this map
-		File mapSourceXmlFile = this.getLoaderInfo().getSourceFile();
-		File mapSourceXmlDir = mapSourceXmlFile.getParentFile();
+		MapSourceLoaderInfo loaderInfo = getLoaderInfo();
+		File mapSourceXmlDir = null;
+		if (loaderInfo != null) {
+			File mapSourceXmlFile = this.getLoaderInfo().getSourceFile();
+			mapSourceXmlDir = mapSourceXmlFile.getParentFile();
+		}
 
 		this.mapFile = Utilities.findFile(mapFileName, mapSourceXmlDir, DirectoryManager.currentDir,
 				DirectoryManager.mapSourcesDir, DirectoryManager.userAppDataDir);

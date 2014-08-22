@@ -37,5 +37,6 @@
 			<attribute name="javadoc_location" value="http://javapng.googlecode.com/svn/trunk/javapng2/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/mapsforge"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

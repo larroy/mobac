@@ -193,6 +193,9 @@ public abstract class AbstractMultiLayerMapSource implements InitializableMapSou
 		if (this.loaderInfo != null)
 			throw new RuntimeException("LoaderInfo already set");
 		this.loaderInfo = loaderInfo;
+		for (MapSource ms : mapSources) {
+			ms.setLoaderInfo(loaderInfo);
+		}
 	}
 
 }

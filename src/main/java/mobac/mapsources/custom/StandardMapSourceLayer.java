@@ -40,6 +40,8 @@ public class StandardMapSourceLayer implements MapSource {
 
 	protected MapSource mapSource = null;
 
+	protected MapSourceLoaderInfo loaderInfo = null;
+	
 	@XmlElement(name = "name")
 	protected String mapSourceName;
 
@@ -99,11 +101,11 @@ public class StandardMapSourceLayer implements MapSource {
 
 	@XmlTransient
 	public MapSourceLoaderInfo getLoaderInfo() {
-		return mapSource.getLoaderInfo();
+		return loaderInfo;
 	}
 
 	public void setLoaderInfo(MapSourceLoaderInfo loaderInfo) {
-		mapSource.setLoaderInfo(loaderInfo);
+		this.loaderInfo = loaderInfo;
 	}
 
 	@Override

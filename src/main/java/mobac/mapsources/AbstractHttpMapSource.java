@@ -55,7 +55,7 @@ public abstract class AbstractHttpMapSource implements HttpMapSource {
 	protected HttpMapSource.TileUpdate tileUpdate;
 	protected MapSpace mapSpace = MercatorPower2MapSpace.INSTANCE_256;
 	protected MapSourceLoaderInfo loaderInfo = null;
-	
+
 	public AbstractHttpMapSource(String name, int minZoom, int maxZoom, TileImageType tileType) {
 		this(name, minZoom, maxZoom, tileType, HttpMapSource.TileUpdate.None);
 	}
@@ -75,9 +75,8 @@ public abstract class AbstractHttpMapSource implements HttpMapSource {
 		this.tileType = tileType;
 		this.tileUpdate = tileUpdate;
 	}
-	
-	public boolean ignoreContentMismatch()
-	{
+
+	public boolean ignoreContentMismatch() {
 		return false;
 	}
 
@@ -197,7 +196,7 @@ public abstract class AbstractHttpMapSource implements HttpMapSource {
 
 	public void setLoaderInfo(MapSourceLoaderInfo loaderInfo) {
 		if (this.loaderInfo != null)
-			throw new RuntimeException("LoaderInfo already set");
+			throw new RuntimeException("LoaderInfo already set for map source " + name);
 		this.loaderInfo = loaderInfo;
 	}
 

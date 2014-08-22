@@ -784,6 +784,9 @@ public class Utilities {
 				return null;
 		}
 		for (File dir : searchDirs) {
+			if (dir == null)
+				continue; // ignore null entries
+			log.debug("Searching for file \"" + fileName + "\" in directory \"" + dir + "\"");
 			f = new File(dir, fileName);
 			if (f.isFile())
 				return f;
