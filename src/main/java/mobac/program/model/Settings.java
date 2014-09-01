@@ -16,6 +16,8 @@
  ******************************************************************************/
 package mobac.program.model;
 
+import static mobac.gui.MainGUI.LEFT_PANEL_MIN_SIZE;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -46,7 +48,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import static mobac.gui.MainGUI.LEFT_PANEL_MIN_SIZE;
 import mobac.gui.actions.GpxLoad;
 import mobac.gui.panels.JCoordinatesPanel;
 import mobac.mapsources.MapSourcesManager;
@@ -100,6 +101,7 @@ public class Settings {
 	public String elementName = null;
 
 	private String userAgent = null;
+	private String httpAccept = null;
 
 	public int downloadThreadCount = 2;
 	public int downloadRetryCount = 1;
@@ -359,6 +361,22 @@ public class Settings {
 				userAgent = null;
 		}
 		this.userAgent = userAgent;
+	}
+
+	public String getHttpAccept() {
+		if (httpAccept != null)
+			return httpAccept;
+		else
+			return "text/html, image/png, image/jpeg, image/gif, */*; q=0.1";
+	}
+
+	public void setHttpAccept(String httpAccept) {
+		if (httpAccept != null) {
+			httpAccept = httpAccept.trim();
+			if (httpAccept.length() == 0)
+				httpAccept = null;
+		}
+		this.httpAccept = httpAccept;
 	}
 
 	public boolean isCustomTileSize() {

@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 
 public class TileDownLoader {
 
-	public static String ACCEPT = "text/html, image/png, image/jpeg, image/gif, */*;q=0.1";
+	private static Settings settings = Settings.getInstance();
 
 	static {
 		Object defaultReadTimeout = System.getProperty("sun.net.client.defaultReadTimeout");
@@ -47,8 +47,6 @@ public class TileDownLoader {
 	}
 
 	private static Logger log = Logger.getLogger(TileDownLoader.class);
-
-	private static Settings settings = Settings.getInstance();
 
 	public static byte[] getImage(int x, int y, int zoom, HttpMapSource mapSource) throws IOException,
 			InterruptedException, UnrecoverableDownloadException {
@@ -160,10 +158,10 @@ public class TileDownLoader {
 
 		if (code != HttpURLConnection.HTTP_OK)
 			throw new DownloadFailedException(conn, code);
-		
+
 		checkContentType(conn, data);
 		checkContentLength(conn, data);
-		
+
 		String eTag = conn.getHeaderField("ETag");
 		long timeLastModified = conn.getLastModified();
 		long timeExpires = conn.getExpiration();
@@ -341,7 +339,7 @@ public class TileDownLoader {
 		}
 		HttpURLConnection conn = mapSource.getTileUrlConnection(tile.getZoom(), tile.getX(), tile.getY());
 		conn.setRequestMethod("HEAD");
-		conn.setRequestProperty("Accept", ACCEPT);
+		conn.setRequestProperty("Accept", settings.getHttpAccept());
 		long newLastModified = conn.getLastModified();
 		if (newLastModified == 0)
 			return true;
@@ -356,7 +354,7 @@ public class TileDownLoader {
 		}
 		HttpURLConnection conn = mapSource.getTileUrlConnection(tile.getZoom(), tile.getX(), tile.getY());
 		conn.setRequestMethod("HEAD");
-		conn.setRequestProperty("Accept", ACCEPT);
+		conn.setRequestProperty("Accept", settings.getHttpAccept());
 		String onlineETag = conn.getHeaderField("ETag");
 		if (onlineETag == null || onlineETag.length() == 0)
 			return true;
@@ -371,7 +369,7 @@ public class TileDownLoader {
 		conn.setReadTimeout(1000 * s.httpReadTimeout);
 		if (conn.getRequestProperty("User-agent") == null)
 			conn.setRequestProperty("User-agent", s.getUserAgent());
-		conn.setRequestProperty("Accept", ACCEPT);
+		conn.setRequestProperty("Accept", settings.getHttpAccept());
 	}
 
 	protected static void checkContentType(HttpURLConnection conn, byte[] data) throws UnrecoverableDownloadException {
@@ -382,7 +380,7 @@ public class TileDownLoader {
 				if (log.isTraceEnabled() && contentType.startsWith("text/")) {
 					log.trace("Content (" + contentType + "): " + new String(data));
 				}
-				throw new UnrecoverableDownloadException("Content type of the loaded image is unknown: " + contentType, 
+				throw new UnrecoverableDownloadException("Content type of the loaded image is unknown: " + contentType,
 						UnrecoverableDownloadException.ERROR_CODE_CONTENT_TYPE);
 			}
 		}
