@@ -69,8 +69,9 @@ public class MapSourceTestCase extends TestCase {
 
 		HttpURLConnection c = mapSource.getTileUrlConnection(zoom, tilex, tiley);
 		c.setReadTimeout(10000);
-		c.addRequestProperty("User-agent", Settings.getInstance().getUserAgent());
-		c.setRequestProperty("Accept", TileDownLoader.ACCEPT);
+		Settings settings = Settings.getInstance();
+		c.addRequestProperty("User-agent", settings.getUserAgent());
+		c.setRequestProperty("Accept", settings.getHttpAccept());
 
 		c.connect();
 		try {

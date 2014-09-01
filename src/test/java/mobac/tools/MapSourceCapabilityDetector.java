@@ -36,7 +36,6 @@ import mobac.mapsources.MapSourcesManager;
 import mobac.mapsources.mappacks.region_oceania.NzTopoMaps;
 import mobac.program.Logging;
 import mobac.program.ProgramInfo;
-import mobac.program.download.TileDownLoader;
 import mobac.program.interfaces.HttpMapSource;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
@@ -158,7 +157,7 @@ public class MapSourceCapabilityDetector {
 			log.trace("Connecting...");
 			c.setReadTimeout(3000);
 			c.setRequestProperty("User-agent", ProgramInfo.getUserAgent());
-			c.setRequestProperty("Accept", TileDownLoader.ACCEPT);
+			c.setRequestProperty("Accept", Settings.getInstance().getHttpAccept());
 			c.connect();
 			log.debug("Connection established - response HTTP " + c.getResponseCode());
 			if (c.getResponseCode() != 200)
