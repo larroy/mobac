@@ -446,7 +446,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		atlasMenu.add(createAtlas);
 
 		// Selection menu - before, it was called "Maps menu"
-		JMenu selectionMenu = new JMenu("Selection");
+		JMenu selectionMenu = new JMenu(I18nUtils.localizedStringForKey("menu_selection"));
 		selectionMenu.setIcon(Utilities.loadResourceImageIcon("menu_icons/selections.png"));
 		selectionMenu.setMnemonic(KeyEvent.VK_S);
 		JMenu selectionModeMenu = new JMenu(I18nUtils.localizedStringForKey("menu_selection_selection"));
@@ -572,7 +572,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 		menuBar.add(debugMenu);
 
 		// Tools menu
-		JMenu toolsMenu = new JMenu("Tools");
+		JMenu toolsMenu = new JMenu(I18nUtils.localizedStringForKey("menu_tools"));
 		toolsMenu
 				.setIcon(new ImageIcon(MainGUI.class.getResource("/mobac/resources/images/menu_icons/menu_tools.png")));
 		toolsMenu.setMnemonic(KeyEvent.VK_T);
@@ -590,7 +590,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 				.getResource("/mobac/resources/images/menu_icons/menu_panels_right.png")));
 		showRightPanel.addActionListener(new PanelShowHide(rightPanel));
 
-		JMenu mnLeftPanel = new JMenu("Left panel");
+		JMenu mnLeftPanel = new JMenu(I18nUtils.localizedStringForKey("menu_tools_leftpanel"));
 		mnLeftPanel.setIcon(new ImageIcon(MainGUI.class
 				.getResource("/mobac/resources/images/menu_icons/menu_panels_left.png")));
 		toolsMenu.add(mnLeftPanel);
