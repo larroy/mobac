@@ -74,7 +74,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBException;
 
 import mobac.exceptions.MapSourceInitializationException;
@@ -123,6 +122,7 @@ import mobac.gui.mapview.controller.RectangleSelectionMapController;
 import mobac.gui.mapview.interfaces.MapEventListener;
 import mobac.gui.panels.JCoordinatesPanel;
 import mobac.gui.panels.JGpxPanel;
+import mobac.gui.panels.JMapSourcesPanel;
 import mobac.gui.panels.JProfilesPanel;
 import mobac.gui.panels.JTileImageParametersPanel;
 import mobac.gui.panels.JTileStoreCoveragePanel;
@@ -195,7 +195,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 	private JPanel zoomLevelPanel;
 	private JZoomCheckBox[] cbZoom = new JZoomCheckBox[0];
 	private JLabel amountOfTilesLabel;
-	private JCollapsiblePanel mapSourcePanel;
+	private JMapSourcesPanel mapSourcePanel;
 
 	private AtlasCreate atlasCreateAction = new AtlasCreate(jAtlasTree);
 
@@ -374,12 +374,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		// map source tree
 		mapSourceTree = new JMapSourceTree(MapSourcesManager.getInstance().getEnabledOrderedMapSources());
-		mapSourceTree.setRootVisible(false);
-		mapSourceTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		mapSourceTree.addTreeSelectionListener(new MapSourceTreeListener());
-		mapSourceTree.setExpandsSelectedPaths(true);
-		mapSourceTree.setToggleClickCount(1);
-		mapSourceTree.setToolTipText(I18nUtils.localizedStringForKey("lp_map_source_tree_tips"));
 		mapSourceTree.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -707,15 +702,7 @@ public class MainGUI extends JFrame implements MapEventListener {
 
 		coordinatesPanel.addButtonActionListener(new ApplySelectionButtonListener());
 
-		mapSourcePanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_map_source_title"),
-				new GridBagLayout(), true);
-
-		JScrollPane mapSourceTreeScrollPane = new JScrollPane(mapSourceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		mapSourceTreeScrollPane.setPreferredSize(new Dimension(100, 200));
-		mapSourceTreeScrollPane.setAutoscrolls(true);
-		mapSourcePanel.addContent(mapSourceTreeScrollPane, GBC.eol().fill().insets(0, 1, 0, 0));
+		mapSourcePanel = new JMapSourcesPanel(mapSourceTree);
 
 		JCollapsiblePanel zoomLevelsPanel = new JCollapsiblePanel(I18nUtils.localizedStringForKey("lp_zoom_title"),
 				new GridBagLayout());

@@ -35,6 +35,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import mobac.mapsources.AbstractMultiLayerMapSource;
 import mobac.program.interfaces.FileBasedMapSource;
@@ -156,10 +157,14 @@ public class JMapSourceTree extends JTree {
 
 	public JMapSourceTree(Vector<MapSource> enabledOrderedMapSources) {
 		super();
-		this.setRootVisible(true);
 		// Setting a cell renderer which will provide proper icons behavior
 		setCellRenderer(new CustomIconRenderer());
 		initialize(enabledOrderedMapSources);
+		setRootVisible(false);
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		setExpandsSelectedPaths(true);
+		setToggleClickCount(1);
+		setToolTipText(I18nUtils.localizedStringForKey("lp_map_source_tree_tips"));
 	}
 
 	/**

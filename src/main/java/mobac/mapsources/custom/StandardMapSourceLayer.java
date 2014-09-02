@@ -52,7 +52,7 @@ public class StandardMapSourceLayer implements MapSource {
 	protected void afterUnmarshal(Unmarshaller u, Object parent) {
 		mapSource = MapSourcesManager.getInstance().getSourceByName(mapSourceName);
 		if (mapSource == null)
-			throw new RuntimeException("Invalid map source name used: " + mapSourceName);
+			throw new RuntimeException("Unknown map source name used: " + mapSourceName);
 	}
 
 	public int getMaxZoom() {
