@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 
 public class TileDownLoader {
 
-	private static Settings settings = Settings.getInstance();
+	private static final Settings settings = Settings.getInstance();
 
 	static {
 		Object defaultReadTimeout = System.getProperty("sun.net.client.defaultReadTimeout");
@@ -66,10 +66,8 @@ public class TileDownLoader {
 		// if (Math.random()>0.7) throw new
 		// IOException("intentionally download error");
 
-		Settings s = Settings.getInstance();
-
 		TileStoreEntry tile = null;
-		if (s.tileStoreEnabled) {
+		if (settings.tileStoreEnabled) {
 
 			// Copy the file from the persistent tilestore instead of
 			// downloading it from internet.
@@ -130,7 +128,7 @@ public class TileDownLoader {
 	 */
 	public static byte[] downloadTileAndUpdateStore(int x, int y, int zoom, HttpMapSource mapSource)
 			throws UnrecoverableDownloadException, IOException, InterruptedException {
-		return downloadTileAndUpdateStore(x, y, zoom, mapSource, Settings.getInstance().tileStoreEnabled);
+		return downloadTileAndUpdateStore(x, y, zoom, mapSource, settings.tileStoreEnabled);
 	}
 
 	public static byte[] downloadTile(int x, int y, int zoom, HttpMapSource mapSource)
@@ -235,13 +233,11 @@ public class TileDownLoader {
 
 		conn.connect();
 
-		Settings s = Settings.getInstance();
-
 		int code = conn.getResponseCode();
 
 		if (conditionalRequest && code == HttpURLConnection.HTTP_NOT_MODIFIED) {
 			// Data unchanged on server
-			if (s.tileStoreEnabled) {
+			if (settings.tileStoreEnabled) {
 				tile.update(conn.getExpiration());
 				TileStore.getInstance().putTile(tile, mapSource);
 			}
@@ -265,7 +261,7 @@ public class TileDownLoader {
 		TileImageType imageType = Utilities.getImageType(data);
 		if (imageType == null)
 			throw new UnrecoverableDownloadException("The returned image is of unknown format");
-		if (s.tileStoreEnabled) {
+		if (settings.tileStoreEnabled) {
 			TileStore.getInstance().putTileData(data, x, y, zoom, mapSource, timeLastModified, timeExpires, eTag);
 		}
 		Utilities.checkForInterruption();
@@ -302,7 +298,7 @@ public class TileDownLoader {
 		try {
 			if (Thread.currentThread() instanceof MapSourceListener) {
 				// We only throttle atlas downloads, not downloads for the preview map
-				long bandwidthLimit = Settings.getInstance().getBandwidthLimit();
+				long bandwidthLimit = settings.getBandwidthLimit();
 				if (bandwidthLimit > 0) {
 					input = new ThrottledInputStream(input);
 				}
@@ -364,11 +360,10 @@ public class TileDownLoader {
 	protected static void prepareConnection(HttpURLConnection conn) throws ProtocolException {
 		conn.setRequestMethod("GET");
 
-		Settings s = Settings.getInstance();
-		conn.setConnectTimeout(1000 * s.httpConnectionTimeout);
-		conn.setReadTimeout(1000 * s.httpReadTimeout);
+		conn.setConnectTimeout(1000 * settings.httpConnectionTimeout);
+		conn.setReadTimeout(1000 * settings.httpReadTimeout);
 		if (conn.getRequestProperty("User-agent") == null)
-			conn.setRequestProperty("User-agent", s.getUserAgent());
+			conn.setRequestProperty("User-agent", settings.getUserAgent());
 		conn.setRequestProperty("Accept", settings.getHttpAccept());
 	}
 
