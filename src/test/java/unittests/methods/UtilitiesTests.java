@@ -16,9 +16,13 @@
  ******************************************************************************/
 package unittests.methods;
 
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import mobac.utilities.Utilities;
+import mobac.utilities.tar.TarHeader;
 
 public class UtilitiesTests extends TestCase {
 
@@ -30,6 +34,46 @@ public class UtilitiesTests extends TestCase {
 		assertEquals(4168, Utilities.parseSVNRevision("$Revision:	4168$"));
 		assertEquals(4168, Utilities.parseSVNRevision("$Rev: 4212:4168MS$"));
 		assertEquals(-1, Utilities.parseSVNRevision("exported"));
+	}
+
+	public void testTarHeader() throws Exception {
+
+		final String str1 = "Test123";
+		final String str2 = "abcdefghijklmnopqrstuvwxyz";
+		final String str3 = "1234567890";
+		StringWriter sw = new StringWriter(110);
+		for (int i = 0; i < 100; i++)
+			sw.write('x');
+		String str4 = sw.toString();
+
+		for (int i = 0; i < 101; i++)
+			sw.write('y');
+		String str5 = sw.toString();
+
+		TarHeader tarHeader = new TarHeader(str1, 12345, false);
+		assertEquals(str1, tarHeader.getFileName());
+
+		tarHeader.setFileName(str2);
+		assertEquals(str2, tarHeader.getFileName());
+
+		tarHeader.setFileName(str3);
+		assertEquals(str3, tarHeader.getFileName());
+
+		tarHeader.setFileName(str4); // max length filename
+		assertEquals(str4, tarHeader.getFileName());
+
+		try {
+			tarHeader.setFileName(str5);
+			fail("Exception expected");
+		} catch (Exception e) {
+			
+		}
+
+		Field f = TarHeader.class.getDeclaredField("fileName");
+		f.setAccessible(true);
+		char[] chars = (char[]) f.get(tarHeader);
+		for (char c : chars)
+			System.out.print(c == 0 ? " 0" : c);
 	}
 
 	public static void main(String[] args) {

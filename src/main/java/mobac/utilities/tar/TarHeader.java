@@ -83,8 +83,8 @@ public class TarHeader {
 		String filePath = theFile.getAbsolutePath();
 		String basePath = theBaseFilePath.getAbsolutePath();
 		if (!filePath.startsWith(basePath))
-			throw new RuntimeException("File \"" + filePath
-					+ "\" is outside of archive base path \"" + basePath + "\"!");
+			throw new RuntimeException("File \"" + filePath + "\" is outside of archive base path \"" + basePath
+					+ "\"!");
 
 		String tarFileName = filePath.substring(basePath.length(), filePath.length());
 
@@ -99,15 +99,17 @@ public class TarHeader {
 	}
 
 	public void setFileName(String newFileName) {
-		char[] theFileName = newFileName.toCharArray();
+		int newFileNameLength = newFileName.length();
+		if (newFileNameLength > fileName.length)
+			throw new RuntimeException("File name length exceeds limit of 100 characters: " + newFileNameLength
+					+ "chars:" + newFileName);
 
-		fileNameLength = newFileName.length();
-		for (int i = 0; i < fileName.length; i++) {
-			if (i < theFileName.length) {
-				fileName[i] = theFileName[i];
-			} else {
-				fileName[i] = 0;
-			}
+		char[] theFileName = newFileName.toCharArray();
+		System.arraycopy(theFileName, 0, fileName, 0, newFileNameLength);
+		fileNameLength = newFileNameLength;
+
+		for (int i = newFileNameLength; i < fileName.length; i++) {
+			fileName[i] = 0;
 		}
 	}
 
@@ -228,21 +230,18 @@ public class TarHeader {
 	/**
 	 * <p>
 	 * Checksum field content:<br>
-	 * Header checksum, stored as an octal number in ASCII. To compute the
-	 * checksum, set the checksum field to all spaces, then sum all bytes in the
-	 * header using unsigned arithmetic. This field should be stored as six
-	 * octal digits followed by a null and a space character. Note that many
-	 * early implementations of tar used signed arithmetic for the checksum
-	 * field, which can cause inter- operability problems when transferring
-	 * archives between systems. Modern robust readers compute the checksum both
-	 * ways and accept the header if either computation matches.<br>
-	 * <a href="http://www.freebsd.org/cgi/man.cgi?query=tar&sektion=5&manpath=FreeBSD+8-current"
-	 * >definition source</a>
+	 * Header checksum, stored as an octal number in ASCII. To compute the checksum, set the checksum field to all
+	 * spaces, then sum all bytes in the header using unsigned arithmetic. This field should be stored as six octal
+	 * digits followed by a null and a space character. Note that many early implementations of tar used signed
+	 * arithmetic for the checksum field, which can cause inter- operability problems when transferring archives between
+	 * systems. Modern robust readers compute the checksum both ways and accept the header if either computation
+	 * matches.<br>
+	 * <a href="http://www.freebsd.org/cgi/man.cgi?query=tar&sektion=5&manpath=FreeBSD+8-current" >definition source</a>
 	 * </p>
 	 * 
 	 * @param header
-	 *            array containing a tar header at offset 0 (512 bytes of size)
-	 *            with prepared checksum field (filled with spaces)
+	 *            array containing a tar header at offset 0 (512 bytes of size) with prepared checksum field (filled
+	 *            with spaces)
 	 */
 	public void correctCheckSum(byte[] header) {
 		// Compute the checksum
