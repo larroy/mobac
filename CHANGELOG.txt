@@ -12,7 +12,8 @@
 =======
 
 2.0.0 alpha 2 (2014-08-??)
- ! Fixed problems using mapsforge vector maps as a layer of a multi-layer map 
+ ! Fixed problems using mapsforge vector maps as a layer of a multi-layer map
+ ! TrekBuddyTar: test added for too long layer & map names  
 
 2.0.0 alpha 1 (2014-07-31)
  ~ GUI design improved

@@ -22,16 +22,31 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
+import mobac.exceptions.AtlasTestException;
 import mobac.program.annotations.AtlasCreatorName;
 import mobac.program.atlascreators.impl.MapTileWriter;
+import mobac.program.interfaces.LayerInterface;
+import mobac.program.interfaces.MapInterface;
 import mobac.utilities.Utilities;
 import mobac.utilities.tar.TarArchive;
 import mobac.utilities.tar.TarTmiArchive;
 
 @AtlasCreatorName(value = "TrekBuddy tared atlas", type = "TaredAtlas")
 public class TrekBuddyTared extends TrekBuddy {
+
+	@Override
+	protected void testAtlas() throws AtlasTestException {
+		super.testAtlas();
+		for (LayerInterface layer : atlas) {
+			for (MapInterface map : layer) {
+				String mapFileName = layer.getName() + "/" + map.getName() + "/" + map.getName() + ".map";
+				if (mapFileName.length() > 100)
+					throw new AtlasTestException("Layer and map name too long for Trekbuddy Tar format!\n"
+							+ mapFileName + "\n\nCurrent length: " + mapFileName.length()
+							+ " characters\nMaximum length: 100 characters", map);
+			}
+		}
+	}
 
 	@Override
 	public void finishAtlasCreation() {
