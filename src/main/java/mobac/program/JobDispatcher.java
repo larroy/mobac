@@ -34,18 +34,19 @@ public class JobDispatcher {
 
 	private static Logger log = Logger.getLogger(JobDispatcher.class);
 
+	protected final AtlasThread atlasThread;
+	protected final PauseResumeHandler pauseResumeHandler;
+	protected final MapSourceListener mapSourceListener;
+	protected final WorkerThread[] workers;
+
 	protected int maxJobsInQueue = 100;
 	protected int minJobsInQueue = 50;
 
-	protected WorkerThread[] workers;
+	protected final BlockingQueue<Job> jobQueue = new LinkedBlockingQueue<Job>();
 
-	protected PauseResumeHandler pauseResumeHandler;
-
-	protected MapSourceListener mapSourceListener;
-
-	protected BlockingQueue<Job> jobQueue = new LinkedBlockingQueue<Job>();
-
-	public JobDispatcher(int threadCount, PauseResumeHandler pauseResumeHandler, MapSourceListener mapSourceListener) {
+	public JobDispatcher(AtlasThread atlasThread, int threadCount, PauseResumeHandler pauseResumeHandler,
+			MapSourceListener mapSourceListener) {
+		this.atlasThread = atlasThread;
 		this.pauseResumeHandler = pauseResumeHandler;
 		this.mapSourceListener = mapSourceListener;
 		workers = new WorkerThread[threadCount];
@@ -135,7 +136,7 @@ public class JobDispatcher {
 	 * Each worker thread takes the first job from the job queue and executes it. If the queue is empty the worker
 	 * blocks, waiting for the next job.
 	 */
-	protected class WorkerThread extends DelayedInterruptThread implements MapSourceListener {
+	public class WorkerThread extends DelayedInterruptThread implements MapSourceListener {
 
 		Job job = null;
 
@@ -199,6 +200,9 @@ public class JobDispatcher {
 			mapSourceListener.tileLoadedFromCache(size);
 		}
 
+		public AtlasThread getAtlasThread() {
+			return JobDispatcher.this.atlasThread;
+		}
 	}
 
 }
