@@ -21,6 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.annotation.XmlElement;
@@ -34,10 +36,14 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.TileImageType;
 
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.awt.AwtTileBitmap;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.queue.Job;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 import org.mapsforge.map.layer.renderer.RendererJob;
 import org.mapsforge.map.model.DisplayModel;
@@ -58,6 +64,8 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	protected DatabaseRenderer renderer;
 	protected XmlRenderTheme xmlRenderTheme;
 	protected DisplayModel displayModel;
+
+	protected MapsForgeCache tileCache = new MapsForgeCache();
 
 	@XmlElement(defaultValue = "false")
 	protected boolean transparent = false;
@@ -83,7 +91,7 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		if (!res.isSuccess())
 			throw new MapSourceInitializationException(res.getErrorMessage());
 
-		renderer = new DatabaseRenderer(mapDatabase, graphicFactory);
+		renderer = new DatabaseRenderer(mapDatabase, graphicFactory, tileCache);
 	}
 
 	@Override
@@ -131,13 +139,16 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		if (loadMethod == LoadMethod.CACHE)
 			return null;
 
-		Tile tile = new Tile(x, y, (byte) zoom);
-		RendererJob job = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, textScale, transparent);
-
+		RendererJob job;
+		Bitmap tileBitmap;
 		synchronized (this) {
-			AwtTileBitmap tileBitmap = (AwtTileBitmap) renderer.executeJob(job);
-			return tileBitmap.getBufferedImage();
+			Tile tile = new Tile(x, y, (byte) zoom, 256);
+			job = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, textScale, transparent, false);
+
+			tileBitmap = (AwtTileBitmap) renderer.executeJob(job);
 		}
+		tileCache.put(job, null);
+		return AwtGraphicFactory.getBitmap(tileBitmap);
 	}
 
 	public TileImageType getTileImageType() {
@@ -157,4 +168,47 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		return name;
 	}
 
+	private static class MapsForgeCache implements TileCache {
+
+		HashSet<Job> set = new HashSet<Job>(1000);
+
+		@Override
+		public void put(Job job, TileBitmap tile) {
+			set.add(job);
+		}
+
+		@Override
+		public boolean containsKey(Job job) {
+			return set.contains(job);
+		}
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public TileBitmap get(Job job) {
+			throw new RuntimeException("not implemented");
+		}
+
+		@Override
+		public int getCapacity() {
+			throw new RuntimeException("not implemented");
+		}
+
+		@Override
+		public int getCapacityFirstLevel() {
+			throw new RuntimeException("not implemented");
+		}
+
+		@Override
+		public TileBitmap getImmediately(Job job) {
+			throw new RuntimeException("not implemented");
+		}
+
+		@Override
+		public void setWorkingSet(Set<Job> jobs) {
+		}
+
+	}
 }
