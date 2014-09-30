@@ -24,11 +24,12 @@ import mobac.program.annotations.AtlasCreatorName;
  * 
  * Map/Atlas format see http://help.codesector.com/MapsCache
  */
-@AtlasCreatorName("Maverick SQLite atlas format")
-public class Maverick extends RMapsSQLite {
+@AtlasCreatorName("Maverick simple tiles atlas format")
+public class MaverickOld extends OSMTracker {
 
-	public Maverick() {
+	public MaverickOld() {
 		super();
+		tileFileNamePattern = "%d/%d/%d.jpg.tile";
 	}
 
 }
