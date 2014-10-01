@@ -35,6 +35,7 @@
 		<fileset dir="lib" includes="commons-io-2.0.jar" />
 		<fileset dir="lib" includes="commons-lang3-3.1.jar" />
 		<fileset dir="lib" includes="je-${je-version}.jar" />
+		<fileset dir="lib" includes="kxml2-2.3.0.jar.jar" />
 		<fileset dir="lib" includes="mapsforge*.jar" />
 	</path>
 
@@ -184,6 +185,7 @@
 			<zipfileset src="lib/mapsforge-map-${mapsforge-version}.jar" />
 			<zipfileset src="lib/mapsforge-map-awt-${mapsforge-version}.jar" />
 			<zipfileset src="lib/mapsforge-map-reader-${mapsforge-version}.jar" />
+			<zipfileset src="lib/kxml2-2.3.0.jar" />
 			<fileset dir="build/mobac">
 				<exclude name="**/unittest/**" />
 				<exclude name="mobac/mapsources/mapapcks/**" />
