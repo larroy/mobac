@@ -16,31 +16,21 @@
  ******************************************************************************/
 package mobac.program.atlascreators;
 
-import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
 
-import mobac.exceptions.AtlasTestException;
 import mobac.exceptions.MapCreationException;
 import mobac.program.annotations.AtlasCreatorName;
 import mobac.program.annotations.SupportedParameters;
-import mobac.program.atlascreators.tileprovider.ConvertedRawTileProvider;
-import mobac.program.interfaces.AtlasInterface;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.interfaces.MapSpace.ProjectionCategory;
-import mobac.program.interfaces.RequiresSQLite;
-import mobac.program.model.Settings;
-import mobac.program.model.TileImageParameters;
 import mobac.program.model.TileImageParameters.Name;
 import mobac.utilities.Utilities;
-import mobac.utilities.jdbc.SQLiteLoader;
 
 /**
  * Atlas/Map creator for "BigPlanet-Maps application for Android" (offline SQLite maps)
@@ -58,9 +48,7 @@ import mobac.utilities.jdbc.SQLiteLoader;
  */
 @AtlasCreatorName(value = "RMaps SQLite", type = "RMaps")
 @SupportedParameters(names = { Name.format })
-public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
-
-	private static final int MAX_BATCH_SIZE = 1000;
+public class RMapsSQLite extends AbstractSQLite {
 
 	private static final String TABLE_DDL = "CREATE TABLE IF NOT EXISTS tiles (x int, y int, z int, s int, image blob, PRIMARY KEY (x,y,z,s))";
 	private static final String INDEX_DDL = "CREATE INDEX IF NOT EXISTS IND on tiles (x,y,z,s)";
@@ -71,14 +59,8 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 	private static final String RMAPS_INFO_MAX_SQL = "SELECT DISTINCT z FROM tiles ORDER BY z DESC LIMIT 1;";
 	private static final String RMAPS_INFO_MIN_SQL = "SELECT DISTINCT z FROM tiles ORDER BY z ASC LIMIT 1;";
 
-	protected File databaseFile;
-
-	protected Connection conn = null;
-	protected PreparedStatement prepStmt;
-
 	public RMapsSQLite() {
 		super();
-		SQLiteLoader.loadSQLiteOrShowError();
 	}
 
 	@Override
@@ -91,26 +73,11 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 	}
 
 	@Override
-	public void startAtlasCreation(AtlasInterface atlas, File customAtlasDir) throws IOException, AtlasTestException,
-			InterruptedException {
-		if (customAtlasDir == null)
-			customAtlasDir = Settings.getInstance().getAtlasOutputDirectory();
-		super.startAtlasCreation(atlas, customAtlasDir);
-		databaseFile = new File(atlasDir, getDatabaseFileName());
-		log.debug("SQLite Database file: " + databaseFile);
-	}
-
-	@Override
 	public void createMap() throws MapCreationException, InterruptedException {
 		try {
 			Utilities.mkDir(atlasDir);
 		} catch (IOException e) {
 			throw new MapCreationException(map, e);
-		}
-		try {
-			SQLiteLoader.loadSQLite();
-		} catch (SQLException e) {
-			throw new MapCreationException(SQLiteLoader.getMsgSqliteMissing(), map, e);
 		}
 		try {
 			openConnection();
@@ -120,27 +87,6 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 			throw new MapCreationException("Error creating SQL database \"" + databaseFile + "\": " + e.getMessage(),
 					map, e);
 		}
-	}
-
-	protected void openConnection() throws SQLException {
-		if (conn == null || conn.isClosed()) {
-			String url = "jdbc:sqlite:/" + databaseFile.getAbsolutePath();
-			conn = DriverManager.getConnection(url);
-		}
-	}
-
-	@Override
-	public void abortAtlasCreation() throws IOException {
-		SQLiteLoader.closeConnection(conn);
-		conn = null;
-		super.abortAtlasCreation();
-	}
-
-	@Override
-	public void finishAtlasCreation() throws IOException, InterruptedException {
-		SQLiteLoader.closeConnection(conn);
-		conn = null;
-		super.finishAtlasCreation();
 	}
 
 	protected void initializeDB() throws SQLException {
@@ -161,59 +107,7 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 		stat.executeUpdate(RMAPS_TABLE_INFO_DDL);
 	}
 
-	protected void createTiles() throws InterruptedException, MapCreationException {
-		int maxMapProgress = 2 * (xMax - xMin + 1) * (yMax - yMin + 1);
-		atlasProgress.initMapCreation(maxMapProgress);
-		TileImageParameters param = map.getParameters();
-		if (param != null)
-			mapDlTileProvider = new ConvertedRawTileProvider(mapDlTileProvider, param.getFormat());
-		try {
-			conn.setAutoCommit(false);
-			int batchTileCount = 0;
-			int tilesWritten = 0;
-			Runtime r = Runtime.getRuntime();
-			long heapMaxSize = r.maxMemory();
-			prepStmt = conn.prepareStatement(getTileInsertSQL());
-			for (int x = xMin; x <= xMax; x++) {
-				for (int y = yMin; y <= yMax; y++) {
-					checkUserAbort();
-					atlasProgress.incMapCreationProgress();
-					try {
-						byte[] sourceTileData = mapDlTileProvider.getTileData(x, y);
-						if (sourceTileData != null) {
-							writeTile(x, y, zoom, sourceTileData);
-							tilesWritten++;
-							long heapAvailable = heapMaxSize - r.totalMemory() + r.freeMemory();
-
-							batchTileCount++;
-							if ((heapAvailable < HEAP_MIN) || (batchTileCount >= MAX_BATCH_SIZE)) {
-								log.trace("Executing batch containing " + batchTileCount + " tiles");
-								prepStmt.executeBatch();
-								prepStmt.clearBatch();
-								System.gc();
-								conn.commit();
-								atlasProgress.incMapCreationProgress(batchTileCount);
-								batchTileCount = 0;
-							}
-						}
-					} catch (IOException e) {
-						throw new MapCreationException(map, e);
-					}
-				}
-			}
-			prepStmt.executeBatch();
-			prepStmt.clearBatch();
-			System.gc();
-			if (tilesWritten > 0)
-				updateTileMetaInfo();
-			log.trace("Final commit containing " + batchTileCount + " tiles");
-			conn.commit();
-			atlasProgress.setMapCreationProgress(maxMapProgress);
-		} catch (SQLException e) {
-			throw new MapCreationException(map, e);
-		}
-	}
-
+	@Override
 	protected void updateTileMetaInfo() throws SQLException {
 		Statement stat = conn.createStatement();
 		ResultSet rs = stat.executeQuery(RMAPS_INFO_MAX_SQL);
@@ -236,6 +130,7 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 		ps.close();
 	}
 
+	@Override
 	protected void writeTile(int x, int y, int z, byte[] tileData) throws SQLException, IOException {
 		prepStmt.setInt(1, x);
 		prepStmt.setInt(2, y);
@@ -244,10 +139,12 @@ public class RMapsSQLite extends AtlasCreator implements RequiresSQLite {
 		prepStmt.addBatch();
 	}
 
+	@Override
 	protected String getDatabaseFileName() {
 		return atlas.getName() + ".sqlitedb";
 	}
 
+	@Override
 	protected String getTileInsertSQL() {
 		return INSERT_SQL;
 	}
