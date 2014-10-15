@@ -22,7 +22,7 @@
 	<property name="mapsforge-version" value="0.5.0-SNAPSHOT" />
 		
 	<!-- Java target version -->
-	<property name="java-target" value="1.6" />
+	<property name="java-target" value="1.7" />
 
 	<path id="maincp">
 		<fileset dir="lib" includes="log*.jar" />
@@ -72,7 +72,7 @@
 			<classpath refid="maincp" />
 			<include name="mobac/StartMOBAC.java" />
 		</javac>
-		<!-- Compile the other classes for Java 1.6 -->
+		<!-- Compile the other classes for Java 1.7 -->
 		<javac srcdir="src/main/java" destdir="build/mobac" target="${java-target}"
 			source="${java-target}" debug="true" includeantruntime="false"
 			encoding="UTF-8">
@@ -200,118 +200,6 @@
 
 	<target name="shrink_libraryjars_osx" if="rtlibraryjar.osx.present">
 		<property name="rtlibraryjar" value="${rtlibraryjar.osx}" />
-	</target>
-
-	<target name="shrink"
-		depends="create_jar,shrink_libraryjars,shrink_libraryjars_osx"
-		description="Removes unused classes from compiled jar">
-		<taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar" />
-		<proguard>
-			-libraryjars "${rtlibraryjar}"
-			-injars
-			"${jar.name}"
-			-outjars
-			build/temp.jar
-			-keepattributes *Annotation*
-			-keep class ${main.class} {
-			public static void main(java.lang.String[]); }
-			-keep class
-			mobac.program.* { public *; }
-			-keep class mobac.program.interfaces.* {
-			public *; }
-			-keep class mobac.program.model.package-info
-			-keep class mobac.mapsources.custom.* { *; } 
-			-keep class
-			mobac.program.model.* { public *; }
-			-keep class mobac.program.jaxb.* {
-			public *; }
-			-keep class mobac.program.interfaces.* { public *; }
-			-keep
-			class mobac.program.download.UserAgent { public *; }
-			-keep class
-			mobac.exceptions.* { public *; }
-			-keep class
-			mobac.program.tilestore.berkeleydb.* { *; }
-			-keep class
-			mobac.program.tilestore.TileStoreEntry { public *; }
-			-keep class
-			mobac.program.atlascreators.AtlasCreator { public *; }
-			-keep class
-			mobac.utilities.beanshell.* { public *; }
-			-keep class
-			mobac.utilities.tar.TarIndex { public *; }
-			-keep class
-			mobac.utilities.tar.TarIndexedArchive { public *; }
-			-keep class
-			mobac.data.gpx.gpx11.* { public *; }
-			-keep class
-			mobac.mapsources.MapSourceTools { public *; }
-			-keep class
-			mobac.mapsources.MapSourceUrlUpdater { public *; }
-			-keep class
-			mobac.mapsources.custom.* { *; }
-			-keep class org.apache.log4j.Layout {
-			public *; }
-			-keep class org.apache.log4j.Level { public *; }
-			-keep
-			class org.apache.commons.lang3.StringEscapeUtils { public *; }
-			-keep
-			class org.apache.log4j.Category { public *; }
-			-keep class
-			org.apache.log4j.Priority { public *; }
-			-keep class
-			org.apache.log4j.spi.LoggingEvent { public *; }
-			-keep class
-			org.apache.log4j.spi.ThrowableInformation { public *; }
-			-keep class
-			org.apache.log4j.spi.LocationInfo { public *; }
-			-keep class
-			org.apache.log4j.PatternLayout { public *; }
-			-keep class
-			org.apache.log4j.Appender { public *; }
-			-keep class
-			org.apache.log4j.FileAppender { public *; }
-			-keep class
-			com.sixlegs.png.PngImage { public *; }
-			-keep class org.mapsforge.map.rendertheme.XmlRenderTheme { public *; }
-			-keep class bsh.This { public
-			*; }
-			-keep class bsh.XThis { public *; }
-			-keep class
-			com.sleepycat.persist.PrimaryIndex { public *; }
-			-keepclassmembers
-			enum * {
-			public static **[] values();
-			public static **
-			valueOf(java.lang.String);
-			}
-			-keepclassmembers class *
-			implements
-			java.io.Serializable {
-			static final long serialVersionUID;
-			private void
-			writeObject(java.io.ObjectOutputStream);
-			private void
-			readObject(java.io.ObjectInputStream);
-			java.lang.Object
-			writeReplace();
-			java.lang.Object readResolve();
-			}
-			-keepclassmembers
-			class * implements
-			com.sleepycat.persist.evolve.Conversion {
-			boolean
-			equals(java.lang.Object);
-			}
-			-dontnote java.**
-			-dontnote javax.**
-			-dontnote com.sun.**
-			-dontnote sun.**
-			-dontwarn
-			-dontoptimize
-			-dontobfuscate
-		</proguard>
-		<move file="build/temp.jar" tofile="${jar.name}" overwrite="true" />
 	</target>
 
 	<target name="svnversion"

@@ -19,8 +19,6 @@ package mobac;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import mobac.utilities.I18nUtils;
-
 /**
  * Main class for starting Mobile Atlas Creator.
  * 
@@ -28,6 +26,8 @@ import mobac.utilities.I18nUtils;
  * of the class specified by {@link #MAIN_CLASS}. The class to be instantiated is specified by it's name intentionally
  * as this allows to compile this class without any further class dependencies.
  * 
+ * Note: Translation of Strings in this file do not make sense because the settings are not loaded yet. Therefore all
+ * messages are always shown in the default language.
  */
 public class StartMOBAC {
 
@@ -46,9 +46,9 @@ public class StartMOBAC {
 			Class.forName(MAIN_CLASS).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, I18nUtils.localizedStringForKey("msg_environment_unable_to_start") + e.getMessage(), 
-					I18nUtils.localizedStringForKey("Error"),
+			JOptionPane.showMessageDialog(null, "Unable to start Mobile Atlas Creator: \n" + e.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
 		}
 	}
 
@@ -57,7 +57,7 @@ public class StartMOBAC {
 			if (System.getProperty("swing.defaultlaf") != null)
 				return;
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			//MainGUI.setDefaultFontOfAllUIComponents(MainGUI.customFont());
+			// MainGUI.setDefaultFontOfAllUIComponents(MainGUI.customFont());
 		} catch (Exception e) {
 		}
 	}
@@ -78,11 +78,12 @@ public class StartMOBAC {
 		// 1.5 -> 1005; 1.6 -> 1006; 1.7 -> 1007
 		if (version < 1007) {
 			JOptionPane.showMessageDialog(null,
-					String.format(I18nUtils.localizedStringForKey("msg_environment_jre_below"), ver), 
-					I18nUtils.localizedStringForKey("msg_environment_jre_below_title"),
+					"The used Java Runtime Environment does not meet the minimum requirements.\n\n"
+							+ "Mobile Atlas Creator requires at least Java 7 (1.7) or higher.\n"
+							+ "Please update your Java Runtime before starting Mobile Atlas Creator.\n\n"
+							+ "Detected Java Runtime Version: " + ver, "Java Runtime version problem detected",
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
-
 }
