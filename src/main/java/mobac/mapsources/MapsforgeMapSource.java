@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.annotation.XmlElement;
 
 import mobac.exceptions.MapSourceInitializationException;
+import mobac.exceptions.NotImplementedException;
 import mobac.exceptions.UnrecoverableDownloadException;
 import mobac.mapsources.mapspace.MercatorPower2MapSpace;
 import mobac.program.interfaces.FileBasedMapSource;
@@ -139,6 +140,7 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		if (loadMethod == LoadMethod.CACHE)
 			return null;
 
+		// ((MapSourceCallerThreadInfo)Thread.currentThread()).isMapPreviewThread()
 		RendererJob job;
 		Bitmap tileBitmap;
 		synchronized (this) {
@@ -170,16 +172,16 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 
 	private static class MapsForgeCache implements TileCache {
 
-		HashSet<Job> set = new HashSet<Job>(1000);
+		HashSet<Integer> set = new HashSet<>(1000);
 
 		@Override
 		public void put(Job job, TileBitmap tile) {
-			set.add(job);
+			set.add(job.hashCode());
 		}
 
 		@Override
 		public boolean containsKey(Job job) {
-			return set.contains(job);
+			return set.contains(job.hashCode());
 		}
 
 		@Override
@@ -188,26 +190,27 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 
 		@Override
 		public TileBitmap get(Job job) {
-			throw new RuntimeException("not implemented");
+			throw new NotImplementedException();
 		}
 
 		@Override
 		public int getCapacity() {
-			throw new RuntimeException("not implemented");
+			throw new NotImplementedException();
 		}
 
 		@Override
 		public int getCapacityFirstLevel() {
-			throw new RuntimeException("not implemented");
+			throw new NotImplementedException();
 		}
 
 		@Override
 		public TileBitmap getImmediately(Job job) {
-			throw new RuntimeException("not implemented");
+			throw new NotImplementedException();
 		}
 
 		@Override
 		public void setWorkingSet(Set<Job> jobs) {
+			throw new NotImplementedException();
 		}
 
 	}

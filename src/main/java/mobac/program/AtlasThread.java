@@ -40,6 +40,7 @@ import mobac.program.interfaces.LayerInterface;
 import mobac.program.interfaces.MapInterface;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSource.LoadMethod;
+import mobac.program.interfaces.MapSourceCallerThreadInfo;
 import mobac.program.model.AtlasOutputFormat;
 import mobac.program.model.Settings;
 import mobac.program.tilestore.TileStore;
@@ -51,7 +52,7 @@ import mobac.utilities.tar.TarIndexedArchive;
 
 import org.apache.log4j.Logger;
 
-public class AtlasThread extends Thread implements DownloadJobListener, AtlasCreationController {
+public class AtlasThread extends Thread implements DownloadJobListener, AtlasCreationController, MapSourceCallerThreadInfo {
 
 	private static final Logger log = Logger.getLogger(AtlasThread.class);
 	private static int threadNum = 0;
@@ -451,6 +452,11 @@ public class AtlasThread extends Thread implements DownloadJobListener, AtlasCre
 
 	public void setQuitMobacAfterAtlasCreation(boolean quitMobacAfterAtlasCreation) {
 		this.quitMobacAfterAtlasCreation = quitMobacAfterAtlasCreation;
+	}
+
+	@Override
+	public boolean isMapPreviewThread() {
+		return false;
 	}
 
 }

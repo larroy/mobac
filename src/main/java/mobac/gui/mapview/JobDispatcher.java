@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import mobac.program.interfaces.MapSourceCallerThreadInfo;
 import mobac.program.tilestore.berkeleydb.DelayedInterruptThread;
 
 import org.apache.log4j.Logger;
@@ -80,11 +81,24 @@ public class JobDispatcher implements ThreadFactory, RejectedExecutionHandler {
 			id = WORKER_THREAD_ID++;
 		}
 		log.trace("New map preview worker thread created with id=" + id);
-		return new DelayedInterruptThread(r, "Map preview thread " + id);
+		return new MapPreviewThread(r, "Map preview thread " + id);
 	}
 
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
 		log.error("Map preview job rejected: " + r);
 	}
 
+	public class MapPreviewThread extends DelayedInterruptThread implements MapSourceCallerThreadInfo {
+
+		public MapPreviewThread(Runnable target, String name) {
+			super(target, name);
+		}
+
+		@Override
+		public boolean isMapPreviewThread() {
+			return true;
+		}
+
+
+	}
 }
