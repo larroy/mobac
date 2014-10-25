@@ -16,6 +16,7 @@
  ******************************************************************************/
 package mobac.program.atlascreators;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,12 +24,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
 
+import mobac.exceptions.AtlasTestException;
 import mobac.exceptions.MapCreationException;
 import mobac.program.annotations.AtlasCreatorName;
 import mobac.program.annotations.SupportedParameters;
+import mobac.program.interfaces.AtlasInterface;
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 import mobac.program.interfaces.MapSpace.ProjectionCategory;
+import mobac.program.model.Settings;
 import mobac.program.model.TileImageParameters.Name;
 import mobac.utilities.Utilities;
 
@@ -70,6 +74,16 @@ public class RMapsSQLite extends AbstractSQLite {
 		ProjectionCategory pc = mapSpace.getProjectionCategory();
 		boolean correctProjection = (ProjectionCategory.SPHERE.equals(pc) || ProjectionCategory.ELLIPSOID.equals(pc));
 		return correctTileSize && correctProjection;
+	}
+
+	
+	
+	@Override
+	public void startAtlasCreation(AtlasInterface atlas, File customAtlasDir) throws IOException, AtlasTestException,
+			InterruptedException {
+		if (customAtlasDir == null)
+			customAtlasDir = Settings.getInstance().getAtlasOutputDirectory();
+		super.startAtlasCreation(atlas, customAtlasDir);
 	}
 
 	@Override

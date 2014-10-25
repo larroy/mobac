@@ -66,8 +66,6 @@ public abstract class AbstractSQLite extends AtlasCreator implements RequiresSQL
 	@Override
 	public void startAtlasCreation(AtlasInterface atlas, File customAtlasDir) throws IOException, AtlasTestException,
 			InterruptedException {
-		if (customAtlasDir == null)
-			customAtlasDir = Settings.getInstance().getAtlasOutputDirectory();
 		super.startAtlasCreation(atlas, customAtlasDir);
 		databaseFile = new File(atlasDir, getDatabaseFileName());
 		log.debug("SQLite Database file: " + databaseFile);

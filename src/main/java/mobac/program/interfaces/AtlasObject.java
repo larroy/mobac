@@ -19,8 +19,8 @@ package mobac.program.interfaces;
 import mobac.exceptions.InvalidNameException;
 
 /**
- * Marker interface that indicates that the implementing class/instance is an
- * atlas or is part of an atlas (layer or map)
+ * Marker interface that indicates that the implementing class/instance is an atlas or is part of an atlas (layer or
+ * map)
  */
 public interface AtlasObject {
 
@@ -35,8 +35,31 @@ public interface AtlasObject {
 	 */
 	public boolean checkData();
 
+	/**
+	 * minimum latitude (corresponds to row/y value)
+	 * 
+	 * @return
+	 */
 	public double getMinLat();
+
+	/**
+	 * maximum latitude (corresponds to row/y value)
+	 * 
+	 * @return
+	 */
 	public double getMaxLat();
+
+	/**
+	 * minimum longitude (corresponds to column/x value)
+	 * 
+	 * @return
+	 */
 	public double getMinLon();
-	public double getMaxLon();	
+
+	/**
+	 * maximum longitude (corresponds to column/x value)
+	 * 
+	 * @return
+	 */
+	public double getMaxLon();
 }
