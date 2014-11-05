@@ -177,6 +177,7 @@ public class GeoPackage extends AbstractSQLite {
 			prepStmt.setDouble(5, pixel_size); // pixel_y_size
 			prepStmt.executeUpdate();
 			prepStmt.close();
+			conn.commit();
 		} catch (SQLException e) {
 			throw new MapCreationException(map, e);
 		}
@@ -185,8 +186,6 @@ public class GeoPackage extends AbstractSQLite {
 
 	@Override
 	protected void updateTileMetaInfo() throws SQLException {
-		log.debug("Updating meta data in gpkg_contents and gpkg_tile_matrix_set");
-
 		min_x = Math.min(min_x, map.getMinLon());
 		min_y = Math.min(min_y, map.getMinLat());
 		max_x = Math.max(max_x, map.getMaxLon());
@@ -217,6 +216,7 @@ public class GeoPackage extends AbstractSQLite {
 		prepStmt.setDouble(4, max_y); // max_y
 		prepStmt.executeUpdate();
 		prepStmt.close();
+		conn.commit();
 	}
 
 	@Override
