@@ -76,7 +76,7 @@ public class GeoPackage extends AbstractSQLite {
 
 	private boolean atlasInitialized = false;
 
-	double min_x, min_y, max_x, max_y;
+	double minLon, minLat, maxLat, maxLon;
 
 	public GeoPackage() {
 		super();
@@ -97,10 +97,10 @@ public class GeoPackage extends AbstractSQLite {
 			InterruptedException {
 		super.startAtlasCreation(atlas, customAtlasDir);
 		Utilities.mkDir(atlasDir);
-		min_x = Double.MAX_VALUE;
-		min_y = Double.MAX_VALUE;
-		max_x = Double.MIN_VALUE;
-		max_y = Double.MIN_VALUE;
+		minLat = Double.MAX_VALUE;
+		minLon = Double.MAX_VALUE;
+		maxLat = Double.MIN_VALUE;
+		maxLon = Double.MIN_VALUE;
 	}
 
 	@Override
@@ -184,12 +184,27 @@ public class GeoPackage extends AbstractSQLite {
 
 	}
 
+	private double lonToMetersX(double lon) {
+		return lon * Math.PI * 6378137.0 / 180.0;
+	}
+
+	private double latToMetersY(double lat) {
+		double meters_y = Math.log(Math.tan((90 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
+		meters_y = meters_y * Math.PI * 6378137.0 / 180.0;
+		return meters_y;
+	}
+
 	@Override
 	protected void updateTileMetaInfo() throws SQLException {
-		min_x = Math.min(min_x, map.getMinLon());
-		min_y = Math.min(min_y, map.getMinLat());
-		max_x = Math.max(max_x, map.getMaxLon());
-		max_y = Math.max(max_y, map.getMaxLat());
+		minLon = Math.min(minLon, map.getMinLon());
+		minLat = Math.min(minLat, map.getMinLat());
+		maxLat = Math.max(maxLat, map.getMaxLon());
+		maxLon = Math.max(maxLon, map.getMaxLat());
+
+		double min_y = latToMetersY(minLat);
+		double max_y = latToMetersY(maxLat);
+		double min_x = lonToMetersX(minLon);
+		double max_x = lonToMetersX(maxLon);
 
 		Statement stat = conn.createStatement();
 		stat.execute("DELETE FROM gpkg_contents;");
@@ -227,8 +242,8 @@ public class GeoPackage extends AbstractSQLite {
 	@Override
 	protected void writeTile(int x, int y, int z, byte[] tileData) throws SQLException, IOException {
 		prepStmt.setInt(1, z);
-		prepStmt.setInt(2, x);
-		prepStmt.setInt(3, y);
+		prepStmt.setInt(2, x - xMin);
+		prepStmt.setInt(3, y - yMin);
 		prepStmt.setBytes(4, tileData);
 		prepStmt.addBatch();
 	}
