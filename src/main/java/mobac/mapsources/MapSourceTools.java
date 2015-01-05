@@ -16,6 +16,8 @@
  ******************************************************************************/
 package mobac.mapsources;
 
+import java.security.SecureRandom;
+
 import mobac.program.interfaces.MapSource;
 import mobac.program.interfaces.MapSpace;
 
@@ -25,6 +27,8 @@ import mobac.program.interfaces.MapSpace;
 public class MapSourceTools {
 
 	protected static final char[] NUM_CHAR = { '0', '1', '2', '3' };
+
+	public static final SecureRandom RND = new SecureRandom();
 
 	/**
 	 * See: http://msdn.microsoft.com/en-us/library/bb259689.aspx
@@ -92,5 +96,9 @@ public class MapSourceTools {
 		String tmp = mapUrl;
 		tmp = tmp.replace("{$serverpart}", serverPart);
 		return formatMapUrl(tmp, zoom, tilex, tiley);
+	}
+
+	public static String getRandomServerPart(String[] serverParts) {
+		return serverParts[RND.nextInt(serverParts.length)];
 	}
 }

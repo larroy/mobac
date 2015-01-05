@@ -19,17 +19,20 @@
  */
 package mobac.mapsources.mappacks.openstreetmap;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import mobac.exceptions.TileException;
-import mobac.mapsources.AbstractHttpMapSource;
 import mobac.mapsources.AbstractMultiLayerMapSource;
-import mobac.program.interfaces.HttpMapSource;
+import mobac.mapsources.MapSourceTools;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.TileImageType;
 
 public class Hikebikemap extends AbstractMultiLayerMapSource {
+
+	private static final String[] SERVERS = { "a", "b", "c" };
+	private static final Color BACKGROUND = new Color(180, 180, 180);
 
 	public Hikebikemap() {
 		super("OpenStreetMap Hikebikemap.de", TileImageType.PNG);
@@ -40,10 +43,12 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 	/**
 	 * http://hikebikemap.de/
 	 */
-	public static class HikebikemapBase extends AbstractHttpMapSource {
+	public static class HikebikemapBase extends AbstractOsmMapSource {
 
 		public HikebikemapBase() {
-			super("HikebikemapTiles", 0, 17, TileImageType.PNG, HttpMapSource.TileUpdate.None);
+			super("HikebikemapTiles");
+			maxZoom = 17;
+			tileUpdate = TileUpdate.IfNoneMatch;
 		}
 
 		@Override
@@ -52,7 +57,8 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 		}
 
 		public String getTileUrl(int zoom, int tilex, int tiley) {
-			return "http://toolserver.org/tiles/hikebike/" + zoom + "/" + tilex + "/" + tiley + ".png";
+			return String.format("http://%s.tiles.wmflabs.org/hikebike/%d/%d/%d.png",
+					MapSourceTools.getRandomServerPart(SERVERS), zoom, tilex, tiley);
 		}
 
 	}
@@ -62,14 +68,17 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 	 * 
 	 * http://hikebikemap.de/
 	 */
-	public static class HikebikemapRelief extends AbstractHttpMapSource {
+	public static class HikebikemapRelief extends AbstractOsmMapSource {
 
 		public HikebikemapRelief() {
-			super("HikebikemapRelief", 0, 17, TileImageType.PNG, HttpMapSource.TileUpdate.None);
+			super("HikebikemapRelief");
+			maxZoom = 17;
+			tileUpdate = TileUpdate.IfNoneMatch;
 		}
 
 		public String getTileUrl(int zoom, int tilex, int tiley) {
-			return "http://toolserver.org/~cmarqu/hill/" + zoom + "/" + tilex + "/" + tiley + ".png";
+			return String.format("http://%s.tiles.wmflabs.org/hillshading/%d/%d/%d.png",
+					MapSourceTools.getRandomServerPart(SERVERS), zoom, tilex, tiley);
 		}
 
 		@Override
@@ -81,4 +90,10 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 		}
 
 	}
+
+	@Override
+	public Color getBackgroundColor() {
+		return BACKGROUND;
+	}
+
 }
