@@ -25,13 +25,13 @@ import java.io.IOException;
 
 import mobac.exceptions.TileException;
 import mobac.mapsources.AbstractMultiLayerMapSource;
-import mobac.mapsources.MapSourceTools;
 import mobac.program.interfaces.MapSource;
 import mobac.program.model.TileImageType;
 
 public class Hikebikemap extends AbstractMultiLayerMapSource {
 
 	private static final String[] SERVERS = { "a", "b", "c" };
+	private static int SERVER_NUM = 0;
 	private static final Color BACKGROUND = new Color(180, 180, 180);
 
 	public Hikebikemap() {
@@ -57,8 +57,9 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 		}
 
 		public String getTileUrl(int zoom, int tilex, int tiley) {
-			return String.format("http://%s.tiles.wmflabs.org/hikebike/%d/%d/%d.png",
-					MapSourceTools.getRandomServerPart(SERVERS), zoom, tilex, tiley);
+			String server = SERVERS[SERVER_NUM];
+			SERVER_NUM = (SERVER_NUM + 1) % SERVERS.length;
+			return String.format("http://%s.tiles.wmflabs.org/hikebike/%d/%d/%d.png", server, zoom, tilex, tiley);
 		}
 
 	}
@@ -77,8 +78,9 @@ public class Hikebikemap extends AbstractMultiLayerMapSource {
 		}
 
 		public String getTileUrl(int zoom, int tilex, int tiley) {
-			return String.format("http://%s.tiles.wmflabs.org/hillshading/%d/%d/%d.png",
-					MapSourceTools.getRandomServerPart(SERVERS), zoom, tilex, tiley);
+			String server = SERVERS[SERVER_NUM];
+			SERVER_NUM = (SERVER_NUM + 1) % SERVERS.length;
+			return String.format("http://%s.tiles.wmflabs.org/hillshading/%d/%d/%d.png", server, zoom, tilex, tiley);
 		}
 
 		@Override
