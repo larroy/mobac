@@ -98,7 +98,7 @@ public class AtlasOutputFormat implements Comparable<AtlasOutputFormat> {
 		FORMATS.add(createByClass(Galileo.class));
 		FORMATS.add(createByClass(GarminCustom.class));
 		FORMATS.add(createByClass(GCLive.class));
-		FORMATS.add(createByClass(GeoPackage.class));
+		// FORMATS.add(createByClass(GeoPackage.class));
 		FORMATS.add(createByClass(Glopus.class));
 		FORMATS.add(createByClass(GlopusMapFile.class));
 		FORMATS.add(createByClass(GoogleEarthOverlay.class));
@@ -199,4 +199,13 @@ public class AtlasOutputFormat implements Comparable<AtlasOutputFormat> {
 		return getTypeName().compareTo(o.toString());
 	}
 
+	/**
+	 * Print all atlas formats
+	 */
+	public static void main(String[] args) {
+		for (AtlasOutputFormat s : FORMATS) {
+			System.out.println("|" + s);
+			System.out.println("|-");
+		}
+	}
 }

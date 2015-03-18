@@ -33,6 +33,9 @@ import mobac.program.model.TileImageParameters.Name;
 import mobac.utilities.Utilities;
 
 /**
+ * 
+ * Warning: This implementation is defect and incomplete!
+ * 
  * https://sourceforge.net/p/mobac/feature-requests/263/
  * 
  * http://www.geopackage.org/spec/
