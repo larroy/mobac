@@ -172,7 +172,7 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 
 	private static class MapsForgeCache implements TileCache {
 
-		HashSet<Integer> set = new HashSet<>(1000);
+		HashSet<Integer> set = new HashSet<>(10000);
 
 		@Override
 		public void put(Job job, TileBitmap tile) {
