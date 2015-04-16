@@ -11,6 +11,10 @@
 
 =======
 
+2.0.0 alpha 3 (2015-04-16)
+ ~ Mapsforge vector maps library updated to 0.5.1
+ ! Mapsforge custom caching implemented (required for correct label rendering) 
+
 2.0.0 alpha 2 (2014-10-31)
  ! Fixed problems using mapsforge vector maps as a layer of a multi-layer map
  ! TrekBuddyTar: test added for too long layer & map names
