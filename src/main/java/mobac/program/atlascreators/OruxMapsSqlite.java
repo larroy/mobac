@@ -187,8 +187,6 @@ public class OruxMapsSqlite extends OruxMaps implements RequiresSQLite {
 
 	private class OruxMapTileWriterDB implements MapTileWriter {
 
-		private static final int MAX_BATCH_SIZE = 1000;
-
 		private int tileCounter = 0;
 		private Runtime r = Runtime.getRuntime();
 

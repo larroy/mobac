@@ -28,7 +28,6 @@ import mobac.exceptions.MapCreationException;
 import mobac.program.atlascreators.tileprovider.ConvertedRawTileProvider;
 import mobac.program.interfaces.AtlasInterface;
 import mobac.program.interfaces.RequiresSQLite;
-import mobac.program.model.Settings;
 import mobac.program.model.TileImageParameters;
 import mobac.utilities.jdbc.SQLiteLoader;
 

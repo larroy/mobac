@@ -21,6 +21,8 @@ package mobac.program.interfaces;
  */
 public interface RequiresSQLite {
 
+	public static final int MAX_BATCH_SIZE = 1000;
+	
 	/**
 	 * Accumulate tiles in batch process until 20MB of heap are remaining
 	 */

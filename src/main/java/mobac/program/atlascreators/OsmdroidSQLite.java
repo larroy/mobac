@@ -47,8 +47,6 @@ import mobac.utilities.jdbc.SQLiteLoader;
 @SupportedParameters(names = { Name.format })
 public class OsmdroidSQLite extends AtlasCreator implements RequiresSQLite {
 
-	private static final int MAX_BATCH_SIZE = 1000;
-
 	protected Connection conn = null;
 
 	public OsmdroidSQLite() {
