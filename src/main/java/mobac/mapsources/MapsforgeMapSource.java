@@ -48,10 +48,11 @@ import org.mapsforge.map.layer.queue.Job;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 import org.mapsforge.map.layer.renderer.RendererJob;
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.reader.MapDatabase;
-import org.mapsforge.map.reader.header.FileOpenResult;
+import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.reader.MultiMapDataStore;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.mapsforge.map.rendertheme.rule.RenderThemeFuture;
 
 public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 
@@ -65,6 +66,8 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	protected DatabaseRenderer renderer;
 	protected XmlRenderTheme xmlRenderTheme;
 	protected DisplayModel displayModel;
+	protected MultiMapDataStore multiMapDataStore;
+	protected RenderThemeFuture renderThemeFuture;
 
 	protected MapsForgeCache tileCache = new MapsForgeCache();
 
@@ -87,12 +90,15 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	@Override
 	public void initialize() throws MapSourceInitializationException {
 		GraphicFactory graphicFactory = AwtGraphicFactory.INSTANCE;
-		MapDatabase mapDatabase = new MapDatabase();
-		FileOpenResult res = mapDatabase.openFile(mapFile);
-		if (!res.isSuccess())
-			throw new MapSourceInitializationException(res.getErrorMessage());
+		if (!mapFile.exists())
+			throw new MapSourceInitializationException("File does not exist: " + mapFile.getAbsolutePath());
+		multiMapDataStore = new MultiMapDataStore(MultiMapDataStore.DataPolicy.RETURN_FIRST);
+		multiMapDataStore.addMapDataStore(new MapFile(mapFile), true, true);
 
-		renderer = new DatabaseRenderer(mapDatabase, graphicFactory, tileCache);
+		renderer = new DatabaseRenderer(multiMapDataStore, graphicFactory, tileCache);
+		renderThemeFuture = new RenderThemeFuture(graphicFactory, xmlRenderTheme, displayModel);
+		new Thread(renderThemeFuture).start();
+
 	}
 
 	@Override
@@ -145,10 +151,13 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		Bitmap tileBitmap;
 		synchronized (this) {
 			Tile tile = new Tile(x, y, (byte) zoom, 256);
-			job = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, textScale, transparent, false);
+			job = new RendererJob(tile, multiMapDataStore, renderThemeFuture, displayModel,
+					displayModel.getScaleFactor(), transparent, false);
 
 			tileBitmap = (AwtTileBitmap) renderer.executeJob(job);
 		}
+		if (tileBitmap == null)
+			throw new IOException("Failed to render image");
 		tileCache.put(job, null);
 		return AwtGraphicFactory.getBitmap(tileBitmap);
 	}
@@ -211,6 +220,11 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		@Override
 		public void setWorkingSet(Set<Job> jobs) {
 			throw new NotImplementedException();
+		}
+
+		@Override
+		public void purge() {
+			set.clear();
 		}
 
 	}

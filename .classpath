@@ -22,11 +22,6 @@
 	<classpathentry kind="lib" path="lib/itextpdf-5.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.15-M1.jar"/>
-	<classpathentry kind="lib" path="lib/mapsforge-core-0.5.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/mapsforge-map-0.5.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/mapsforge-map-awt-0.5.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/mapsforge-map-reader-0.5.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/webserver.jar"/>
@@ -38,5 +33,11 @@
 			<attribute name="javadoc_location" value="http://javapng.googlecode.com/svn/trunk/javapng2/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/mapsforge/kxml2-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/mapsforge/mapsforge-core-0.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/mapsforge/mapsforge-map-0.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/mapsforge/mapsforge-map-awt-0.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/mapsforge/mapsforge-map-reader-0.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/mapsforge/svg-salamander-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

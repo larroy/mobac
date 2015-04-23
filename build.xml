@@ -19,7 +19,7 @@
 
 	<property name="je-version" value="3.3.93" />
 	<property name="sqlite-version" value="3.7.15-M1" />
-	<property name="mapsforge-version" value="0.5.0-SNAPSHOT" />
+	<property name="mapsforge-version" value="0.5.1" />
 		
 	<!-- Java target version -->
 	<property name="java-target" value="1.7" />
@@ -35,8 +35,9 @@
 		<fileset dir="lib" includes="commons-io-2.0.jar" />
 		<fileset dir="lib" includes="commons-lang3-3.1.jar" />
 		<fileset dir="lib" includes="je-${je-version}.jar" />
-		<fileset dir="lib" includes="kxml2-2.3.0.jar.jar" />
-		<fileset dir="lib" includes="mapsforge*.jar" />
+		<fileset dir="lib" includes="mapsforge/kxml2-2.3.0.jar.jar" />
+		<fileset dir="lib" includes="mapsforge/svg-salamander-1.0.jar" />
+		<fileset dir="lib" includes="mapsforge/mapsforge*.jar" />
 	</path>
 
 	<target name="all"
@@ -181,11 +182,12 @@
 			<zipfileset src="lib/javapng-2.0.jar" includes="**/*.class" />
 			<zipfileset src="lib/Tidy.jar" includes="org/w3c/tidy/**" />
 			<zipfileset src="lib/itextpdf-5.1.0.jar" includes="com/**" />
-			<zipfileset src="lib/mapsforge-core-${mapsforge-version}.jar" />
-			<zipfileset src="lib/mapsforge-map-${mapsforge-version}.jar" />
-			<zipfileset src="lib/mapsforge-map-awt-${mapsforge-version}.jar" />
-			<zipfileset src="lib/mapsforge-map-reader-${mapsforge-version}.jar" />
-			<zipfileset src="lib/kxml2-2.3.0.jar" />
+			<zipfileset src="lib/mapsforge/mapsforge-core-${mapsforge-version}.jar" includes="org/**" />
+			<zipfileset src="lib/mapsforge/mapsforge-map-${mapsforge-version}.jar" excludes="META-INF/**" />
+			<zipfileset src="lib/mapsforge/mapsforge-map-awt-${mapsforge-version}.jar" includes="org/**" />
+			<zipfileset src="lib/mapsforge/mapsforge-map-reader-${mapsforge-version}.jar" includes="org/**" />
+			<zipfileset src="lib/mapsforge/kxml2-2.3.0.jar" includes="org/**" />
+			<zipfileset src="lib/mapsforge/svg-salamander-1.0.jar" includes="com/**" />
 			<fileset dir="build/mobac">
 				<exclude name="**/unittest/**" />
 				<exclude name="mobac/mapsources/mapapcks/**" />
