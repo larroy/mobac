@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,12 +38,12 @@ import mobac.program.interfaces.MapSpace;
 import mobac.program.model.MapSourceLoaderInfo;
 import mobac.program.model.TileImageType;
 
+import org.apache.log4j.Logger;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
-import org.mapsforge.map.awt.AwtTileBitmap;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.queue.Job;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
@@ -50,11 +51,17 @@ import org.mapsforge.map.layer.renderer.RendererJob;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.MultiMapDataStore;
+import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
+import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
+import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 import org.mapsforge.map.rendertheme.rule.RenderThemeFuture;
 
 public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
+
+	private static final Logger LOG = Logger.getLogger(MapsforgeMapSource.class);
 
 	private static final String name = "MapsforgeWorld";
 
@@ -68,6 +75,7 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 	protected DisplayModel displayModel;
 	protected MultiMapDataStore multiMapDataStore;
 	protected RenderThemeFuture renderThemeFuture;
+	protected XmlRenderThemeStyleMenu renderThemeStyleMenu;
 
 	protected MapsForgeCache tileCache = new MapsForgeCache();
 
@@ -97,8 +105,35 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 
 		renderer = new DatabaseRenderer(multiMapDataStore, graphicFactory, tileCache);
 		renderThemeFuture = new RenderThemeFuture(graphicFactory, xmlRenderTheme, displayModel);
-		new Thread(renderThemeFuture).start();
+		// new Thread(renderThemeFuture).start();
+		renderThemeFuture.run();
+		// renderThemeFuture = new RenderThemeFuture(graphicFactory, xmlRenderTheme, displayModel);
+		// renderThemeFuture.run();
+	}
 
+	protected void loadExternalRenderTheme(File xmlRenderThemeFile) throws FileNotFoundException {
+
+		XmlRenderThemeMenuCallback callBack = new XmlRenderThemeMenuCallback() {
+
+			@Override
+			public Set<String> getCategories(XmlRenderThemeStyleMenu styleMenu) {
+				renderThemeStyleMenu = styleMenu;
+				String id = styleMenu.getDefaultValue();
+				XmlRenderThemeStyleLayer baseLayer = styleMenu.getLayer(id);
+				Set<String> result = baseLayer.getCategories();
+
+				for (XmlRenderThemeStyleLayer overlay : baseLayer.getOverlays()) {
+					LOG.trace("Overlay " + overlay.getId() + " enabled: " + overlay.isEnabled());
+					if (overlay.isEnabled()) {
+						result.addAll(overlay.getCategories());
+					}
+				}
+
+				return result;
+			}
+
+		};
+		this.xmlRenderTheme = new ExternalRenderTheme(xmlRenderThemeFile, callBack);
 	}
 
 	@Override
@@ -149,12 +184,12 @@ public class MapsforgeMapSource implements MapSource, FileBasedMapSource {
 		// ((MapSourceCallerThreadInfo)Thread.currentThread()).isMapPreviewThread()
 		RendererJob job;
 		Bitmap tileBitmap;
-		synchronized (this) {
-			Tile tile = new Tile(x, y, (byte) zoom, 256);
-			job = new RendererJob(tile, multiMapDataStore, renderThemeFuture, displayModel,
-					displayModel.getScaleFactor(), transparent, false);
+		Tile tile = new Tile(x, y, (byte) zoom, 256);
+		job = new RendererJob(tile, multiMapDataStore, renderThemeFuture, displayModel, displayModel.getScaleFactor(),
+				transparent, false);
 
-			tileBitmap = (AwtTileBitmap) renderer.executeJob(job);
+		synchronized (this) {
+			tileBitmap = renderer.executeJob(job);
 		}
 		if (tileBitmap == null)
 			throw new IOException("Failed to render image");
